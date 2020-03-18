@@ -80,12 +80,19 @@ add_filter('the_content', function( $content ) {
 		));
 
 		$script_url = EMBED_URL;
-		return "<script src='$script_url' data-forum-id='$community_id' data-url='https://login.dev.randomcoffee.us/$community_id/login/signed/$payload?$userdata' data-forum-prefix='forum' hide-menu></script>";
+		return "
+		<script defer src='$script_url'
+			data-forum-id='$community_id'
+			data-url='https://login.dev.randomcoffee.us/$community_id/login/signed/$payload?$userdata'
+			data-forum-prefix='forum'
+			data-forum-hide-menu
+			data-forum-container-id='circles-forum'></script>
+		<div id='circles-forum'></div>";
 	}
 	return $content;
 });
 
-add_filter( 'request', function( array $query_vars ) {
+add_filter('request', function( array $query_vars ) {
 	if (isEmbedPage()) {
 		$query_vars = array("page_id" => get_option("circles_post"));
 	}
