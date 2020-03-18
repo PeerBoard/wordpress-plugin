@@ -3,7 +3,7 @@
 Plugin Name: Circles integration
 Plugin URI: http://circles.is
 Description: Circles forum integration plugin
-Version: 0.0.1
+Version: 0.0.2
 Author: anton@circles.is
 */
 
@@ -35,16 +35,18 @@ add_action('wp_enqueue_scripts', function() {
 
 register_activation_hook( __FILE__, 'myplugin_activate' );
 function myplugin_activate(){
-	$post_data = array(
-		'post_title'    => 'Circles forum integration',
-		'post_alias'    => 'forum',
-		'post_content'  => '',
-		'post_status'   => 'publish',
-		'post_type'     => 'page',
-		'post_author'   => 1
-	);
-	$post_id = wp_insert_post( $post_data );
-	update_option( "circles_post", $post_id);
+	if (is_null(get_option("circles_post"))) {
+		$post_data = array(
+			'post_title'    => 'Circles forum integration',
+			'post_alias'    => 'forum',
+			'post_content'  => '',
+			'post_status'   => 'publish',
+			'post_type'     => 'page',
+			'post_author'   => 1
+		);
+		$post_id = wp_insert_post( $post_data );
+		update_option( "circles_post", $post_id);
+	}
 }
 
 function isEmbedPage() {
