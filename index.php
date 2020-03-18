@@ -3,7 +3,7 @@
 Plugin Name: Circles integration
 Plugin URI: http://circles.is
 Description: Circles forum integration plugin
-Version: 0.0.1
+Version: 0.0.2
 Author: anton@circles.is
 */
 
@@ -35,16 +35,18 @@ add_action('wp_enqueue_scripts', function() {
 
 register_activation_hook( __FILE__, 'myplugin_activate' );
 function myplugin_activate(){
-	$post_data = array(
-		'post_title'    => 'Circles forum integration',
-		'post_alias'    => 'forum',
-		'post_content'  => '',
-		'post_status'   => 'publish',
-		'post_type'     => 'page',
-		'post_author'   => 1
-	);
-	$post_id = wp_insert_post( $post_data );
-	update_option( "circles_post", $post_id);
+	if (is_null(get_option("circles_post"))) {
+		$post_data = array(
+			'post_title'    => 'Circles forum integration',
+			'post_alias'    => 'forum',
+			'post_content'  => '',
+			'post_status'   => 'publish',
+			'post_type'     => 'page',
+			'post_author'   => 1
+		);
+		$post_id = wp_insert_post( $post_data );
+		update_option( "circles_post", $post_id);
+	}
 }
 
 function isEmbedPage() {
@@ -55,7 +57,6 @@ function isEmbedPage() {
 function getTailPath() {
 	return str_replace("/forum/","",$_SERVER['REQUEST_URI']);
 }
-
 add_filter('the_content', function( $content ) {
 	if (isEmbedPage()) {
 		// We store community id in our custom page
@@ -80,10 +81,11 @@ add_filter('the_content', function( $content ) {
 		));
 
 		$script_url = EMBED_URL;
+		remove_filter( 'the_content', 'wpautop' );
 		return "<script src='$script_url' data-forum-id='$community_id' data-url='https://login.dev.randomcoffee.us/$community_id/login/signed/$payload?$userdata' data-forum-prefix='forum' hide-menu></script>";
 	}
 	return $content;
-});
+}, 0);
 
 add_filter( 'request', function( array $query_vars ) {
 	if (isEmbedPage()) {
