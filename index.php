@@ -7,7 +7,7 @@ Version: 0.0.1
 Author: anton@circles.is
 */
 
-DEFINE('EMBED_URL', 'https://static.dev.randomcoffee.us/embed/embed.js'); // TODO: grab from the correct env
+DEFINE('EMBED_URL', plugin_dir_url(__FILE__)."embed.js"); // TODO: grab from the correct env
 DEFINE('STYLE_URL', plugin_dir_url(__FILE__)."style.css");
 DEFINE('PREFIX', 'forum'); // TODO: get prefix from settings
 
@@ -49,11 +49,11 @@ function myplugin_activate(){
 }
 
 function isEmbedPage() {
-	return (substr($_SERVER['REQUEST_URI'],0,6) == "/$PREFIX");
+	return (substr($_SERVER['REQUEST_URI'],0,6) == "/" . PREFIX);
 }
 
 function getTailPath() {
-	return str_replace("/$PREFIX/","",$_SERVER['REQUEST_URI']);
+	return str_replace("/". PREFIX ."/","",$_SERVER['REQUEST_URI']);
 }
 
 add_filter('the_content', function( $content ) {
@@ -84,7 +84,7 @@ add_filter('the_content', function( $content ) {
 		<script defer src='$script_url'
 			data-forum-id='$community_id'
 			data-forum-wp-login='$payload?$userdata'
-			data-forum-prefix='$PREFIX'
+			data-forum-prefix='".PREFIX ."'
 			data-forum-hide-menu
 			data-forum-container-id='circles-forum'></script>
 		<div id='circles-forum'></div>";
