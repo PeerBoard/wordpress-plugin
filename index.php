@@ -7,8 +7,9 @@ Version: 0.0.2
 Author: anton@circles.is
 */
 
-DEFINE('EMBED_URL', 'https://static.dev.randomcoffee.us/embed/embed.js');
+DEFINE('EMBED_URL', 'https://static.dev.randomcoffee.us/embed/embed.js'); // TODO: grab from the correct env
 DEFINE('STYLE_URL', plugin_dir_url(__FILE__)."style.css");
+DEFINE('PREFIX', 'forum'); // TODO: get prefix from settings
 
 
 function base64url_encode($data)
@@ -50,12 +51,13 @@ function myplugin_activate(){
 }
 
 function isEmbedPage() {
-	// Todo: get prefix from settings
-	return (substr($_SERVER['REQUEST_URI'],0,6) == '/forum');
+	return (substr($_SERVER['REQUEST_URI'],0,6) == "/" . PREFIX);
 }
 
 function getTailPath() {
-	return str_replace("/forum/","",$_SERVER['REQUEST_URI']);
+	$r = $_SERVER['REQUEST_URI'];
+	$prefix_part = sprintf("/%s/", PREFIX);
+	return ($r == $prefix_part) ? "/" : str_replace($prefix_part,"",$r);
 }
 add_filter('the_content', function( $content ) {
 	if (isEmbedPage()) {
@@ -70,7 +72,7 @@ add_filter('the_content', function( $content ) {
 		$payload = base64url_encode(json_encode(
 			array(
 				'communityID' => $community_id,
-				'location' => "https://dev.randomcoffee.us/$community_id/" . getTailPath()
+				'location' => getTailPath(),
 			)
 		));
 		$userdata = http_build_query(array(
@@ -82,12 +84,19 @@ add_filter('the_content', function( $content ) {
 
 		$script_url = EMBED_URL;
 		remove_filter( 'the_content', 'wpautop' );
-		return "<script src='$script_url' data-forum-id='$community_id' data-url='https://login.dev.randomcoffee.us/$community_id/login/signed/$payload?$userdata' data-forum-prefix='forum' hide-menu></script>";
+		return "
+		<script defer src='$script_url'
+			data-forum-id='$community_id'
+			data-forum-wp-login='$payload?$userdata'
+			data-forum-prefix='".PREFIX ."'
+			data-forum-hide-menu
+			data-forum-container-id='circles-forum'></script>
+		<div id='circles-forum'></div>";
 	}
 	return $content;
 }, 0);
 
-add_filter( 'request', function( array $query_vars ) {
+add_filter('request', function( array $query_vars ) {
 	if (isEmbedPage()) {
 		$query_vars = array("page_id" => get_option("circles_post"));
 	}
