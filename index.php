@@ -55,7 +55,6 @@ function isEmbedPage() {
 function getTailPath() {
 	return str_replace("/forum/","",$_SERVER['REQUEST_URI']);
 }
-
 add_filter('the_content', function( $content ) {
 	if (isEmbedPage()) {
 		// We store community id in our custom page
@@ -80,10 +79,11 @@ add_filter('the_content', function( $content ) {
 		));
 
 		$script_url = EMBED_URL;
+		remove_filter( 'the_content', 'wpautop' );
 		return "<script src='$script_url' data-forum-id='$community_id' data-url='https://login.dev.randomcoffee.us/$community_id/login/signed/$payload?$userdata' data-forum-prefix='forum' hide-menu></script>";
 	}
 	return $content;
-});
+}, 0);
 
 add_filter( 'request', function( array $query_vars ) {
 	if (isEmbedPage()) {
