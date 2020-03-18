@@ -7,7 +7,7 @@ Version: 0.0.1
 Author: anton@circles.is
 */
 
-DEFINE('EMBED_URL', plugin_dir_url(__FILE__)."embed.js"); // TODO: grab from the correct env
+DEFINE('EMBED_URL', 'https://static.dev.randomcoffee.us/embed/embed.js'); // TODO: grab from the correct env
 DEFINE('STYLE_URL', plugin_dir_url(__FILE__)."style.css");
 DEFINE('PREFIX', 'forum'); // TODO: get prefix from settings
 
@@ -54,7 +54,8 @@ function isEmbedPage() {
 
 function getTailPath() {
 	$r = $_SERVER['REQUEST_URI'];
-	return ($r == sprintf("/%s/", PREFIX)) ? "/" : str_replace(sprintf("/%s/", PREFIX),"",$r);
+	$prefix_part = sprintf("/%s/", PREFIX);
+	return ($r == $prefix_part) ? "/" : str_replace($prefix_part,"",$r);
 }
 
 add_filter('the_content', function( $content ) {
