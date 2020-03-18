@@ -53,7 +53,8 @@ function isEmbedPage() {
 }
 
 function getTailPath() {
-	return str_replace("/". PREFIX ."/","",$_SERVER['REQUEST_URI']);
+	$r = $_SERVER['REQUEST_URI'];
+	return ($r == sprintf("/%s/", PREFIX)) ? "/" : str_replace(sprintf("/%s/", PREFIX),"",$r);
 }
 
 add_filter('the_content', function( $content ) {
@@ -69,7 +70,7 @@ add_filter('the_content', function( $content ) {
 		$payload = base64url_encode(json_encode(
 			array(
 				'communityID' => $community_id,
-				'location' => getTailPath()
+				'location' => getTailPath(),
 			)
 		));
 		$userdata = http_build_query(array(
