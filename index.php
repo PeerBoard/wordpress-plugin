@@ -3,11 +3,11 @@
 Plugin Name: Circles integration
 Plugin URI: http://circles.is
 Description: Circles forum integration plugin
-Version: 0.0.2
+Version: 0.0.3
 Author: anton@circles.is
 */
 
-DEFINE('EMBED_URL', 'https://static.dev.randomcoffee.us/embed/embed.js'); // TODO: grab from the correct env
+DEFINE('EMBED_URL', 'https://static.circles.is/embed/embed.js'); // TODO: grab from the correct env
 DEFINE('STYLE_URL', plugin_dir_url(__FILE__)."style.css");
 DEFINE('PREFIX', 'forum'); // TODO: get prefix from settings
 
