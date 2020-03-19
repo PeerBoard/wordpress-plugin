@@ -3,7 +3,7 @@
 Plugin Name: Circles integration
 Plugin URI: http://circles.is
 Description: Circles forum integration plugin
-Version: 0.0.3
+Version: 0.0.4
 Author: anton@circles.is
 */
 
@@ -90,7 +90,9 @@ add_filter('the_content', function( $content ) {
 			data-forum-id='$community_id'
 			data-forum-wp-login='$payload?$userdata'
 			data-forum-prefix='".PREFIX ."'
+			data-forum-scroll='top' 
 			data-forum-hide-menu
+			data-forum-resize
 			data-forum-container-id='circles-forum'></script>
 		<div id='circles-forum'></div>";
 	}
