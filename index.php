@@ -77,7 +77,7 @@ add_filter('the_content', function( $content ) {
 		));
 		$userdata = http_build_query(array(
 			'email' =>  $user->user_email,
-			'username' => $user->display_name,
+			'username' => $user->nickname,
 			'first_name' => $user->first_name,
 			'last_name' => $user->last_name,
 			'photo_url' => get_avatar_url($user->user_email),
