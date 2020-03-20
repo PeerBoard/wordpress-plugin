@@ -3,14 +3,14 @@
 Plugin Name: Circles integration
 Plugin URI: http://circles.is
 Description: Circles forum integration plugin
-Version: 0.0.4
+Version: 0.0.5
 Author: anton@circles.is
 */
 
 DEFINE('EMBED_URL', 'https://static.circles.is/embed/embed.js'); // TODO: grab from the correct env
 DEFINE('STYLE_URL', plugin_dir_url(__FILE__)."style.css");
-DEFINE('PREFIX', 'forum'); // TODO: get prefix from settings
 
+require(plugin_dir_path(__FILE__)."settings.php");
 
 function base64url_encode($data)
 {
@@ -28,6 +28,13 @@ function base64url_encode($data)
   // Remove padding character from the end of line and return the Base64URL result
   return rtrim($url, '=');
 }
+
+add_action( 'init', function() {
+	global $circles_prefix;
+	$options = get_option( 'circles_options' );
+	$prefix = $options['prefix'];
+	$circles_prefix = ($prefix != "") ? $prefix : 'forum';
+});
 
 add_action('wp_enqueue_scripts', function() {
 	wp_register_style( 'circles', STYLE_URL );
@@ -50,29 +57,30 @@ function myplugin_activate(){
 	}
 }
 
-function isEmbedPage() {
-	return (substr($_SERVER['REQUEST_URI'],0,6) == "/" . PREFIX);
+function isEmbedPage($prefix) {
+	return (substr($_SERVER['REQUEST_URI'],0,strlen($prefix) + 1) == "/" . $prefix);
 }
 
-function getTailPath() {
+function getTailPath($prefix) {
 	$r = $_SERVER['REQUEST_URI'];
-	$prefix_part = sprintf("/%s/", PREFIX);
+	$prefix_part = sprintf("/%s/", $prefix);
 	return ($r == $prefix_part) ? "/" : str_replace($prefix_part,"",$r);
 }
+
 add_filter('the_content', function( $content ) {
-	if (isEmbedPage()) {
+	global $circles_prefix;
+	if (isEmbedPage($circles_prefix)) {
 		// We store community id in our custom page
 		preg_match_all('!\d+!', $content, $matches);
 		if (count($matches[0]) == 0 || intval($matches[0][0]) == 0) {
 			return "<H4>Please set community id into 'Circles forum integration' page content</H4>";
 		}
 		$community_id = intval($matches[0][0]);
-
 		$user = wp_get_current_user();
 		$payload = base64url_encode(json_encode(
 			array(
 				'communityID' => $community_id,
-				'location' => getTailPath(),
+				'location' => getTailPath($circles_prefix),
 			)
 		));
 		$userdata = http_build_query(array(
@@ -89,7 +97,7 @@ add_filter('the_content', function( $content ) {
 		<script defer src='$script_url'
 			data-forum-id='$community_id'
 			data-forum-wp-login='$payload?$userdata'
-			data-forum-prefix='".PREFIX ."'
+			data-forum-prefix='$circles_prefix'
 			data-forum-scroll='top' 
 			data-forum-hide-menu
 			data-forum-resize
@@ -100,7 +108,8 @@ add_filter('the_content', function( $content ) {
 }, 0);
 
 add_filter('request', function( array $query_vars ) {
-	if (isEmbedPage()) {
+	global $circles_prefix;
+	if (isEmbedPage($circles_prefix)) {
 		$query_vars = array("page_id" => get_option("circles_post"));
 	}
 	return $query_vars;
