@@ -8,21 +8,36 @@ function circles_field_prefix_cb( $args ) {
 	$prefix = $options['prefix'];
 	echo "<input name='circles_options[prefix]' value='$prefix' />";
 }
+
+function circles_field_expose_cb( $args ) {
+	$options = get_option( 'circles_options' );
+	$checked = (array_key_exists('expose_user_data', $options)) ? checked( '1', $options['expose_user_data'], false) : '';
+	echo "<input name='circles_options[expose_user_data]' type='checkbox' value='1' $checked/>";
+}
+
 function circles_settings_init() {
 	register_setting( 'circles', 'circles_options' );
 	add_settings_section(
-	'circles_section_integration',
-	'Forum integration options',
-	'circles_section_integration_cb',
-	'circles'
+		'circles_section_integration',
+		'Forum integration options',
+		'circles_section_integration_cb',
+		'circles'
 	);
 
 	add_settings_field(
-	'prefix',
-	'Path prefix',
-	'circles_field_prefix_cb',
-	'circles',
-	'circles_section_integration'
+		'prefix',
+		'Path prefix',
+		'circles_field_prefix_cb',
+		'circles',
+		'circles_section_integration'
+	);
+
+	add_settings_field(
+		'expose_user_data',
+		'Expose users first and last name?',
+		'circles_field_expose_cb',
+		'circles',
+		'circles_section_integration'
 	);
 }
 add_action( 'admin_init', 'circles_settings_init' );

@@ -3,7 +3,7 @@
 Plugin Name: Circles integration
 Plugin URI: http://circles.is
 Description: Circles forum integration plugin
-Version: 0.0.5
+Version: 0.0.6
 Author: anton@circles.is
 */
 
@@ -30,10 +30,15 @@ function base64url_encode($data)
 }
 
 add_action( 'init', function() {
-	global $circles_prefix;
+	global $circles_options;
 	$options = get_option( 'circles_options' );
-	$prefix = $options['prefix'];
-	$circles_prefix = ($prefix != "") ? $prefix : 'forum';
+	if (!array_key_exists('prefix', $options) || $options['prefix'] == "") {
+		$options['prefix'] = 'forum';
+	}
+	if (!array_key_exists('expose_user_data', $options)) {
+		$options['expose_user_data'] = false;
+	}
+	$circles_options = $options;
 });
 
 add_action('wp_enqueue_scripts', function() {
@@ -68,7 +73,8 @@ function getTailPath($prefix) {
 }
 
 add_filter('the_content', function( $content ) {
-	global $circles_prefix;
+	global $circles_options;
+	$circles_prefix = $circles_options['prefix'];
 	if (isEmbedPage($circles_prefix)) {
 		// We store community id in our custom page
 		preg_match_all('!\d+!', $content, $matches);
@@ -83,13 +89,22 @@ add_filter('the_content', function( $content ) {
 				'location' => getTailPath($circles_prefix),
 			)
 		));
-		$userdata = http_build_query(array(
+
+		$userdata = array(
 			'email' =>  $user->user_email,
 			'username' => $user->nickname,
-			'first_name' => $user->first_name,
-			'last_name' => $user->last_name,
-			'photo_url' => get_avatar_url($user->user_email),
-		));
+			'bio' => $user->description,
+			'photo_url' => get_avatar_url($user->user_email)
+		);
+
+		// Will send first and last name only if this true
+		if ($circles_options['expose_user_data'] == '1') {
+			$userdata['first_name'] = $user->first_name;
+			$userdata['last_name'] = $user->last_name;
+		}
+
+		$userdata = http_build_query($userdata);
+
 
 		$script_url = EMBED_URL;
 		remove_filter( 'the_content', 'wpautop' );
@@ -108,8 +123,8 @@ add_filter('the_content', function( $content ) {
 }, 0);
 
 add_filter('request', function( array $query_vars ) {
-	global $circles_prefix;
-	if (isEmbedPage($circles_prefix)) {
+	global $circles_options;
+	if (isEmbedPage($circles_options['prefix'])) {
 		$query_vars = array("page_id" => get_option("circles_post"));
 	}
 	return $query_vars;
