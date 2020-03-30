@@ -1,14 +1,19 @@
-<?php 
+<?php
 /*
 Plugin Name: Circles integration
 Plugin URI: http://circles.is
 Description: Circles forum integration plugin
-Version: 0.0.6
+Version: 0.0.7
 Author: anton@circles.is
 */
-
-DEFINE('EMBED_URL', 'https://static.circles.is/embed/embed.js'); // TODO: grab from the correct env
+//define('CIRCLES_TEST', true);
+if (defined('CIRCLES_TEST')) {
+  DEFINE('EMBED_URL', 'http://static.local.is/embed/embed.js');
+} else {
+  DEFINE('EMBED_URL', 'https://static.circles.is/embed/embed.js');
+}
 DEFINE('STYLE_URL', plugin_dir_url(__FILE__)."style.css");
+
 
 require(plugin_dir_path(__FILE__)."settings.php");
 
@@ -46,9 +51,10 @@ add_action('wp_enqueue_scripts', function() {
 	wp_enqueue_style( 'circles' );
 });
 
-register_activation_hook( __FILE__, 'myplugin_activate' );
-function myplugin_activate(){
-	if (is_null(get_option("circles_post"))) {
+register_activation_hook( __FILE__, 'circles_activate' );
+function circles_activate(){
+  $circles_post = get_option("circles_post");
+	if (is_null($circles_post) || !$circles_post) {
 		$post_data = array(
 			'post_title'    => 'Circles forum integration',
 			'post_alias'    => 'forum',
@@ -76,12 +82,12 @@ add_filter('the_content', function( $content ) {
 	global $circles_options;
 	$circles_prefix = $circles_options['prefix'];
 	if (isEmbedPage($circles_prefix)) {
-		// We store community id in our custom page
-		preg_match_all('!\d+!', $content, $matches);
-		if (count($matches[0]) == 0 || intval($matches[0][0]) == 0) {
+    $community_id = $circles_options['community_id'];
+		if (is_null($community_id) || !$community_id || intval($community_id) == 0) {
 			return "<H4>Please set community id into 'Circles forum integration' page content</H4>";
 		}
-		$community_id = intval($matches[0][0]);
+    $community_id = intval($community_id);
+
 		$user = wp_get_current_user();
 		$payload = base64url_encode(json_encode(
 			array(
@@ -113,7 +119,7 @@ add_filter('the_content', function( $content ) {
 			data-forum-id='$community_id'
 			data-forum-wp-login='$payload?$userdata'
 			data-forum-prefix='$circles_prefix'
-			data-forum-scroll='top' 
+			data-forum-scroll='top'
 			data-forum-hide-menu
 			data-forum-resize
 			data-forum-container-id='circles-forum'></script>

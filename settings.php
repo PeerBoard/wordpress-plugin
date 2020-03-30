@@ -2,11 +2,17 @@
 function circles_section_integration_cb( $args ) {
 	echo '<p>Please set required options</p>';
 }
- 
+
 function circles_field_prefix_cb( $args ) {
 	$options = get_option( 'circles_options' );
 	$prefix = $options['prefix'];
 	echo "<input name='circles_options[prefix]' value='$prefix' />";
+}
+
+function circles_field_community_id_cb( $args ) {
+	$options = get_option( 'circles_options' );
+	$community_id = $options['community_id'];
+	echo "<input name='circles_options[community_id]' value='$community_id' />";
 }
 
 function circles_field_expose_cb( $args ) {
@@ -22,6 +28,14 @@ function circles_settings_init() {
 		'Forum integration options',
 		'circles_section_integration_cb',
 		'circles'
+	);
+
+	add_settings_field(
+		'community_id',
+		'Community ID',
+		'circles_field_community_id_cb',
+		'circles',
+		'circles_section_integration'
 	);
 
 	add_settings_field(
@@ -77,4 +91,3 @@ function circles_options_page() {
 	);
 }
 add_action( 'admin_menu', 'circles_options_page' );
-
