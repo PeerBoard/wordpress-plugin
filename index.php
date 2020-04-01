@@ -3,7 +3,7 @@
 Plugin Name: Circles integration
 Plugin URI: http://circles.is
 Description: Circles forum integration plugin
-Version: 0.0.7
+Version: 0.0.8
 Author: anton@circles.is
 */
 DEFINE('EMBED_URL', 'https://static.circles.is/embed/embed.js');
@@ -31,7 +31,7 @@ function base64url_encode($data)
 
 add_action( 'init', function() {
 	global $circles_options;
-	$options = get_option( 'circles_options' );
+	$options = get_option( 'circles_options', array() );
 	if (!array_key_exists('prefix', $options) || $options['prefix'] == "") {
 		$options['prefix'] = 'forum';
 	}
