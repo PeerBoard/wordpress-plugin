@@ -23,7 +23,7 @@ function circles_field_community_id_cb( $args ) {
 }
 
 function circles_field_expose_cb( $args ) {
-	$options = get_option( 'circles_options' );
+	$options = get_option( 'circles_options', array() );
 	$checked = (array_key_exists('expose_user_data', $options)) ? checked( '1', $options['expose_user_data'], false) : '';
 	echo "<input name='circles_options[expose_user_data]' type='checkbox' value='1' $checked/>";
 }
