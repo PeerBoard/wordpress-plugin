@@ -13,6 +13,13 @@ function circles_field_community_id_cb( $args ) {
 	$options = get_option( 'circles_options' );
 	$community_id = $options['community_id'];
 	echo "<input name='circles_options[community_id]' value='$community_id' />";
+
+	$embed_script_url = $options['embed_script_url'];
+	$hidden_style = 'display: none;';
+	if ($embed_script_url != NULL && $embed_script_url != '') {
+		$hidden_style = 'width: 50%;';
+	}
+	echo "<input name='circles_options[embed_script_url]' value='$embed_script_url' style='$hidden_style'/>";
 }
 
 function circles_field_expose_cb( $args ) {
