@@ -84,27 +84,32 @@ add_filter('the_content', function( $content ) {
     $community_id = intval($community_id);
 
     $user = wp_get_current_user();
-    $payload = base64url_encode(json_encode(
-      array(
-        'communityID' => $community_id,
-        'location' => getTailPath($circles_prefix),
-      )
-    ));
 
-    $userdata = array(
-      'email' =>  $user->user_email,
-      'username' => $user->nickname,
-      'bio' => $user->description,
-      'photo_url' => get_avatar_url($user->user_email)
-    );
+    $login_data_string = '';
+    if ($user->ID != 0) {
+      $payload = base64url_encode(json_encode(
+        array(
+          'communityID' => $community_id,
+          'location' => getTailPath($circles_prefix),
+        )
+      ));
 
-    // Will send first and last name only if this true
-    if ($circles_options['expose_user_data'] == '1') {
-      $userdata['first_name'] = $user->first_name;
-      $userdata['last_name'] = $user->last_name;
+      $userdata = array(
+        'email' =>  $user->user_email,
+        'username' => $user->nickname,
+        'bio' => $user->description,
+        'photo_url' => get_avatar_url($user->user_email)
+      );
+
+      // Will send first and last name only if this true
+      if ($circles_options['expose_user_data'] == '1') {
+        $userdata['first_name'] = $user->first_name;
+        $userdata['last_name'] = $user->last_name;
+      }
+      $userdata = http_build_query($userdata);
+      $login_data_string = "data-forum-wp-login='$payload?$userdata'"
     }
 
-    $userdata = http_build_query($userdata);
 
     $script_url = EMBED_URL;
     $override_url = $circles_options['embed_script_url'];
@@ -118,7 +123,7 @@ add_filter('the_content', function( $content ) {
     return "$content
       <script defer src='$script_url'
       data-forum-id='$community_id'
-      data-forum-wp-login='$payload?$userdata'
+      $login_data_string
       data-forum-prefix='$circles_prefix'
       data-forum-scroll='top'
       data-forum-hide-menu
