@@ -74,60 +74,60 @@ function getTailPath($prefix) {
 }
 
 add_filter('the_content', function( $content ) {
-	global $circles_options;
-	$circles_prefix = $circles_options['prefix'];
-	if (isEmbedPage($circles_prefix)) {
-    	$community_id = $circles_options['community_id'];
-		if (is_null($community_id) || !$community_id || intval($community_id) == 0) {
-			return "<H4>Please set community id into 'Circles forum integration' page content</H4>";
-		}
-    	$community_id = intval($community_id);
+  global $circles_options;
+  $circles_prefix = $circles_options['prefix'];
+  if (isEmbedPage($circles_prefix)) {
+    $community_id = $circles_options['community_id'];
+    if (is_null($community_id) || !$community_id || intval($community_id) == 0) {
+      return "<H4>Please set community id into 'Circles forum integration' page content</H4>";
+    }
+    $community_id = intval($community_id);
 
-		$user = wp_get_current_user();
-		$payload = base64url_encode(json_encode(
-			array(
-				'communityID' => $community_id,
-				'location' => getTailPath($circles_prefix),
-			)
-		));
+    $user = wp_get_current_user();
+    $payload = base64url_encode(json_encode(
+      array(
+        'communityID' => $community_id,
+        'location' => getTailPath($circles_prefix),
+      )
+    ));
 
-		$userdata = array(
-			'email' =>  $user->user_email,
-			'username' => $user->nickname,
-			'bio' => $user->description,
-			'photo_url' => get_avatar_url($user->user_email)
-		);
+    $userdata = array(
+      'email' =>  $user->user_email,
+      'username' => $user->nickname,
+      'bio' => $user->description,
+      'photo_url' => get_avatar_url($user->user_email)
+    );
 
-		// Will send first and last name only if this true
-		if ($circles_options['expose_user_data'] == '1') {
-			$userdata['first_name'] = $user->first_name;
-			$userdata['last_name'] = $user->last_name;
-		}
+    // Will send first and last name only if this true
+    if ($circles_options['expose_user_data'] == '1') {
+      $userdata['first_name'] = $user->first_name;
+      $userdata['last_name'] = $user->last_name;
+    }
 
-		$userdata = http_build_query($userdata);
+    $userdata = http_build_query($userdata);
 
+    $script_url = EMBED_URL;
+    $override_url = $circles_options['embed_script_url'];
+    if ($override_url != NULL && $override_url != '') {
+      $script_url = $override_url;
+    }
 
-		$script_url = EMBED_URL;
-	    $override_url = $circles_options['embed_script_url'];
-	    if ($override_url != NULL && $override_url != '') {
-	      $script_url = $override_url;
-	  	}
-
-    	$home_url = get_home_url();
-		remove_filter( 'the_content', 'wpautop' );
-		return "
-		<script defer src='$script_url'
-			data-forum-id='$community_id'
-			data-forum-wp-login='$payload?$userdata'
-			data-forum-prefix='$circles_prefix'
-			data-forum-scroll='top'
-			data-forum-hide-menu
-			data-forum-resize
-			data-forum-container-id='circles-forum'
-  			data-forum-base-url='$home_url'></script>
-		<div id='circles-forum'></div>";
-	}
-	return $content;
+    $url_parts = explode('://',get_home_url());
+    $base_url = $url_parts[0].'forum.'.$url_parts[1];
+    remove_filter( 'the_content', 'wpautop' );
+    return "
+      <script defer src='$script_url'
+      data-forum-id='$community_id'
+      data-forum-wp-login='$payload?$userdata'
+      data-forum-prefix='$circles_prefix'
+      data-forum-scroll='top'
+      data-forum-hide-menu
+      data-forum-resize
+      data-forum-container-id='circles-forum'
+      data-forum-base-url='$base_url'></script>
+      <div id='circles-forum'></div>";
+  }
+  return $content;
 }, 0);
 
 add_filter('request', function( array $query_vars ) {
