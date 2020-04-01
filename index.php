@@ -107,7 +107,7 @@ add_filter('the_content', function( $content ) {
         $userdata['last_name'] = $user->last_name;
       }
       $userdata = http_build_query($userdata);
-      $login_data_string = "data-forum-wp-login='$payload?$userdata'"
+      $login_data_string = "data-forum-wp-login='$payload?$userdata'";
     }
 
 
