@@ -115,7 +115,7 @@ add_filter('the_content', function( $content ) {
     $url_parts = explode('://',get_home_url());
     $base_url = $url_parts[0].'://forum.'.$url_parts[1];
     remove_filter( 'the_content', 'wpautop' );
-    return "
+    return "$content
       <script defer src='$script_url'
       data-forum-id='$community_id'
       data-forum-wp-login='$payload?$userdata'
