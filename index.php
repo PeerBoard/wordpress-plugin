@@ -32,8 +32,8 @@ function base64url_encode($data)
 add_action( 'init', function() {
 	global $circles_options;
 	$options = get_option( 'circles_options', array() );
-	if (!array_key_exists('prefix', $options) || $options['prefix'] == "") {
-		$options['prefix'] = 'forum';
+	if (!array_key_exists('prefix', $options)) {
+		$options['prefix'] = 'community';
 	}
 	if (!array_key_exists('expose_user_data', $options)) {
 		$options['expose_user_data'] = false;

@@ -1,12 +1,13 @@
 <?php
-function circles_section_integration_cb( $args ) {
-	echo '<p>Please set required options</p>';
+function circles_readme() {
+	echo "You can find those values in your board settings in Integrations tab. If you don't have a board created yet, please visit ";
+	echo "<a href='https://peerboard.io' target='_blank'>peerboard.io</a>";
 }
-
 function circles_field_prefix_cb( $args ) {
-	$options = get_option( 'circles_options' );
-	$prefix = $options['prefix'];
+	global $circles_options;
+	$prefix = $circles_options['prefix'];
 	echo "<input name='circles_options[prefix]' value='$prefix' />";
+	echo "  PeerBoard will live at " . get_home_url() . '/' . $prefix;
 }
 
 function circles_field_community_id_cb( $args ) {
@@ -22,6 +23,12 @@ function circles_field_community_id_cb( $args ) {
 	echo "<input name='circles_options[embed_script_url]' value='$embed_script_url' style='$hidden_style'/>";
 }
 
+function circles_field_token_cb( $args ) {
+	$options = get_option( 'circles_options' );
+	$token = $options['auth_token'];
+	echo "<input name='circles_options[auth_token]' value='$token' />";
+}
+
 function circles_field_expose_cb( $args ) {
 	$options = get_option( 'circles_options', array() );
 	$checked = (array_key_exists('expose_user_data', $options)) ? checked( '1', $options['expose_user_data'], false) : '';
@@ -32,22 +39,30 @@ function circles_settings_init() {
 	register_setting( 'circles', 'circles_options' );
 	add_settings_section(
 		'circles_section_integration',
-		'Forum integration options',
-		'circles_section_integration_cb',
+		'Integration Settings',
+		'circles_readme',
 		'circles'
 	);
 
 	add_settings_field(
 		'community_id',
-		'Community ID',
+		'Board ID',
 		'circles_field_community_id_cb',
 		'circles',
 		'circles_section_integration'
 	);
 
 	add_settings_field(
+		'auth_token',
+		'Auth token',
+		'circles_field_token_cb',
+		'circles',
+		'circles_section_integration',
+	);
+
+	add_settings_field(
 		'prefix',
-		'Path prefix',
+		'Board path',
 		'circles_field_prefix_cb',
 		'circles',
 		'circles_section_integration'
@@ -55,7 +70,7 @@ function circles_settings_init() {
 
 	add_settings_field(
 		'expose_user_data',
-		'Expose users first and last name?',
+		'Automatically import first and last names',
 		'circles_field_expose_cb',
 		'circles',
 		'circles_section_integration'
@@ -64,7 +79,7 @@ function circles_settings_init() {
 add_action( 'admin_init', 'circles_settings_init' );
 
 
-function circles_options_page_html() {
+function peerboard_options_page_html() {
 	if ( ! current_user_can( 'manage_options' ) ) {
 		return;
 	}
@@ -82,6 +97,8 @@ function circles_options_page_html() {
 	<?php
 	settings_fields( 'circles' );
 	do_settings_sections( 'circles' );
+	echo "For more information please check our ";
+	echo "<a href='https://community.peerboard.io/post/396436794' target='_blank'>How-To guide for WordPress</a>";
 	submit_button( 'Save Settings' );
 	?>
 		</form>
@@ -90,11 +107,11 @@ function circles_options_page_html() {
 }
 function circles_options_page() {
 	add_menu_page(
-		'circles',
-		'Сircles Options',
+		'',
+		'PeerBoard Options',
 		'manage_options',
-		'circles',
-		'circles_options_page_html'
+		'peerboard',
+		'peerboard_options_page_html'
 	);
 }
 add_action( 'admin_menu', 'circles_options_page' );
