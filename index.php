@@ -3,7 +3,7 @@
 Plugin Name: Circles integration
 Plugin URI: http://circles.is
 Description: Circles forum integration plugin
-Version: 0.0.8
+Version: 0.0.9
 Author: anton@circles.is
 */
 DEFINE('EMBED_URL', 'https://static.circles.is/embed/embed.js');
@@ -38,6 +38,9 @@ add_action( 'init', function() {
 	if (!array_key_exists('expose_user_data', $options)) {
 		$options['expose_user_data'] = false;
 	}
+  if (!array_key_exists('auth_token', $options)) {
+    $options['auth_token'] = '';
+  }
 	$circles_options = $options;
 });
 
@@ -73,20 +76,34 @@ function getTailPath($prefix) {
 	return ($r == $prefix_part) ? "/" : str_replace($prefix_part,"",$r);
 }
 
+function getHash($params, $secret) {
+  $strings = array();
+  foreach ($params as $key => $value) {
+    $strings[] = $key . '=' . $value;
+  }
+  sort($strings);
+  return hash_hmac('sha256', implode("\n", $strings), hash('sha256', $secret, true));
+}
+
 add_filter('the_content', function( $content ) {
   global $circles_options;
   $circles_prefix = $circles_options['prefix'];
   if (isEmbedPage($circles_prefix)) {
     $community_id = $circles_options['community_id'];
     if (is_null($community_id) || !$community_id || intval($community_id) == 0) {
-      return "<H4>Please set community id into 'Circles forum integration' page content</H4>";
+      return "<H4>Please set community id inside 'PeerBoard Settings' admin section</H4>";
     }
     $community_id = intval($community_id);
+
+    $auth_token = $circles_options['auth_token'];
+    if ($auth_token == '') {
+      return "<H4>Please set auth token inside 'PeerBoard Settings' admin section</H4>";
+    }
 
     $user = wp_get_current_user();
 
     $login_data_string = '';
-    if ($user->ID != 0) {
+    if (is_user_logged_in()) {
       $payload = base64url_encode(json_encode(
         array(
           'communityID' => $community_id,
@@ -98,7 +115,9 @@ add_filter('the_content', function( $content ) {
         'email' =>  $user->user_email,
         'username' => $user->nickname,
         'bio' => $user->description,
-        'photo_url' => get_avatar_url($user->user_email)
+        'photo_url' => get_avatar_url($user->user_email),
+        'first_name' => '',
+        'last_name' => ''
       );
 
       // Will send first and last name only if this true
@@ -106,7 +125,11 @@ add_filter('the_content', function( $content ) {
         $userdata['first_name'] = $user->first_name;
         $userdata['last_name'] = $user->last_name;
       }
+
+      $hash = getHash($userdata, $auth_token);
+      $userdata['hash'] = $hash;
       $userdata = http_build_query($userdata);
+
       $login_data_string = "data-forum-wp-login='$payload?$userdata'";
     }
 
@@ -117,7 +140,7 @@ add_filter('the_content', function( $content ) {
       $script_url = $override_url;
     }
 
-    $url_parts = explode('://',get_home_url());
+    $url_parts = explode('://', get_home_url());
     $base_url = $url_parts[0].'://forum.'.$url_parts[1];
     remove_filter( 'the_content', 'wpautop' );
     return "$content

@@ -7,7 +7,7 @@ function circles_field_prefix_cb( $args ) {
 	global $circles_options;
 	$prefix = $circles_options['prefix'];
 	echo "<input name='circles_options[prefix]' value='$prefix' />";
-	echo "  PeerBoard will live at " . get_home_url() . '/' . $prefix;
+	echo "  PeerBoard will be live at " . get_home_url() . '/' . $prefix;
 }
 
 function circles_field_community_id_cb( $args ) {
