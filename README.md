@@ -1,2 +1,2 @@
 # Circles.is integration plugin
-[Readme available here](https://circlum.circles.is/post/396436794)
+[Readme available here](https://community.peerboard.io/post/396436794)
