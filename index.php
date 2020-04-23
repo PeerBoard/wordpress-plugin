@@ -3,7 +3,7 @@
 Plugin Name: Circles integration
 Plugin URI: http://circles.is
 Description: Circles forum integration plugin
-Version: 0.0.9
+Version: 0.1.0
 Author: anton@circles.is
 */
 DEFINE('EMBED_URL', 'https://static.circles.is/embed/embed.js');
