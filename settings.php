@@ -57,7 +57,7 @@ function circles_settings_init() {
 		'Auth token',
 		'circles_field_token_cb',
 		'circles',
-		'circles_section_integration',
+		'circles_section_integration'
 	);
 
 	add_settings_field(
