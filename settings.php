@@ -1,7 +1,11 @@
 <?php
 function circles_readme() {
+	global $circles_options;
+	$url_parts = explode('://', get_home_url());
+	$domain = $url_parts[1];
+	$prefix = $circles_options['prefix'];
 	echo "You can find those values in your board settings in Integrations tab. If you don't have a board created yet, please visit ";
-	echo "<a href='https://peerboard.io' target='_blank'>peerboard.io</a>";
+	echo "<a href='https://peerboard.io/getstarted?wordpressDomain=$domain&pathPrefix=$prefix' target='_blank'>peerboard.io</a>";
 }
 function circles_field_prefix_cb( $args ) {
 	global $circles_options;
@@ -108,7 +112,7 @@ function peerboard_options_page_html() {
 function circles_options_page() {
 	add_menu_page(
 		'',
-		'PeerBoard Options',
+		'PeerBoard',
 		'manage_options',
 		'peerboard',
 		'peerboard_options_page_html'
