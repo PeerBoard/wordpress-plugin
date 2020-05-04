@@ -3,7 +3,7 @@
 Plugin Name: Circles integration
 Plugin URI: http://circles.is
 Description: Circles forum integration plugin
-Version: 0.1.0
+Version: 0.1.1
 Author: anton@circles.is
 */
 DEFINE('EMBED_URL', 'https://static.circles.is/embed/embed.js');
@@ -54,8 +54,8 @@ function circles_activate(){
   $circles_post = get_option("circles_post");
 	if (is_null($circles_post) || !$circles_post) {
 		$post_data = array(
-			'post_title'    => 'Circles forum integration',
-			'post_alias'    => 'forum',
+			'post_title'    => 'Community',
+			'post_alias'    => 'community',
 			'post_content'  => '',
 			'post_status'   => 'publish',
 			'post_type'     => 'page',
