@@ -1,9 +1,9 @@
 <?php
 /*
-Plugin Name: Circles integration
-Plugin URI: http://circles.is
-Description: Circles forum integration plugin
-Version: 0.1.1
+Plugin Name: PeerBoard integration
+Plugin URI: https://peerboard.io
+Description: PeerBoard forum integration plugin
+Version: 0.1.2
 Author: anton@circles.is
 */
 DEFINE('EMBED_URL', 'https://static.circles.is/embed/embed.js');
