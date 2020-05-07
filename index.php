@@ -3,7 +3,7 @@
 Plugin Name: PeerBoard integration
 Plugin URI: https://peerboard.io
 Description: PeerBoard forum integration plugin
-Version: 0.1.2
+Version: 0.1.3
 Author: anton@circles.is
 */
 DEFINE('PEERBOARD_EMBED_URL', 'https://static.circles.is/embed/embed.js');
@@ -136,17 +136,20 @@ add_filter('the_content', function( $content ) {
 
     $url_parts = explode('://', get_home_url());
     $base_url = $url_parts[0].'://forum.'.$url_parts[1];
+    $integration_tag_open = "<script defer src='$script_url'";
+    $integration_tag_close = '></script>';
     remove_filter( 'the_content', 'wpautop' );
     return "$content
-      <script defer src='$script_url'
-      data-forum-id='$community_id'
-      $login_data_string
-      data-forum-prefix='$circles_prefix'
-      data-forum-scroll='top'
-      data-forum-hide-menu
-      data-forum-resize
-      data-forum-container-id='circles-forum'
-      data-forum-base-url='$base_url'></script>
+      $integration_tag_open
+        data-forum-id='$community_id'
+        $login_data_string
+        data-forum-prefix='$circles_prefix'
+        data-forum-scroll='top'
+        data-forum-hide-menu
+        data-forum-resize
+        data-forum-container-id='circles-forum'
+        data-forum-base-url='$base_url'
+      $integration_tag_close
       <div id='circles-forum'></div>";
   }
   return $content;
@@ -156,9 +159,6 @@ add_action( 'wp_enqueue_scripts', 'peerboard_include_files' );
 function peerboard_include_files() {
   wp_register_style( 'peerboard_integration_styles', plugin_dir_url(__FILE__)."/static/style.css" );
 	wp_enqueue_style( 'peerboard_integration_styles' );
-
-  wp_enqueue_script( 'peerboard_integration_script', plugin_dir_url(__FILE__)."/static/script.js" );
-	wp_localize_script( 'peerboard_integration_script', 'peerboard_data', array( 'test' => 'ololo' ) );
 }
 
 add_filter('request', function( array $query_vars ) {
