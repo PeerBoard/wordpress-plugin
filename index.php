@@ -6,13 +6,12 @@ Description: PeerBoard forum integration plugin
 Version: 0.1.2
 Author: anton@circles.is
 */
-DEFINE('EMBED_URL', 'https://static.circles.is/embed/embed.js');
-DEFINE('STYLE_URL', plugin_dir_url(__FILE__)."style.css");
+DEFINE('PEERBOARD_EMBED_URL', 'https://static.circles.is/embed/embed.js');
 
 
 require(plugin_dir_path(__FILE__)."settings.php");
 
-function base64url_encode($data)
+function peerboard_base64url_encode($data)
 {
   // First of all you should encode $data to Base64 string
   $b64 = base64_encode($data);
@@ -44,11 +43,6 @@ add_action( 'init', function() {
 	$circles_options = $options;
 });
 
-add_action('wp_enqueue_scripts', function() {
-	wp_register_style( 'circles', STYLE_URL );
-	wp_enqueue_style( 'circles' );
-});
-
 register_activation_hook( __FILE__, 'circles_activate' );
 function circles_activate(){
   $circles_post = get_option("circles_post");
@@ -66,17 +60,17 @@ function circles_activate(){
 	}
 }
 
-function isEmbedPage($prefix) {
+function peerboard_is_embed_page($prefix) {
 	return (substr($_SERVER['REQUEST_URI'],0,strlen($prefix) + 1) == "/" . $prefix);
 }
 
-function getTailPath($prefix) {
+function peerboard_get_tail_path($prefix) {
 	$r = $_SERVER['REQUEST_URI'];
 	$prefix_part = sprintf("/%s/", $prefix);
 	return ($r == $prefix_part) ? "/" : str_replace($prefix_part,"",$r);
 }
 
-function getHash($params, $secret) {
+function peerboard_get_auth_hash($params, $secret) {
   $strings = array();
   foreach ($params as $key => $value) {
     $strings[] = $key . '=' . $value;
@@ -88,7 +82,7 @@ function getHash($params, $secret) {
 add_filter('the_content', function( $content ) {
   global $circles_options;
   $circles_prefix = $circles_options['prefix'];
-  if (isEmbedPage($circles_prefix)) {
+  if (peerboard_is_embed_page($circles_prefix)) {
     $community_id = $circles_options['community_id'];
     if (is_null($community_id) || !$community_id || intval($community_id) == 0) {
       return "<H4>Please set community id inside 'PeerBoard Settings' admin section</H4>";
@@ -104,10 +98,10 @@ add_filter('the_content', function( $content ) {
 
     $login_data_string = '';
     if (is_user_logged_in()) {
-      $payload = base64url_encode(json_encode(
+      $payload = peerboard_base64url_encode(json_encode(
         array(
           'communityID' => $community_id,
-          'location' => getTailPath($circles_prefix),
+          'location' => peerboard_get_tail_path($circles_prefix),
         )
       ));
 
@@ -126,7 +120,7 @@ add_filter('the_content', function( $content ) {
         $userdata['last_name'] = $user->last_name;
       }
 
-      $hash = getHash($userdata, $auth_token);
+      $hash = peerboard_get_auth_hash($userdata, $auth_token);
       $userdata['hash'] = $hash;
       $userdata = http_build_query($userdata);
 
@@ -134,7 +128,7 @@ add_filter('the_content', function( $content ) {
     }
 
 
-    $script_url = EMBED_URL;
+    $script_url = PEERBOARD_EMBED_URL;
     $override_url = $circles_options['embed_script_url'];
     if ($override_url != NULL && $override_url != '') {
       $script_url = $override_url;
@@ -158,9 +152,18 @@ add_filter('the_content', function( $content ) {
   return $content;
 }, 0);
 
+add_action( 'wp_enqueue_scripts', 'peerboard_include_files' );
+function peerboard_include_files() {
+  wp_register_style( 'peerboard_integration_styles', plugin_dir_url(__FILE__)."/static/style.css" );
+	wp_enqueue_style( 'peerboard_integration_styles' );
+
+  wp_enqueue_script( 'peerboard_integration_script', plugin_dir_url(__FILE__)."/static/script.js" );
+	wp_localize_script( 'peerboard_integration_script', 'peerboard_data', array( 'test' => 'ololo' ) );
+}
+
 add_filter('request', function( array $query_vars ) {
 	global $circles_options;
-	if (isEmbedPage($circles_options['prefix'])) {
+	if (peerboard_is_embed_page($circles_options['prefix'])) {
 		$query_vars = array("page_id" => get_option("circles_post"));
 	}
 	return $query_vars;
