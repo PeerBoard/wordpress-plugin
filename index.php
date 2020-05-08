@@ -3,7 +3,7 @@
 Plugin Name: PeerBoard integration
 Plugin URI: https://peerboard.io
 Description: PeerBoard forum integration plugin
-Version: 0.1.3
+Version: 0.1.4
 Author: anton@circles.is
 */
 DEFINE('PEERBOARD_EMBED_URL', 'https://static.circles.is/embed/embed.js');
@@ -29,8 +29,8 @@ function peerboard_base64url_encode($data)
 }
 
 add_action( 'init', function() {
-	global $circles_options;
-	$options = get_option( 'circles_options', array() );
+	global $peerboard_options;
+	$options = get_option( 'peerboard_options', array() );
 	if (!array_key_exists('prefix', $options)) {
 		$options['prefix'] = 'community';
 	}
@@ -40,13 +40,16 @@ add_action( 'init', function() {
   if (!array_key_exists('auth_token', $options)) {
     $options['auth_token'] = '';
   }
-	$circles_options = $options;
+	$peerboard_options = $options;
 });
 
-register_activation_hook( __FILE__, 'circles_activate' );
-function circles_activate(){
-  $circles_post = get_option("circles_post");
-	if (is_null($circles_post) || !$circles_post) {
+register_activation_hook( __FILE__, 'peerboard_plugin_activate' );
+function peerboard_plugin_activate(){
+  if ( ! current_user_can( 'activate_plugins' ) )
+    return;
+
+  $peerboard_post = get_option("peerboard_post");
+	if (is_null($peerboard_post) || !$peerboard_post) {
 		$post_data = array(
 			'post_title'    => 'Community',
 			'post_alias'    => 'community',
@@ -56,9 +59,21 @@ function circles_activate(){
 			'post_author'   => 1
 		);
 		$post_id = wp_insert_post( $post_data );
-		update_option( "circles_post", $post_id);
+		update_option( "peerboard_post", $post_id);
 	}
 }
+
+register_uninstall_hook( __FILE__, 'peerboard_plugin_uninstall' );
+function peerboard_plugin_uninstall(){
+  if ( ! current_user_can( 'activate_plugins' ) )
+    return;
+
+  $post_id = get_option('peerboard_post');
+  wp_delete_post($post_id, true);
+  delete_option('peerboard_post');
+  delete_option('peerboard_options');
+}
+
 
 function peerboard_is_embed_page($prefix) {
 	return (substr($_SERVER['REQUEST_URI'],0,strlen($prefix) + 1) == "/" . $prefix);
@@ -80,16 +95,16 @@ function peerboard_get_auth_hash($params, $secret) {
 }
 
 add_filter('the_content', function( $content ) {
-  global $circles_options;
-  $circles_prefix = $circles_options['prefix'];
-  if (peerboard_is_embed_page($circles_prefix)) {
-    $community_id = $circles_options['community_id'];
+  global $peerboard_options;
+  $peerboard_prefix = $peerboard_options['prefix'];
+  if (peerboard_is_embed_page($peerboard_prefix)) {
+    $community_id = $peerboard_options['community_id'];
     if (is_null($community_id) || !$community_id || intval($community_id) == 0) {
       return "<H4>Please set community id inside 'PeerBoard Settings' admin section</H4>";
     }
     $community_id = intval($community_id);
 
-    $auth_token = $circles_options['auth_token'];
+    $auth_token = $peerboard_options['auth_token'];
     if ($auth_token == '') {
       return "<H4>Please set auth token inside 'PeerBoard Settings' admin section</H4>";
     }
@@ -101,7 +116,7 @@ add_filter('the_content', function( $content ) {
       $payload = peerboard_base64url_encode(json_encode(
         array(
           'communityID' => $community_id,
-          'location' => peerboard_get_tail_path($circles_prefix),
+          'location' => peerboard_get_tail_path($peerboard_prefix),
         )
       ));
 
@@ -115,7 +130,7 @@ add_filter('the_content', function( $content ) {
       );
 
       // Will send first and last name only if this true
-      if ($circles_options['expose_user_data'] == '1') {
+      if ($peerboard_options['expose_user_data'] == '1') {
         $userdata['first_name'] = $user->first_name;
         $userdata['last_name'] = $user->last_name;
       }
@@ -128,8 +143,9 @@ add_filter('the_content', function( $content ) {
     }
 
 
+
     $script_url = PEERBOARD_EMBED_URL;
-    $override_url = $circles_options['embed_script_url'];
+    $override_url = $peerboard_options['embed_script_url'];
     if ($override_url != NULL && $override_url != '') {
       $script_url = $override_url;
     }
@@ -143,7 +159,7 @@ add_filter('the_content', function( $content ) {
       $integration_tag_open
         data-forum-id='$community_id'
         $login_data_string
-        data-forum-prefix='$circles_prefix'
+        data-forum-prefix='$peerboard_prefix'
         data-forum-scroll='top'
         data-forum-hide-menu
         data-forum-resize
@@ -162,9 +178,9 @@ function peerboard_include_files() {
 }
 
 add_filter('request', function( array $query_vars ) {
-	global $circles_options;
-	if (peerboard_is_embed_page($circles_options['prefix'])) {
-		$query_vars = array("page_id" => get_option("circles_post"));
+	global $peerboard_options;
+	if (peerboard_is_embed_page($peerboard_options['prefix'])) {
+		$query_vars = array("page_id" => get_option("peerboard_post"));
 	}
 	return $query_vars;
 });
