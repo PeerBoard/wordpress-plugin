@@ -1,10 +1,10 @@
 <?php
 /*
-Plugin Name: PeerBoard integration
+Plugin Name: PeerBoard – User Profile, Community & Forum Plugin
 Plugin URI: https://peerboard.io
-Description: PeerBoard forum integration plugin
+Description: Forum, Community & User Profile Plugin
 Version: 0.1.4
-Author: anton@circles.is
+Author: PeerBoard
 */
 DEFINE('PEERBOARD_EMBED_URL', 'https://static.circles.is/embed/embed.js');
 
