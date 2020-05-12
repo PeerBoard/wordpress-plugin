@@ -8,10 +8,10 @@ Stable tag: trunk
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-This WordPress forum plugin brings everything you need to build an online community, connect with your customers, and grow without a headache. 
+This WordPress forum plugin brings everything you need to build an online community, connect with your customers, and grow without a headache.
 
 == Description ==
-PeerBoard gives your community a home they\'ll love. This WordPress forum plugin brings everything you need to build a truly branded online community, connect with your customers, and grow without a single tech headache. 
+PeerBoard gives your community a home they'll love. This WordPress forum plugin brings everything you need to build a truly branded online community, connect with your customers, and grow without a single tech headache.
 
 Get full access to all of your member info, contacts and stats without any restrictions.
 
@@ -51,7 +51,7 @@ No, we have built PeerBoard to be super easy to use and does not require you to 
 
 Q: Where can I see a demo?
 
-There’s a demo [here](http://www.peerboard.io). Feel free to register and post some content so that you can see how it works.
+There’s a live demo [here](http://www.peerboard.io).
 
 Q: Is PeerBoard mobile responsive?
 
@@ -66,6 +66,12 @@ Q: I have a different question than listed here.
 Check out our support forums [here](https://community.peerboard.io/) or send us an email at support@peerboard.io.
 
 == Screenshots ==
-1. https://dl.dropbox.com/s/oc4820dwsjzrc74/Screenshot0.jpg
-2. https://dl.dropbox.com/s/w0bsm8rugpvysdf/Screenshot0p2.jpg
-3. https://dl.dropbox.com/s/0b58j1qyp2su6om/Screenshot1.png
+1. Newsfeed Style. Instead of a traditional forum, PeerBoard makes it easy to stay up to date with a single Facebook-like feed.
+2. Real-time threads. Facilitate valuable in-depth conversations with multi-level discussions.
+3. PeerBoard's modern look and feel makes it a sight to behold and delight to use for every single user.
+4. Private or public. Control your community’s visibility, access rights and registration options.
+5. Built-In CRM. Get full access to all of your member info, contacts and stats without any restrictions.
+6. Easy Email Invite. Quickly transfer or add existing members through a simple email invite.
+7. Rich user profiles. Let your members get recognized with taglines, rich bios, avatars and more.
+8. No code integration.
+9. White Label Forum. Make it a seamless part of your entire brand experience.
