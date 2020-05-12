@@ -173,8 +173,11 @@ add_filter('the_content', function( $content ) {
 
 add_action( 'wp_enqueue_scripts', 'peerboard_include_files' );
 function peerboard_include_files() {
-  wp_register_style( 'peerboard_integration_styles', plugin_dir_url(__FILE__)."/static/style.css" );
-	wp_enqueue_style( 'peerboard_integration_styles' );
+  global $peerboard_options;
+	if (peerboard_is_embed_page($peerboard_options['prefix'])) {
+    wp_register_style( 'peerboard_integration_styles', plugin_dir_url(__FILE__)."/static/style.css" );
+  	wp_enqueue_style( 'peerboard_integration_styles' );
+	}
 }
 
 add_filter('request', function( array $query_vars ) {

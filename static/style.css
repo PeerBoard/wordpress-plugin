@@ -13,3 +13,19 @@
 	max-width: none;
 	max-height: none;
 }
+
+.post-inner {
+	padding-top: 0px!important;
+}
+
+.footer-nav-widgets-wrapper {
+  margin-top: 0px!important;
+}
+
+#site-content .section-inner {
+	display: none!important;
+}
+
+article header {
+	display: none!important;
+}
