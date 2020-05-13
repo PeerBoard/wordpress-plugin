@@ -3,10 +3,10 @@
 Plugin Name: PeerBoard – User Profile, Community & Forum Plugin
 Plugin URI: https://peerboard.io
 Description: Forum, Community & User Profile Plugin
-Version: 0.1.4
+Version: 0.1.5
 Author: PeerBoard
 */
-DEFINE('PEERBOARD_EMBED_URL', 'https://static.circles.is/embed/embed.js');
+DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.org/embed/embed.js');
 
 
 require(plugin_dir_path(__FILE__)."settings.php");
@@ -151,7 +151,7 @@ add_filter('the_content', function( $content ) {
     }
 
     $url_parts = explode('://', get_home_url());
-    $base_url = $url_parts[0].'://forum.'.$url_parts[1];
+    $base_url = 'https://forum.'.$url_parts[1];
     $integration_tag_open = "<script defer src='$script_url'";
     $integration_tag_close = '></script>';
     remove_filter( 'the_content', 'wpautop' );
