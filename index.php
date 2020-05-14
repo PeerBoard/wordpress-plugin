@@ -146,12 +146,19 @@ add_filter('the_content', function( $content ) {
 
     $script_url = PEERBOARD_EMBED_URL;
     $override_url = $peerboard_options['embed_script_url'];
+    $is_local = false;
     if ($override_url != NULL && $override_url != '') {
       $script_url = $override_url;
+      if ($override_url == 'http://static.local.is/embed/embed.js') {
+        $is_local = true;
+      }
     }
 
     $url_parts = explode('://', get_home_url());
     $base_url = 'https://peerboard.'.$url_parts[1];
+    if ($is_local) {
+      $base_url = 'http://peerboard.wordpress.is';
+    }
     $integration_tag_open = "<script defer src='$script_url'";
     $integration_tag_close = '></script>';
     remove_filter( 'the_content', 'wpautop' );
