@@ -3,7 +3,7 @@
 Plugin Name: PeerBoard – User Profile, Community & Forum Plugin
 Plugin URI: https://peerboard.io
 Description: Forum, Community & User Profile Plugin
-Version: 0.1.6
+Version: 0.1.7
 Author: PeerBoard
 */
 DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.org/embed/embed.js');
@@ -110,9 +110,19 @@ add_filter('the_content', function( $content ) {
     }
 
     $user = wp_get_current_user();
-
     $login_data_string = '';
-    if (is_user_logged_in()) {
+    $isUserLogged = false;
+    if ( !function_exists('is_user_logged_in') ) {
+      if ( !empty($user->ID) ) {
+        $isUserLogged = true;
+      }
+    } else {
+      if ( is_user_logged_in() ) {
+        $isUserLogged = true;
+      }
+    }
+
+    if ($isUserLogged) {
       $payload = peerboard_base64url_encode(json_encode(
         array(
           'communityID' => $community_id,
