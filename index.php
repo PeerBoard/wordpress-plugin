@@ -4,7 +4,7 @@ Plugin Name: WordPress Forum Plugin – PeerBoard
 Plugin URI: https://peerboard.io
 Description: Forum, Community & User Profile Plugin
 Version: 0.1.7
-Author: PeerBoard
+Author: peerboard, forumplugin
 */
 DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.org/embed/embed.js');
 
