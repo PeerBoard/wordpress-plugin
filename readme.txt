@@ -1,6 +1,6 @@
-=== PeerBoard – Forum, Community & User Profile Plugin ===
+=== PeerBoard Forum ===
 Contributors: peerboard
-Tags: forum plugin, wordpress forum, WordPress forum plugin, forum, forums, community, member, user profile, user registration
+Tags: forum, plugin, wordpress forum, WordPress forum plugin, forums, community, member, user profile, user registration
 Requires at least: 5.1
 Tested up to: 5.4
 Requires PHP: 5.5
