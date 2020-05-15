@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: PeerBoard – User Profile, Community & Forum Plugin
+Plugin Name: WordPress Forum Plugin – PeerBoard
 Plugin URI: https://peerboard.io
 Description: Forum, Community & User Profile Plugin
 Version: 0.1.7
