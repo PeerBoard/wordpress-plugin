@@ -5,13 +5,20 @@ function peerboard_integration_readme() {
 	$domain = $url_parts[1];
 	$prefix = $peerboard_options['prefix'];
 	echo "You can find those values in your board settings in Integrations tab. If you don't have a board created yet, please visit ";
-	echo "<a href='https://peerboard.org/getstarted?wordpressDomain=$domain&pathPrefix=$prefix' target='_blank'>peerboard.org</a>";
+	echo "<a href='https://peerboard.org/getstarted?wordpressDomain=$domain&pathPrefix=$prefix' target='_blank'>peerboard.org/getstarted</a>";
 }
+
+function peerboard_options_readme() {
+	global $peerboard_options;
+	$prefix = $peerboard_options['prefix'];
+	$integration_url = get_home_url() . '/' . $prefix;
+	echo "PeerBoard will be live at <a target='_blank' href='$integration_url'>" . $integration_url . '</a>';
+}
+
 function peerboard_field_prefix_cb( $args ) {
 	global $peerboard_options;
 	$prefix = $peerboard_options['prefix'];
 	echo "<input name='peerboard_options[prefix]' value='$prefix' />";
-	echo "  PeerBoard will be live at " . get_home_url() . '/' . $prefix;
 }
 
 function peerboard_field_community_id_cb( $args ) {
@@ -45,7 +52,14 @@ function peerboard_settings_init() {
 		'peerboard_section_integration',
 		'Integration Settings',
 		'peerboard_integration_readme',
-		'circles'
+		'circles',
+	);
+
+	add_settings_section(
+		'peerboard_section_options',
+		'',
+		'peerboard_options_readme',
+		'circles',
 	);
 
 	add_settings_field(
@@ -69,7 +83,7 @@ function peerboard_settings_init() {
 		'Board path',
 		'peerboard_field_prefix_cb',
 		'circles',
-		'peerboard_section_integration'
+		'peerboard_section_integration',
 	);
 
 	add_settings_field(
@@ -77,7 +91,7 @@ function peerboard_settings_init() {
 		'Automatically import first and last names',
 		'peerboard_field_expose_cb',
 		'circles',
-		'peerboard_section_integration'
+		'peerboard_section_options'
 	);
 }
 add_action( 'admin_init', 'peerboard_settings_init' );
@@ -102,7 +116,9 @@ function peerboard_options_page_html() {
 	settings_fields( 'circles' );
 	do_settings_sections( 'circles' );
 	echo "For more information please check our ";
-	echo "<a href='https://community.peerboard.io/post/396436794' target='_blank'>How-To guide for WordPress</a>";
+	echo "<a href='https://community.peerboard.io/post/396436794' target='_blank'>How-To guide for WordPress</a><br/><br/>";
+	$calendly_link = "<a href='https://peerboard.org/integration-call' target='_blank'>calendly link</a>";
+	echo "If you have any troubles or would like us to guide you through the process<br/>Please book a time with our specialists using this $calendly_link.";
 	submit_button( 'Save Settings' );
 	?>
 		</form>

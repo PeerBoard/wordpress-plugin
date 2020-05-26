@@ -3,8 +3,8 @@
 Plugin Name: WordPress Forum Plugin – PeerBoard
 Plugin URI: https://peerboard.io
 Description: Forum, Community & User Profile Plugin
-Version: 0.1.7
-Author: peerboard, forumplugin
+Version: 0.1.8
+Author: <a href='https://peerboard.io' target='_blank'>Peerboard</a>, forumplugin
 */
 DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.org/embed/embed.js');
 
@@ -186,7 +186,7 @@ add_filter('the_content', function( $content ) {
       <div id='circles-forum'></div>";
   }
   return $content;
-}, 0);
+}, 9999999);
 
 add_action( 'wp_enqueue_scripts', 'peerboard_include_files' );
 function peerboard_include_files() {
