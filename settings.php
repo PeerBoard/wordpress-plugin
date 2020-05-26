@@ -21,10 +21,10 @@ function peerboard_field_prefix_cb( $args ) {
 	echo "<input name='peerboard_options[prefix]' value='$prefix' />";
 }
 
-function peerboard_field_community_id_cb( $args ) {
+function peerboard_field_token_cb( $args ) {
 	$options = get_option( 'peerboard_options' );
-	$community_id = $options['community_id'];
-	echo "<input name='peerboard_options[community_id]' value='$community_id' />";
+	$token = $options['auth_token'];
+	echo "<input style='width: 300px;' name='peerboard_options[auth_token]' value='$token' />";
 
 	$embed_script_url = $options['embed_script_url'];
 	$hidden_style = 'display: none;';
@@ -32,12 +32,6 @@ function peerboard_field_community_id_cb( $args ) {
 		$hidden_style = 'width: 50%;';
 	}
 	echo "<input name='peerboard_options[embed_script_url]' value='$embed_script_url' style='$hidden_style'/>";
-}
-
-function peerboard_field_token_cb( $args ) {
-	$options = get_option( 'peerboard_options' );
-	$token = $options['auth_token'];
-	echo "<input name='peerboard_options[auth_token]' value='$token' />";
 }
 
 function peerboard_field_expose_cb( $args ) {
@@ -60,14 +54,6 @@ function peerboard_settings_init() {
 		'',
 		'peerboard_options_readme',
 		'circles'
-	);
-
-	add_settings_field(
-		'community_id',
-		'Board ID',
-		'peerboard_field_community_id_cb',
-		'circles',
-		'peerboard_section_integration'
 	);
 
 	add_settings_field(

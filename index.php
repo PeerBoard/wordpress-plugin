@@ -3,7 +3,7 @@
 Plugin Name: WordPress Forum Plugin – PeerBoard
 Plugin URI: https://peerboard.io
 Description: Forum, Community & User Profile Plugin
-Version: 0.1.8
+Version: 0.1.9
 Author: <a href='https://peerboard.io' target='_blank'>Peerboard</a>, forumplugin
 */
 DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.org/embed/embed.js');
@@ -39,6 +39,9 @@ add_action( 'init', function() {
 	}
   if (!array_key_exists('auth_token', $options)) {
     $options['auth_token'] = '';
+  }
+  if (!array_key_exists('domain_activated', $options)) {
+    $options['domain_activated'] = false;
   }
 	$peerboard_options = $options;
 });
@@ -97,17 +100,58 @@ function peerboard_get_auth_hash($params, $secret) {
 add_filter('the_content', function( $content ) {
   global $peerboard_options;
   $peerboard_prefix = $peerboard_options['prefix'];
+  $override_url = $peerboard_options['embed_script_url'];
+  $domain_activated = $peerboard_options['domain_activated'];
+
+
   if (peerboard_is_embed_page($peerboard_prefix)) {
+    $auth_token = $peerboard_options['auth_token'];
+    if ($auth_token == '') {
+      return "<H4>Please set auth token inside 'PeerBoard Settings' admin section</H4>";
+    }
+
+    if (!$domain_activated) {
+      $api_url = 'https://api.peerboard.org/integration';
+      if ($override_url != NULL && $override_url != '') {
+        $api_url = 'https://api.peerboard.dev/integration';
+      }
+      $response = wp_remote_get($api_url, array(
+        'headers' => array(
+          'authorization' => "Bearer $auth_token",
+        ),
+      ));
+      if ( is_wp_error( $result ) ){
+      	echo $response->get_error_message();
+      }
+      $result = json_decode(wp_remote_retrieve_body($response), true);
+      $peerboard_options['community_id'] = $result['community_id'];
+      $status = $result['status'];
+      if ($status === 4) {
+        $peerboard_options['domain_activated'] = true;
+        update_option('peerboard_options', $peerboard_options);
+        return "Now everything should work after page refresh, keep in mind that it could fail for a while because of DNS propagation";
+      } else {
+        switch ($status) {
+          case 0:
+            return "Please set cname for subdomain 'peerboard' with value 'peerboard.org'";
+          case 1:
+            return "Almost done - we are issuing certificates now";
+          case 2:
+            return "Almost done - we are issuing certificates now";
+          case 3:
+            return "Almost done - we are issuing certificates now";
+        }
+      }
+    }
+
+
     $community_id = $peerboard_options['community_id'];
     if (is_null($community_id) || !$community_id || intval($community_id) == 0) {
       return "<H4>Please set community id inside 'PeerBoard Settings' admin section</H4>";
     }
     $community_id = intval($community_id);
 
-    $auth_token = $peerboard_options['auth_token'];
-    if ($auth_token == '') {
-      return "<H4>Please set auth token inside 'PeerBoard Settings' admin section</H4>";
-    }
+
 
     $user = wp_get_current_user();
     $login_data_string = '';
@@ -155,7 +199,6 @@ add_filter('the_content', function( $content ) {
 
 
     $script_url = PEERBOARD_EMBED_URL;
-    $override_url = $peerboard_options['embed_script_url'];
     $is_local = false;
     if ($override_url != NULL && $override_url != '') {
       $script_url = $override_url;
@@ -204,3 +247,25 @@ add_filter('request', function( array $query_vars ) {
 	}
 	return $query_vars;
 });
+
+add_action('updated_option', function( $option_name, $old_value, $value ) {
+  if ($option_name === 'peerboard_options') {
+    if ($old_value['prefix'] !== $value['prefix']) {
+      $override_url = $value['embed_script_url'];
+      $auth_token = $value['auth_token'];
+      $api_url = 'https://api.peerboard.org/integration';
+      if ($override_url != NULL && $override_url != '') {
+        $api_url = 'https://api.peerboard.dev/integration';
+      }
+      wp_remote_post($api_url, array(
+        'timeout'     => 5,
+        'headers' => array(
+          'authorization' => "Bearer $auth_token",
+        ),
+        'body' => json_encode(array(
+          "path_prefix" => $value['prefix'],
+        ))
+      ));
+    }
+  }
+}, 10, 3);
