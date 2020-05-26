@@ -52,14 +52,14 @@ function peerboard_settings_init() {
 		'peerboard_section_integration',
 		'Integration Settings',
 		'peerboard_integration_readme',
-		'circles',
+		'circles'
 	);
 
 	add_settings_section(
 		'peerboard_section_options',
 		'',
 		'peerboard_options_readme',
-		'circles',
+		'circles'
 	);
 
 	add_settings_field(
@@ -83,7 +83,7 @@ function peerboard_settings_init() {
 		'Board path',
 		'peerboard_field_prefix_cb',
 		'circles',
-		'peerboard_section_integration',
+		'peerboard_section_integration'
 	);
 
 	add_settings_field(
