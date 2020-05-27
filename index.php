@@ -103,14 +103,15 @@ add_filter('the_content', function( $content ) {
   $override_url = $peerboard_options['embed_script_url'];
   $domain_activated = $peerboard_options['domain_activated'];
 
-
   if (peerboard_is_embed_page($peerboard_prefix)) {
     $auth_token = $peerboard_options['auth_token'];
-    if ($auth_token == '') {
-      return "<H4>Please set auth token inside 'PeerBoard Settings' admin section</H4>";
-    }
+
 
     if (!$domain_activated) {
+      echo "PeerBoard integration status:<br/>";
+      if ($auth_token == '') {
+        return "PeerBoard plugin is connected. To continue the setup process please set your PeerBoard community auth token (can be found in Settings → Integrations) in WordPress plugin settings for PeerBoard.";
+      }
       $api_url = 'https://api.peerboard.org/integration';
       if ($override_url != NULL && $override_url != '') {
         $api_url = 'https://api.peerboard.dev/integration';
@@ -129,28 +130,24 @@ add_filter('the_content', function( $content ) {
       if ($status === 4) {
         $peerboard_options['domain_activated'] = true;
         update_option('peerboard_options', $peerboard_options);
-        return "Now everything should work after page refresh, keep in mind that it could fail for a while because of DNS propagation";
+        return "Congratulations, it's done! You finished the setup and should soon get access to your embedded PeerBoard!<br/>If you still don't see it, it may be a DNS propagation issue, allow it a few minutes to resolve.";
       } else {
+        $perfecto = "Perfecto, we detected the required CNAME change and are issuing SSL certificates now.<br/>Shouldn't take more than a minute.<br/><br/>";
         switch ($status) {
           case 0:
-            return "Please set cname for subdomain 'peerboard' with value 'peerboard.org'";
+            echo 'You are almost done connecting PeerBoard. To finish, sign in to your domain name provider (such as Godaddy.com or NameCheap.com) and add a new DNS record of CNAME type for "peerboard" pointing to "peerboard.org".<br/>This is needed for us to proxy API calls through your domain to avoid using cross-domain cookies.';
           case 1:
-            return "Almost done - we are issuing certificates now";
+            echo $perfecto;
           case 2:
-            return "Almost done - we are issuing certificates now";
+            echo $perfecto;
           case 3:
-            return "Almost done - we are issuing certificates now";
+            echo $perfecto;
         }
+        return peerboard_show_readme();
       }
     }
 
-
-    $community_id = $peerboard_options['community_id'];
-    if (is_null($community_id) || !$community_id || intval($community_id) == 0) {
-      return "<H4>Please set community id inside 'PeerBoard Settings' admin section</H4>";
-    }
-    $community_id = intval($community_id);
-
+    $community_id = intval($peerboard_options['community_id']);
 
 
     $user = wp_get_current_user();

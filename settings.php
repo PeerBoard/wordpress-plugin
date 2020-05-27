@@ -82,6 +82,11 @@ function peerboard_settings_init() {
 }
 add_action( 'admin_init', 'peerboard_settings_init' );
 
+function peerboard_show_readme() {
+	$calendly_link = "<a href='https://peerboard.org/integration-call' target='_blank'>calendly link</a>";
+	$contact_email = "<a href='mailto:integrations@peerboard.io' target='_blank'>integrations@peerboard.io</a>";
+	echo "If you experienced any problems during the setup, please don't hesitate to contact us at $contact_email or book a time with our specialist using this $calendly_link";
+}
 
 function peerboard_options_page_html() {
 	if ( ! current_user_can( 'manage_options' ) ) {
@@ -103,8 +108,7 @@ function peerboard_options_page_html() {
 	do_settings_sections( 'circles' );
 	echo "For more information please check our ";
 	echo "<a href='https://community.peerboard.io/post/396436794' target='_blank'>How-To guide for WordPress</a><br/><br/>";
-	$calendly_link = "<a href='https://peerboard.org/integration-call' target='_blank'>calendly link</a>";
-	echo "If you have any troubles or would like us to guide you through the process<br/>Please book a time with our specialists using this $calendly_link.";
+	peerboard_show_readme();
 	submit_button( 'Save Settings' );
 	?>
 		</form>
