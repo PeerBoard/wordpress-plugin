@@ -3,7 +3,7 @@
 Plugin Name: WordPress Forum Plugin – PeerBoard
 Plugin URI: https://peerboard.io
 Description: Forum, Community & User Profile Plugin
-Version: 0.1.9
+Version: 0.2.0
 Author: <a href='https://peerboard.io' target='_blank'>Peerboard</a>, forumplugin
 */
 DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.org/embed/embed.js');
@@ -152,7 +152,15 @@ add_filter('the_content', function( $content ) {
 
     $community_id = intval($peerboard_options['community_id']);
     $user = wp_get_current_user();
-    $login_data_string = '';
+
+    $payload = peerboard_base64url_encode(json_encode(
+      array(
+        'communityID' => $community_id,
+        'location' => peerboard_get_tail_path($peerboard_prefix),
+      )
+    ));
+
+    $login_data_string = "data-forum-wp-login='$payload?logout=true'";
     $isUserLogged = false;
     if ( !function_exists('is_user_logged_in') ) {
       if ( !empty($user->ID) ) {
@@ -165,13 +173,6 @@ add_filter('the_content', function( $content ) {
     }
 
     if ($isUserLogged) {
-      $payload = peerboard_base64url_encode(json_encode(
-        array(
-          'communityID' => $community_id,
-          'location' => peerboard_get_tail_path($peerboard_prefix),
-        )
-      ));
-
       $userdata = array(
         'email' =>  $user->user_email,
         'username' => $user->nickname,
@@ -193,8 +194,6 @@ add_filter('the_content', function( $content ) {
 
       $login_data_string = "data-forum-wp-login='$payload?$userdata'";
     }
-
-
 
     $script_url = PEERBOARD_EMBED_URL;
     $is_local = false;
