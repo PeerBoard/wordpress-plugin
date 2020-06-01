@@ -32,6 +32,10 @@ function peerboard_field_token_cb( $args ) {
 		$hidden_style = 'width: 50%;';
 	}
 	echo "<input name='peerboard_options[embed_script_url]' value='$embed_script_url' style='$hidden_style'/>";
+	$domain_activated = $options['domain_activated'];
+	echo "<input name='peerboard_options[domain_activated]' value='$domain_activated' style='display: none;'/>";
+	$community_id = $options['community_id'];
+	echo "<input name='peerboard_options[community_id]' value='$community_id' style='display: none;'/>";
 }
 
 function peerboard_field_expose_cb( $args ) {

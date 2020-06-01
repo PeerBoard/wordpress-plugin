@@ -41,7 +41,7 @@ add_action( 'init', function() {
     $options['auth_token'] = '';
   }
   if (!array_key_exists('domain_activated', $options)) {
-    $options['domain_activated'] = false;
+    $options['domain_activated'] = '';
   }
 	$peerboard_options = $options;
 });
@@ -105,9 +105,7 @@ add_filter('the_content', function( $content ) {
 
   if (peerboard_is_embed_page($peerboard_prefix)) {
     $auth_token = $peerboard_options['auth_token'];
-
-
-    if (!$domain_activated) {
+    if ($domain_activated !== "1") {
       echo "PeerBoard integration status:<br/>";
       if ($auth_token == '') {
         return "PeerBoard plugin is connected. To continue the setup process please set your PeerBoard community auth token (can be found in Settings → Integrations) in WordPress plugin settings for PeerBoard.";
@@ -128,28 +126,31 @@ add_filter('the_content', function( $content ) {
       $peerboard_options['community_id'] = $result['community_id'];
       $status = $result['status'];
       if ($status === 4) {
-        $peerboard_options['domain_activated'] = true;
+        $peerboard_options['domain_activated'] = '1';
         update_option('peerboard_options', $peerboard_options);
-        return "Congratulations, it's done! You finished the setup and should soon get access to your embedded PeerBoard!<br/>If you still don't see it, it may be a DNS propagation issue, allow it a few minutes to resolve.";
+        //var_dump(get_option('peerboard_options'));
+        echo "Congratulations, it's done! You finished the setup and should soon get access to your embedded PeerBoard!<br/>If you still don't see it, it may be a DNS propagation issue, allow it a few minutes to resolve.<br/><br/>";
       } else {
         $perfecto = "Perfecto, we detected the required CNAME change and are issuing SSL certificates now.<br/>Shouldn't take more than a minute.<br/><br/>";
         switch ($status) {
           case 0:
-            echo 'You are almost done connecting PeerBoard. To finish, sign in to your domain name provider (such as Godaddy.com or NameCheap.com) and add a new DNS record of CNAME type for "peerboard" pointing to "peerboard.org".<br/>This is needed for us to proxy API calls through your domain to avoid using cross-domain cookies.';
+            echo 'You are almost done connecting PeerBoard. To finish, sign in to your domain name provider (such as Godaddy.com or NameCheap.com) and add a new DNS record of CNAME type for "peerboard" pointing to "peerboard.org".<br/><br/>This is needed for us to proxy API calls through your domain to avoid using cross-domain cookies.<br/><br/>';
+            break;
           case 1:
             echo $perfecto;
+            break;
           case 2:
             echo $perfecto;
+            break;
           case 3:
             echo $perfecto;
+            break;
         }
-        return peerboard_show_readme();
       }
+      return peerboard_show_readme();
     }
 
     $community_id = intval($peerboard_options['community_id']);
-
-
     $user = wp_get_current_user();
     $login_data_string = '';
     $isUserLogged = false;
@@ -245,24 +246,26 @@ add_filter('request', function( array $query_vars ) {
 	return $query_vars;
 });
 
-add_action('updated_option', function( $option_name, $old_value, $value ) {
-  if ($option_name === 'peerboard_options') {
-    if ($old_value['prefix'] !== $value['prefix']) {
-      $override_url = $value['embed_script_url'];
-      $auth_token = $value['auth_token'];
-      $api_url = 'https://api.peerboard.org/integration';
-      if ($override_url != NULL && $override_url != '') {
-        $api_url = 'https://api.peerboard.dev/integration';
-      }
-      wp_remote_post($api_url, array(
-        'timeout'     => 5,
-        'headers' => array(
-          'authorization' => "Bearer $auth_token",
-        ),
-        'body' => json_encode(array(
-          "path_prefix" => $value['prefix'],
-        ))
-      ));
+add_action('pre_update_option_peerboard_options', function( $value, $old_value, $option ) {
+  if ($old_value['prefix'] !== $value['prefix']) {
+    $override_url = $value['embed_script_url'];
+    $auth_token = $value['auth_token'];
+    $api_url = 'https://api.peerboard.org/integration';
+    if ($override_url != NULL && $override_url != '') {
+      $api_url = 'https://api.peerboard.dev/integration';
     }
+    wp_remote_post($api_url, array(
+      'timeout'     => 5,
+      'headers' => array(
+        'authorization' => "Bearer $auth_token",
+      ),
+      'body' => json_encode(array(
+        "path_prefix" => $value['prefix'],
+      ))
+    ));
   }
+  if ($old_value['auth_token'] !== $value['auth_token']) {
+    $value['domain_activated'] = '';
+  }
+  return $value;
 }, 10, 3);
