@@ -3,7 +3,7 @@
 Plugin Name: WordPress Forum Plugin – PeerBoard
 Plugin URI: https://peerboard.io
 Description: Forum, Community & User Profile Plugin
-Version: 0.2.0
+Version: 0.2.1
 Author: <a href='https://peerboard.io' target='_blank'>Peerboard</a>, forumplugin
 */
 DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.org/embed/embed.js');
@@ -112,7 +112,15 @@ add_filter('the_content', function( $content ) {
       }
       $api_url = 'https://api.peerboard.org/integration';
       if ($override_url != NULL && $override_url != '') {
-        $api_url = 'https://api.peerboard.dev/integration';
+        if ($override_url == 'http://static.local.is/embed/embed.js') {
+          // Change this val for local testing
+          $peerboard_options['community_id'] = 561465857;
+          $peerboard_options['domain_activated'] = '1';
+          update_option('peerboard_options', $peerboard_options);
+          return peerboard_show_readme();
+        } else {
+          $api_url = 'https://api.peerboard.dev/integration';
+        }
       }
       $response = wp_remote_get($api_url, array(
         'headers' => array(
@@ -186,6 +194,10 @@ add_filter('the_content', function( $content ) {
       if ($peerboard_options['expose_user_data'] == '1') {
         $userdata['first_name'] = $user->first_name;
         $userdata['last_name'] = $user->last_name;
+      }
+
+      if (current_user_can( 'manage_options' )) {
+        $userdata['role'] = 'admin';
       }
 
       $hash = peerboard_get_auth_hash($userdata, $auth_token);
