@@ -8,8 +8,8 @@ Author: <a href='https://peerboard.io' target='_blank'>Peerboard</a>, forumplugi
 */
 DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.org/embed/embed.js');
 
-
 require(plugin_dir_path(__FILE__)."settings.php");
+require(plugin_dir_path(__FILE__)."analytics.php");
 
 function peerboard_base64url_encode($data)
 {
@@ -51,6 +51,8 @@ function peerboard_plugin_activate(){
   if ( ! current_user_can( 'activate_plugins' ) )
     return;
 
+  peerboard_send_analytics('activate_plugin');
+
   $peerboard_post = get_option("peerboard_post");
 	if (is_null($peerboard_post) || !$peerboard_post) {
 		$post_data = array(
@@ -75,6 +77,7 @@ function peerboard_plugin_uninstall(){
   wp_delete_post($post_id, true);
   delete_option('peerboard_post');
   delete_option('peerboard_options');
+  peerboard_send_analytics('uninstall_plugin');
 }
 
 
@@ -277,6 +280,7 @@ add_action('pre_update_option_peerboard_options', function( $value, $old_value, 
   }
   if ($old_value['auth_token'] !== $value['auth_token']) {
     $value['domain_activated'] = '';
+    peerboard_send_analytics('set_auth_token');
   }
   return $value;
 }, 10, 3);
