@@ -3,6 +3,7 @@ function peerboard_integration_readme() {
 	global $peerboard_options;
 	$url_parts = explode('://', get_home_url());
 	$domain = $url_parts[1];
+	$domain = str_replace($domain, "www.", "");
 	$prefix = $peerboard_options['prefix'];
 	echo "You can find those values in your board settings in Integrations tab. If you don't have a board created yet, please visit ";
 	echo "<a href='https://peerboard.org/getstarted?wordpressDomain=$domain&pathPrefix=$prefix' target='_blank'>peerboard.org/getstarted</a>";

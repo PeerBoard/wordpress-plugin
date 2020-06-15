@@ -3,7 +3,7 @@
 Plugin Name: WordPress Forum Plugin – PeerBoard
 Plugin URI: https://peerboard.io
 Description: Forum, Community & User Profile Plugin
-Version: 0.2.1
+Version: 0.2.2
 Author: <a href='https://peerboard.io' target='_blank'>Peerboard</a>, forumplugin
 */
 DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.org/embed/embed.js');
@@ -220,7 +220,8 @@ add_filter('the_content', function( $content ) {
     }
 
     $url_parts = explode('://', get_home_url());
-    $base_url = 'https://peerboard.'.$url_parts[1];
+    $domain = str_replace($url_parts[1], "www.", "");
+    $base_url = 'https://peerboard.'.$domain;
     if ($is_local) {
       $base_url = 'http://peerboard.wordpress.is';
     }
