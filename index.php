@@ -220,7 +220,7 @@ add_filter('the_content', function( $content ) {
     }
 
     $url_parts = explode('://', get_home_url());
-    $domain = str_replace($url_parts[1], "www.", "");
+    $domain = str_replace("www.", "", $url_parts[1]);
     $base_url = 'https://peerboard.'.$domain;
     if ($is_local) {
       $base_url = 'http://peerboard.wordpress.is';
