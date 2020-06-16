@@ -134,7 +134,10 @@ add_filter('the_content', function( $content ) {
       	echo $response->get_error_message();
       }
       $result = json_decode(wp_remote_retrieve_body($response), true);
-      $peerboard_options['community_id'] = $result['community_id'];
+      if ($peerboard_options['community_id'] != $result['community_id']) {
+        $peerboard_options['community_id'] = $result['community_id'];
+        peerboard_send_analytics('set_auth_token', $result['community_id']);
+      }
       $status = $result['status'];
       if ($status === 4) {
         $peerboard_options['domain_activated'] = '1';
@@ -281,7 +284,6 @@ add_action('pre_update_option_peerboard_options', function( $value, $old_value, 
   }
   if ($old_value['auth_token'] !== $value['auth_token']) {
     $value['domain_activated'] = '';
-    peerboard_send_analytics('set_auth_token');
   }
   return $value;
 }, 10, 3);
