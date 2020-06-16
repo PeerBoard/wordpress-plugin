@@ -23,7 +23,7 @@ function peerboard_send_analytics($type, $community_id = 0) {
     'timeout'     => 5,
     'body' => json_encode(array(
     'api_key' => PEERBOARD_AMPLITUDE_API_KEY,
-    'events' => $params
+    'events' => array($params)
     ))
   ));
  }
