@@ -137,6 +137,7 @@ add_filter('the_content', function( $content ) {
       if ($peerboard_options['community_id'] != $result['community_id']) {
         $peerboard_options['community_id'] = $result['community_id'];
         peerboard_send_analytics('set_auth_token', $result['community_id']);
+        update_option('peerboard_options', $peerboard_options);
       }
       $status = $result['status'];
       if ($status === 4) {
