@@ -1,16 +1,19 @@
 <?php
 DEFINE('PEERBOARD_AMPLITUDE_ENDPOINT', 'https://api.amplitude.com/2/httpapi');
-DEFINE('PEERBOARD_AMPLITUDE_API_KEY', '381e48e71b68ae50a29454b78a4fa8c8');
+DEFINE('PEERBOARD_AMPLITUDE_API_KEY', '58fd9c4d27c06daaed207bda06b7985c');
 
 function peerboard_send_analytics($type) {
   $user = wp_get_current_user();
+  $url_parts = explode('://', get_home_url());
+  $domain = str_replace("www.", "", $url_parts[1]);
+
   wp_remote_post(PEERBOARD_AMPLITUDE_ENDPOINT, array(
     'timeout'     => 5,
     'body' => json_encode(array(
     'api_key' => PEERBOARD_AMPLITUDE_API_KEY,
     'events' => array(
-      'user_id' => get_home_url(),
-      'event_type' => $type,
+      'event_type' => 'wordpress_' . $type,
+      'device_id' => 'wordpress_' . $domain,
       'user_properties' => array(
        'email' => $user->user_email
       )
