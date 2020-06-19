@@ -26,6 +26,10 @@
 	display: none!important;
 }
 
+.entry-content {
+	width: 100%!important;
+}
+
 article header {
 	display: none!important;
 }
