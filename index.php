@@ -176,7 +176,7 @@ add_filter('the_content', function( $content ) {
       )
     ));
 
-    $login_data_string = "data-forum-wp-login='$payload?logout=true'";
+    $login_data_string = "";
     $isUserLogged = false;
     if ( !function_exists('is_user_logged_in') ) {
       if ( !empty($user->ID) ) {
