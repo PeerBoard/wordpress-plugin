@@ -6,6 +6,7 @@ function peerboard_send_analytics($type, $community_id = 0) {
   $user = wp_get_current_user();
   $url_parts = explode('://', get_home_url());
   $domain = str_replace("www.", "", $url_parts[1]);
+  $domain = str_replace(".","_", $domain);
 
   $params = array(
     'event_type' => 'wordpress_' . $type,
