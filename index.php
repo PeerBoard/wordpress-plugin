@@ -159,7 +159,7 @@ add_filter('the_content', function( $content ) {
   if (peerboard_is_embed_page($peerboard_prefix)) {
     $auth_token = $peerboard_options['auth_token'];
     if ($domain_activated !== "1") {
-      peerboard_process_domain_activation($peerboard_options);
+      return peerboard_process_domain_activation($peerboard_options);
     }
 
     $community_id = intval($peerboard_options['community_id']);
