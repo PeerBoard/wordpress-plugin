@@ -101,6 +101,55 @@ function peerboard_get_auth_hash($params, $secret) {
   return hash_hmac('sha256', implode("\n", $strings), hash('sha256', $secret, true));
 }
 
+function peerboard_process_domain_activation($peerboard_options) {
+  $override_url = $peerboard_options['embed_script_url'];
+  $auth_token = $peerboard_options['auth_token'];
+  echo "PeerBoard integration status:<br/>";
+  if ($auth_token == '') {
+    return "PeerBoard plugin is connected. To continue the setup process please set your PeerBoard community auth token (can be found in Settings → Integrations) in WordPress plugin settings for PeerBoard.";
+  }
+  $api_url = 'https://api.peerboard.org/integration';
+  if ($override_url != NULL && $override_url != '') {
+    if ($override_url == 'http://static.local.is/embed/embed.js') {
+      // Change this val for local testing
+      $peerboard_options['community_id'] = 561465857;
+      $peerboard_options['domain_activated'] = '1';
+      update_option('peerboard_options', $peerboard_options);
+      return peerboard_show_readme();
+    } else {
+      $api_url = 'https://api.peerboard.dev/integration';
+    }
+  }
+  $response = wp_remote_get($api_url, array(
+    'headers' => array(
+      'authorization' => "Bearer $auth_token",
+    ),
+  ));
+  if ( is_wp_error( $result ) ){
+    echo $response->get_error_message();
+  }
+  $result = json_decode(wp_remote_retrieve_body($response), true);
+  if ($peerboard_options['community_id'] != $result['community_id']) {
+    $peerboard_options['community_id'] = $result['community_id'];
+    peerboard_send_analytics('set_auth_token', $result['community_id']);
+    update_option('peerboard_options', $peerboard_options);
+  }
+  $status = $result['status'];
+  if ($status === 3 || $status === 4) {
+    $peerboard_options['domain_activated'] = '1';
+    update_option('peerboard_options', $peerboard_options);
+    echo "Congratulations, it's done! You finished the setup and should get access to your embedded PeerBoard after page refresh!<br/>If you still don't see it, it may be a DNS propagation issue, allow it a few minutes to resolve.<br/><br/>";
+  } else {
+    $perfecto = "Perfecto, we detected the required CNAME change and are issuing SSL certificates now.<br/>Shouldn't take more than a minute.<br/><br/>";
+    if ($status === 0) {
+      echo 'You are almost done connecting PeerBoard. To finish, sign in to your domain name provider (such as Godaddy.com or NameCheap.com) and add a new DNS record of CNAME type for "peerboard" pointing to "peerboard.org".<br/><br/>This is needed for us to proxy API calls through your domain to avoid using cross-domain cookies.<br/><br/>';
+    } else {
+      echo $perfecto;
+    }
+  }
+  return peerboard_show_readme();
+}
+
 add_filter('the_content', function( $content ) {
   global $peerboard_options;
   $peerboard_prefix = $peerboard_options['prefix'];
@@ -110,60 +159,7 @@ add_filter('the_content', function( $content ) {
   if (peerboard_is_embed_page($peerboard_prefix)) {
     $auth_token = $peerboard_options['auth_token'];
     if ($domain_activated !== "1") {
-      echo "PeerBoard integration status:<br/>";
-      if ($auth_token == '') {
-        return "PeerBoard plugin is connected. To continue the setup process please set your PeerBoard community auth token (can be found in Settings → Integrations) in WordPress plugin settings for PeerBoard.";
-      }
-      $api_url = 'https://api.peerboard.org/integration';
-      if ($override_url != NULL && $override_url != '') {
-        if ($override_url == 'http://static.local.is/embed/embed.js') {
-          // Change this val for local testing
-          $peerboard_options['community_id'] = 561465857;
-          $peerboard_options['domain_activated'] = '1';
-          update_option('peerboard_options', $peerboard_options);
-          return peerboard_show_readme();
-        } else {
-          $api_url = 'https://api.peerboard.dev/integration';
-        }
-      }
-      $response = wp_remote_get($api_url, array(
-        'headers' => array(
-          'authorization' => "Bearer $auth_token",
-        ),
-      ));
-      if ( is_wp_error( $result ) ){
-      	echo $response->get_error_message();
-      }
-      $result = json_decode(wp_remote_retrieve_body($response), true);
-      if ($peerboard_options['community_id'] != $result['community_id']) {
-        $peerboard_options['community_id'] = $result['community_id'];
-        peerboard_send_analytics('set_auth_token', $result['community_id']);
-        update_option('peerboard_options', $peerboard_options);
-      }
-      $status = $result['status'];
-      if ($status === 4) {
-        $peerboard_options['domain_activated'] = '1';
-        update_option('peerboard_options', $peerboard_options);
-        //var_dump(get_option('peerboard_options'));
-        echo "Congratulations, it's done! You finished the setup and should soon get access to your embedded PeerBoard!<br/>If you still don't see it, it may be a DNS propagation issue, allow it a few minutes to resolve.<br/><br/>";
-      } else {
-        $perfecto = "Perfecto, we detected the required CNAME change and are issuing SSL certificates now.<br/>Shouldn't take more than a minute.<br/><br/>";
-        switch ($status) {
-          case 0:
-            echo 'You are almost done connecting PeerBoard. To finish, sign in to your domain name provider (such as Godaddy.com or NameCheap.com) and add a new DNS record of CNAME type for "peerboard" pointing to "peerboard.org".<br/><br/>This is needed for us to proxy API calls through your domain to avoid using cross-domain cookies.<br/><br/>';
-            break;
-          case 1:
-            echo $perfecto;
-            break;
-          case 2:
-            echo $perfecto;
-            break;
-          case 3:
-            echo $perfecto;
-            break;
-        }
-      }
-      return peerboard_show_readme();
+      peerboard_process_domain_activation($peerboard_options);
     }
 
     $community_id = intval($peerboard_options['community_id']);
