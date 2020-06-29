@@ -3,7 +3,7 @@
 Plugin Name: WordPress Forum Plugin – PeerBoard
 Plugin URI: https://peerboard.io
 Description: Forum, Community & User Profile Plugin
-Version: 0.2.3
+Version: 0.2.4
 Author: <a href='https://peerboard.io' target='_blank'>Peerboard</a>, forumplugin
 */
 DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.org/embed/embed.js');
@@ -82,7 +82,7 @@ function peerboard_plugin_uninstall(){
 
 
 function peerboard_is_embed_page($prefix) {
-	return (substr($_SERVER['REQUEST_URI'],0,strlen($prefix) + 1) == "/" . $prefix);
+  return (get_the_ID() == get_option("peerboard_post")) || (substr($_SERVER['REQUEST_URI'],0,strlen($prefix) + 1) == "/" . $prefix);
 }
 
 function peerboard_get_tail_path($prefix) {
@@ -125,7 +125,7 @@ function peerboard_process_domain_activation($peerboard_options) {
       'authorization' => "Bearer $auth_token",
     ),
   ));
-  if ( is_wp_error( $result ) ){
+  if ( is_wp_error( $response ) ){
     echo $response->get_error_message();
   }
   $result = json_decode(wp_remote_retrieve_body($response), true);
@@ -140,11 +140,10 @@ function peerboard_process_domain_activation($peerboard_options) {
     update_option('peerboard_options', $peerboard_options);
     echo "Congratulations, it's done! You finished the setup and should get access to your embedded PeerBoard after page refresh!<br/>If you still don't see it, it may be a DNS propagation issue, allow it a few minutes to resolve.<br/><br/>";
   } else {
-    $perfecto = "Perfecto, we detected the required CNAME change and are issuing SSL certificates now.<br/>Shouldn't take more than a minute.<br/><br/>";
     if ($status === 0) {
       echo 'You are almost done connecting PeerBoard. To finish, sign in to your domain name provider (such as Godaddy.com or NameCheap.com) and add a new DNS record of CNAME type for "peerboard" pointing to "peerboard.org".<br/><br/>This is needed for us to proxy API calls through your domain to avoid using cross-domain cookies.<br/><br/>';
     } else {
-      echo $perfecto;
+      echo "Perfecto, we detected the required CNAME change and are issuing SSL certificates now.<br/>Shouldn't take more than a minute.<br/><br/>";;
     }
   }
   return peerboard_show_readme();
