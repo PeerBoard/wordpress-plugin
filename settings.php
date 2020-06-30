@@ -89,7 +89,7 @@ add_action( 'admin_init', 'peerboard_settings_init' );
 function peerboard_show_readme() {
 	$calendly_link = "<a href='https://peerboard.org/integration-call' target='_blank'>calendly link</a>";
 	$contact_email = "<a href='mailto:integrations@peerboard.io' target='_blank'>integrations@peerboard.io</a>";
-	echo "If you experienced any problems during the setup, please don't hesitate to contact us at $contact_email or book a time with our specialist using this $calendly_link";
+	echo "<br/><br/>If you experienced any problems during the setup, please don't hesitate to contact us at $contact_email or book a time with our specialist using this $calendly_link";
 }
 
 function peerboard_options_page_html() {

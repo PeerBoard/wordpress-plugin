@@ -3,7 +3,7 @@
 Plugin Name: WordPress Forum Plugin – PeerBoard
 Plugin URI: https://peerboard.io
 Description: Forum, Community & User Profile Plugin
-Version: 0.2.4
+Version: 0.2.5
 Author: <a href='https://peerboard.io' target='_blank'>Peerboard</a>, forumplugin
 */
 DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.org/embed/embed.js');
@@ -140,11 +140,9 @@ function peerboard_process_domain_activation($peerboard_options) {
     update_option('peerboard_options', $peerboard_options);
     echo "Congratulations, it's done! You finished the setup and should get access to your embedded PeerBoard after page refresh!<br/>If you still don't see it, it may be a DNS propagation issue, allow it a few minutes to resolve.<br/><br/>";
   } else {
-    if ($status === 0) {
-      echo 'You are almost done connecting PeerBoard. To finish, sign in to your domain name provider (such as Godaddy.com or NameCheap.com) and add a new DNS record of CNAME type for "peerboard" pointing to "peerboard.org".<br/><br/>This is needed for us to proxy API calls through your domain to avoid using cross-domain cookies.<br/><br/>';
-    } else {
-      echo "Perfecto, we detected the required CNAME change and are issuing SSL certificates now.<br/>Shouldn't take more than a minute.<br/><br/>";;
-    }
+    $left_replaced = str_replace(" **", " <b>", $result['status_text']);
+    $right_replaced = str_replace("** ", "</b> ", $left_replaced);
+    echo str_replace("**.","</b>", $right_replaced);
   }
   return peerboard_show_readme();
 }
