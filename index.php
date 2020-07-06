@@ -112,7 +112,7 @@ function peerboard_process_domain_activation($peerboard_options) {
   if ($override_url != NULL && $override_url != '') {
     if ($override_url == 'http://static.local.is/embed/embed.js') {
       // Change this val for local testing
-      $peerboard_options['community_id'] = 561465857;
+      $peerboard_options['community_id'] = 436885871;
       $peerboard_options['domain_activated'] = '1';
       update_option('peerboard_options', $peerboard_options);
       return peerboard_show_readme();
@@ -209,20 +209,13 @@ add_filter('the_content', function( $content ) {
     }
 
     $script_url = PEERBOARD_EMBED_URL;
-    $is_local = false;
     if ($override_url != NULL && $override_url != '') {
       $script_url = $override_url;
-      if ($override_url == 'http://static.local.is/embed/embed.js') {
-        $is_local = true;
-      }
     }
 
     $url_parts = explode('://', get_home_url());
     $domain = str_replace("www.", "", $url_parts[1]);
     $base_url = 'https://peerboard.'.$domain;
-    if ($is_local) {
-      $base_url = 'http://peerboard.wordpress.is';
-    }
     $integration_tag_open = "<script defer src='$script_url'";
     $integration_tag_close = '></script>';
     remove_filter( 'the_content', 'wpautop' );
