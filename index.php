@@ -3,13 +3,15 @@
 Plugin Name: WordPress Forum Plugin – PeerBoard
 Plugin URI: https://peerboard.io
 Description: Forum, Community & User Profile Plugin
-Version: 0.2.5
+Version: 0.2.6
 Author: <a href='https://peerboard.io' target='_blank'>Peerboard</a>, forumplugin
 */
-DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.org/embed/embed.js');
+DEFINE('PEERBOARD_EMBED_URL', 'http://static.local.is/embed/embed.js');
+DEFINE('PEERBOARD_PROXY_URL', 'http://local.is/');
 
 require(plugin_dir_path(__FILE__)."settings.php");
 require(plugin_dir_path(__FILE__)."analytics.php");
+require(plugin_dir_path(__FILE__)."proxy.php");
 
 function peerboard_base64url_encode($data)
 {
@@ -40,10 +42,8 @@ add_action( 'init', function() {
   if (!array_key_exists('auth_token', $options)) {
     $options['auth_token'] = '';
   }
-  if (!array_key_exists('domain_activated', $options)) {
-    $options['domain_activated'] = '';
-  }
 	$peerboard_options = $options;
+  $peerboard_options['community_id'] = 436885871;
 });
 
 register_activation_hook( __FILE__, 'peerboard_plugin_activate' );
@@ -80,10 +80,10 @@ function peerboard_plugin_uninstall(){
   peerboard_send_analytics('uninstall_plugin');
 }
 
-
 function peerboard_is_embed_page($prefix) {
   return (get_the_ID() == get_option("peerboard_post")) || (substr($_SERVER['REQUEST_URI'],0,strlen($prefix) + 1) == "/" . $prefix);
 }
+
 
 function peerboard_get_tail_path($prefix) {
 	$r = $_SERVER['REQUEST_URI'];
@@ -101,64 +101,11 @@ function peerboard_get_auth_hash($params, $secret) {
   return hash_hmac('sha256', implode("\n", $strings), hash('sha256', $secret, true));
 }
 
-function peerboard_process_domain_activation($peerboard_options) {
-  $override_url = $peerboard_options['embed_script_url'];
-  $auth_token = $peerboard_options['auth_token'];
-  echo "PeerBoard integration status:<br/>";
-  if ($auth_token == '') {
-    return "PeerBoard plugin is connected. To continue the setup process please set your PeerBoard community auth token (can be found in Settings → Integrations) in WordPress plugin settings for PeerBoard.";
-  }
-  $api_url = 'https://api.peerboard.org/integration';
-  if ($override_url != NULL && $override_url != '') {
-    if ($override_url == 'http://static.local.is/embed/embed.js') {
-      // Change this val for local testing
-      $peerboard_options['community_id'] = 561465857;
-      $peerboard_options['domain_activated'] = '1';
-      update_option('peerboard_options', $peerboard_options);
-      return peerboard_show_readme();
-    } else {
-      $api_url = 'https://api.peerboard.dev/integration';
-    }
-  }
-  $response = wp_remote_get($api_url, array(
-    'headers' => array(
-      'authorization' => "Bearer $auth_token",
-    ),
-  ));
-  if ( is_wp_error( $response ) ){
-    echo $response->get_error_message();
-  }
-  $result = json_decode(wp_remote_retrieve_body($response), true);
-  if ($peerboard_options['community_id'] != $result['community_id']) {
-    $peerboard_options['community_id'] = $result['community_id'];
-    peerboard_send_analytics('set_auth_token', $result['community_id']);
-    update_option('peerboard_options', $peerboard_options);
-  }
-  $status = $result['status'];
-  if ($status === 3 || $status === 4) {
-    $peerboard_options['domain_activated'] = '1';
-    update_option('peerboard_options', $peerboard_options);
-    echo "Congratulations, it's done! You finished the setup and should get access to your embedded PeerBoard after page refresh!<br/>If you still don't see it, it may be a DNS propagation issue, allow it a few minutes to resolve.<br/><br/>";
-  } else {
-    $left_replaced = str_replace(" **", " <b>", $result['status_text']);
-    $right_replaced = str_replace("** ", "</b> ", $left_replaced);
-    echo str_replace("**.","</b>", $right_replaced);
-  }
-  return peerboard_show_readme();
-}
-
 add_filter('the_content', function( $content ) {
   global $peerboard_options;
   $peerboard_prefix = $peerboard_options['prefix'];
-  $override_url = $peerboard_options['embed_script_url'];
-  $domain_activated = $peerboard_options['domain_activated'];
-
   if (peerboard_is_embed_page($peerboard_prefix)) {
     $auth_token = $peerboard_options['auth_token'];
-    if ($domain_activated !== "1") {
-      return peerboard_process_domain_activation($peerboard_options);
-    }
-
     $community_id = intval($peerboard_options['community_id']);
     $user = wp_get_current_user();
 
@@ -208,21 +155,8 @@ add_filter('the_content', function( $content ) {
       $login_data_string = "data-forum-wp-login='$payload?$userdata'";
     }
 
+    $base_url = get_home_url() . "/peerboard";
     $script_url = PEERBOARD_EMBED_URL;
-    $is_local = false;
-    if ($override_url != NULL && $override_url != '') {
-      $script_url = $override_url;
-      if ($override_url == 'http://static.local.is/embed/embed.js') {
-        $is_local = true;
-      }
-    }
-
-    $url_parts = explode('://', get_home_url());
-    $domain = str_replace("www.", "", $url_parts[1]);
-    $base_url = 'https://peerboard.'.$domain;
-    if ($is_local) {
-      $base_url = 'http://peerboard.wordpress.is';
-    }
     $integration_tag_open = "<script defer src='$script_url'";
     $integration_tag_close = '></script>';
     remove_filter( 'the_content', 'wpautop' );
@@ -258,27 +192,3 @@ add_filter('request', function( array $query_vars ) {
 	}
 	return $query_vars;
 });
-
-add_action('pre_update_option_peerboard_options', function( $value, $old_value, $option ) {
-  if ($old_value['prefix'] !== $value['prefix']) {
-    $override_url = $value['embed_script_url'];
-    $auth_token = $value['auth_token'];
-    $api_url = 'https://api.peerboard.org/integration';
-    if ($override_url != NULL && $override_url != '') {
-      $api_url = 'https://api.peerboard.dev/integration';
-    }
-    wp_remote_post($api_url, array(
-      'timeout'     => 5,
-      'headers' => array(
-        'authorization' => "Bearer $auth_token",
-      ),
-      'body' => json_encode(array(
-        "path_prefix" => $value['prefix'],
-      ))
-    ));
-  }
-  if ($old_value['auth_token'] !== $value['auth_token']) {
-    $value['domain_activated'] = '';
-  }
-  return $value;
-}, 10, 3);
