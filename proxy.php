@@ -79,7 +79,11 @@ function peerboard_parse_request($request) {
 			return peerboard_proxy_login($proxy_url);
 		}
 
-		$proxy = wp_remote_get(PEERBOARD_PROXY_URL . implode('/', $splitted));
+		$proxy = wp_remote_get(PEERBOARD_PROXY_URL . implode('/', $splitted), array(
+			'headers'			=> array(
+				"Origin" => "wordpress",
+			)
+		));
 	  if ( is_wp_error( $proxy ) ){
 	    echo $proxy->get_error_message();
 	  }
