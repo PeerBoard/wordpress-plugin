@@ -62,6 +62,9 @@ function peerboard_parse_request($request) {
 		if ($splitted[0] !== 'peerboard') {
 			return;
 		}
+		if ($splitted[1] != '436885871') {
+			return;
+		}
 		$splitted = array_splice($splitted, 1);
 
 		// Proxy graphql requests

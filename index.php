@@ -165,6 +165,7 @@ add_filter('the_content', function( $content ) {
         data-forum-id='$community_id'
         $login_data_string
         data-forum-prefix='$peerboard_prefix'
+        data-forum-prefix-proxy='$peerboard_prefix'
         data-forum-scroll='top'
         data-forum-hide-menu
         data-forum-resize
