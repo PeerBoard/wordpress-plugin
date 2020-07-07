@@ -37,8 +37,7 @@ function peerboard_proxy_login($target) {
 	// Means that there was a problem on wordpress side
 
 	if ( is_wp_error( $proxy ) ){
-		echo "WP_ERROR";
-		echo $proxy->get_error_message();
+		error_log("proxy login wp-error:" . $proxy->get_error_message());
 	}
 
 	if (count($proxy['cookies']) > 0) {
@@ -51,18 +50,20 @@ function peerboard_proxy_login($target) {
 	}
 
 	$redirect = wp_remote_retrieve_body($proxy);
+	//error_log(print_r($proxy, 1));
 	header("Location: $redirect");
 	exit;
 }
 
 add_action('parse_request', 'peerboard_parse_request');
 function peerboard_parse_request($request) {
+	global $peerboard_options;
 	$splitted = explode('/', $request->request);
 	if (count	($splitted) > 1) {
-		if ($splitted[0] !== 'peerboard') {
+		if ($splitted[0] != $peerboard_options['prefix']) {
 			return;
 		}
-		if ($splitted[1] != '436885871') {
+		if ($splitted[1] != $peerboard_options['community_id']) {
 			return;
 		}
 		$splitted = array_splice($splitted, 1);

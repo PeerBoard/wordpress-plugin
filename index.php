@@ -34,7 +34,7 @@ add_action( 'init', function() {
 	global $peerboard_options;
 	$options = get_option( 'peerboard_options', array() );
 	if (!array_key_exists('prefix', $options)) {
-		$options['prefix'] = 'community';
+		$options['prefix'] = 'peerboard';
 	}
 	if (!array_key_exists('expose_user_data', $options)) {
 		$options['expose_user_data'] = false;
@@ -42,12 +42,24 @@ add_action( 'init', function() {
   if (!array_key_exists('auth_token', $options)) {
     $options['auth_token'] = '';
   }
+  if (!array_key_exists('community_id', $options)) {
+    $options['community_id'] = '';
+  }
+
 	$peerboard_options = $options;
-  $peerboard_options['community_id'] = 436885871;
 });
+
+function peerboard_activation_redirect( $plugin ) {
+  global $peerboard_options;
+  if( $plugin == plugin_basename( __FILE__ ) ) {
+    exit( wp_redirect($peerboard_options['redirect']));
+  }
+}
+add_action( 'activated_plugin', 'peerboard_activation_redirect' );
 
 register_activation_hook( __FILE__, 'peerboard_plugin_activate' );
 function peerboard_plugin_activate(){
+  global $peerboard_options;
   if ( ! current_user_can( 'activate_plugins' ) )
     return;
 
@@ -66,6 +78,28 @@ function peerboard_plugin_activate(){
 		$post_id = wp_insert_post( $post_data );
 		update_option( "peerboard_post", $post_id);
 	}
+  $proxy = wp_remote_post('http://api.local.is/v1/community', array(
+    'timeout'     => 5,
+    'headers' => array(
+      "Content-type" => "application/json",
+    ),
+    'body' => json_encode(array(
+      'name' => 'wordpress community',
+      'domain' => 'wordpress.is',
+      'email' => 'anlopan@gmail.com',
+      'type' => 'wp'
+    ))
+  ));
+  if ( is_wp_error( $proxy ) ){
+    error_log($proxy);
+    return;
+	}
+  $result = json_decode(wp_remote_retrieve_body($proxy), true);
+  $peerboard_options['community_id'] = $result['id'];
+  $peerboard_options['auth_token'] = $result['auth_token'];
+  $peerboard_options['prefix'] = $result['path_prefix'];
+  $peerboard_options['redirect'] = $result['url'];
+  update_option('peerboard_options', $peerboard_options);
 }
 
 register_uninstall_hook( __FILE__, 'peerboard_plugin_uninstall' );
@@ -86,10 +120,9 @@ function peerboard_is_embed_page($prefix) {
 
 
 function peerboard_get_tail_path($prefix) {
-	$r = $_SERVER['REQUEST_URI'];
-	$prefix_part = sprintf("/%s/", $prefix);
-  $prefix_part_another = sprintf("/%s", $prefix);
-	return ($r == $prefix_part || $r == $prefix_part_another) ? "/" : str_replace($prefix_part,"",$r);
+  $r = $_SERVER['REQUEST_URI'];
+	error_log($r);
+	return "/";
 }
 
 function peerboard_get_auth_hash($params, $secret) {
@@ -164,7 +197,6 @@ add_filter('the_content', function( $content ) {
       $integration_tag_open
         data-forum-id='$community_id'
         $login_data_string
-        data-forum-prefix='$peerboard_prefix'
         data-forum-prefix-proxy='$peerboard_prefix'
         data-forum-scroll='top'
         data-forum-hide-menu
