@@ -26,14 +26,10 @@ function peerboard_field_token_cb( $args ) {
 	$token = $options['auth_token'];
 	echo "<input style='width: 300px;' name='peerboard_options[auth_token]' value='$token' />";
 
-	$embed_script_url = $options['embed_script_url'];
 	$hidden_style = 'display: none;';
 	if ($embed_script_url != NULL && $embed_script_url != '') {
 		$hidden_style = 'width: 50%;';
 	}
-	echo "<input name='peerboard_options[embed_script_url]' value='$embed_script_url' style='$hidden_style'/>";
-	$domain_activated = $options['domain_activated'];
-	echo "<input name='peerboard_options[domain_activated]' value='$domain_activated' style='display: none;'/>";
 	$community_id = $options['community_id'];
 	echo "<input name='peerboard_options[community_id]' value='$community_id' style='display: none;'/>";
 }
