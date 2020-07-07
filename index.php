@@ -30,6 +30,23 @@ function peerboard_base64url_encode($data)
   return rtrim($url, '=');
 }
 
+function peerboard_migrate_to_new_type($options) {
+  $options['migrated'] = true;
+  $token = $options['auth_token'];
+  $prefix = $options['prefix'];
+  update_option('peerboard_options', $options);
+  wp_remote_post('http://api.local.is/v1/integration', array(
+    'timeout'     => 5,
+    'headers' => array(
+      'authorization' => "Bearer $token",
+    ),
+    'body' => json_encode(array(
+      "path_prefix" => $value['prefix'],
+      "type" => 'wordpress',
+    ))
+  ));
+}
+
 add_action( 'init', function() {
 	global $peerboard_options;
 	$options = get_option( 'peerboard_options', array() );
@@ -44,8 +61,9 @@ add_action( 'init', function() {
   }
   if (!array_key_exists('community_id', $options)) {
     $options['community_id'] = '';
+  } else if (!array_key_exists('migrated', $options)){
+    peerboard_migrate_to_new_type($options);
   }
-
 	$peerboard_options = $options;
 });
 
@@ -99,6 +117,7 @@ function peerboard_plugin_activate(){
   $peerboard_options['auth_token'] = $result['auth_token'];
   $peerboard_options['prefix'] = $result['path_prefix'];
   $peerboard_options['redirect'] = $result['url'];
+  $peerboard_options['migrated'] = true;
   update_option('peerboard_options', $peerboard_options);
 }
 
