@@ -4,13 +4,13 @@ function peerboard_match_path($what, $where) {
 	return count(array_intersect($what, $where)) == count($what);
 }
 
-function peerboard_proxy_graphql($target) {
+function peerboard_proxy_graphql($target, $token) {
 	$headers = getallheaders();
 	$settings = array(
 		'timeout'     => 5,
 		'body' 				=> file_get_contents('php://input'),
 		'headers'			=> array(
-			"Origin" => "wordpress",
+			"Authorization" => "$token",
 			"Content-type" => "application/json",
 			"Content-length" => $headers['Content-Length'],
 		),
@@ -27,11 +27,11 @@ function peerboard_proxy_graphql($target) {
 	exit;
 }
 
-function peerboard_proxy_login($target) {
+function peerboard_proxy_login($target,$token) {
 	$proxy = wp_remote_get($target, array(
 		'timeout'     => 5,
 		'headers'			=> array(
-			"Origin" => "wordpress",
+			"Authorization" => "$token",
 		),
 	));
 	// Means that there was a problem on wordpress side
@@ -70,21 +70,17 @@ function peerboard_parse_request($request) {
 
 		// Proxy graphql requests
 		if (peerboard_match_path(array('api','v2','forum','graphql'), $splitted)) {
-			return peerboard_proxy_graphql(PEERBOARD_PROXY_URL . implode('/', $splitted));
+			return peerboard_proxy_graphql(PEERBOARD_PROXY_URL . implode('/', $splitted), $peerboard_options['auth_token']);
 		}
 
 		// Proxy login requests
 		if (peerboard_match_path(array('api','v2','forum','login'), $splitted)) {
 			$query = '?' . http_build_query($_GET);
 			$proxy_url = PEERBOARD_PROXY_URL . implode('/', $splitted) . $query;
-			return peerboard_proxy_login($proxy_url);
+			return peerboard_proxy_login($proxy_url, $peerboard_options['auth_token']);
 		}
 
-		$proxy = wp_remote_get(PEERBOARD_PROXY_URL . implode('/', $splitted), array(
-			'headers'			=> array(
-				"Origin" => "wordpress",
-			)
-		));
+		$proxy = wp_remote_get(PEERBOARD_PROXY_URL . implode('/', $splitted));
 	  if ( is_wp_error( $proxy ) ){
 	    echo $proxy->get_error_message();
 	  }
