@@ -49,7 +49,7 @@ function peerboard_proxy_login($target,$token) {
 		setcookie('wp-peerboard-auth', $cookie->value, 0, '/', $domain, false, true);
 	}
 
-	$redirect = wp_remote_retrieve_body($proxy);
+	$redirect = str_replace(array("\r", "\n"), '', wp_remote_retrieve_body($proxy));
 	//error_log(print_r($proxy, 1));
 	header("Location: $redirect");
 	exit;
