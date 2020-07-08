@@ -35,7 +35,6 @@ function peerboard_proxy_login($target,$token) {
 		),
 	));
 	// Means that there was a problem on wordpress side
-
 	if ( is_wp_error( $proxy ) ){
 		error_log("proxy login wp-error:" . $proxy->get_error_message());
 	}
