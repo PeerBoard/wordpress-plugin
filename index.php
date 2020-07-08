@@ -183,7 +183,5 @@ add_action('pre_update_option_peerboard_options', function( $value, $old_value, 
       peerboard_post_integration($value['auth_token'], $value['prefix']);
     }
   }
-  error_log("VALUE!!!");
-  error_log(print_r($value, true));
   return $value;
 }, 10, 3);

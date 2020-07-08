@@ -55,6 +55,46 @@ function peerboard_proxy_login($target,$token) {
 	exit;
 }
 
+function peerboard_proxy_file_post($target, $token) {
+	$ch = curl_init();
+	$headers = array(
+		'Authorization: '. $token,
+	);
+	if (isset($_COOKIE['wp-peerboard-auth'])) {
+		$headers[] =  'Cookie: forum.auth.v2=' . $_COOKIE['wp-peerboard-auth'];
+	}
+
+	$file = $_FILES['data'];
+	$cfile = new \CURLFile($file['tmp_name'], $file['type']);
+
+	$post = array('data' => $cfile, 'type' => 'post_attachment');
+	curl_setopt_array($ch, array(
+		CURLOPT_RETURNTRANSFER => true,
+		CURLOPT_HTTPHEADER     => $headers,
+		CURLOPT_POST 					 => true,
+		CURLOPT_URL            => $target,
+		CURLOPT_POSTFIELDS     => $post,
+	));
+
+	$result = curl_exec($ch);
+	curl_close($ch);
+	echo $result;
+	exit;
+}
+
+function peerboard_proxy_get($splitted) {
+	$proxy = wp_remote_get(PEERBOARD_PROXY_URL . implode('/', $splitted));
+	if ( is_wp_error( $proxy ) ){
+		echo $proxy->get_error_message();
+	}
+	$response_headers = $proxy['headers']->getAll();
+	if (array_key_exists('content-type', $response_headers)) {
+		header('Content-Type: ', $response_headers['content-type']);
+	}
+	echo wp_remote_retrieve_body($proxy);
+	exit;
+}
+
 add_action('parse_request', 'peerboard_parse_request');
 function peerboard_parse_request($request) {
 	global $peerboard_options;
@@ -80,12 +120,11 @@ function peerboard_parse_request($request) {
 			return peerboard_proxy_login($proxy_url, $peerboard_options['auth_token']);
 		}
 
-		$proxy = wp_remote_get(PEERBOARD_PROXY_URL . implode('/', $splitted));
-	  if ( is_wp_error( $proxy ) ){
-	    echo $proxy->get_error_message();
-	  }
-		echo wp_remote_retrieve_body($proxy);
-		exit;
+		if (peerboard_match_path(array('file'), $splitted) && $_SERVER['REQUEST_METHOD'] === 'POST') {
+			return peerboard_proxy_file_post(PEERBOARD_PROXY_URL . implode('/', $splitted), $peerboard_options['auth_token']);
+		}
+
+		return peerboard_proxy_get($splitted);
 	}
 	global $wp_rewrite;
 	$rewrite = $wp_rewrite->wp_rewrite_rules();
