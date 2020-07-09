@@ -36,12 +36,6 @@ function peerboard_base64url_encode($data)
   return rtrim($url, '=');
 }
 
-function peerboard_migrate_to_new_type($options) {
-  $options['migrated'] = true;
-  update_option('peerboard_options', $options);
-  peerboard_post_integration($options['auth_token'], $options['prefix']);
-}
-
 function peerboard_is_embed_page($prefix) {
   return (get_the_ID() == get_option("peerboard_post")) || (substr($_SERVER['REQUEST_URI'],0,strlen($prefix) + 1) == "/" . $prefix);
 }
@@ -66,11 +60,17 @@ function peerboard_get_options($data) {
   if ($data === false) {
     return;
   }
+  $integration_type = $data['integration_type'];
+  $mode = 'proxy';
+  if ($integration_type === 'sdk') {
+    $mode = 'sdk';
+  }
+
   return array(
     'community_id' => $data['id'],
     'auth_token' => $data['auth_token'],
     'prefix' => $data['path_prefix'],
     'redirect' => $data['url'],
-    'migrated' => true,
+    'mode' => $mode,
   );
 }
