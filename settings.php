@@ -32,6 +32,8 @@ function peerboard_field_token_cb( $args ) {
 	}
 	$community_id = $options['community_id'];
 	echo "<input name='peerboard_options[community_id]' value='$community_id' style='display: none;'/>";
+	$mode = $options['mode'];
+	echo "<input name='peerboard_options[mode]' value='$mode' style='display: none;'/>";
 }
 
 function peerboard_field_expose_cb( $args ) {
