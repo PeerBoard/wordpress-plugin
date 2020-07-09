@@ -22,17 +22,17 @@ function peerboard_field_prefix_cb( $args ) {
 }
 
 function peerboard_field_token_cb( $args ) {
-	$options = get_option( 'peerboard_options' );
-	$token = $options['auth_token'];
+	global $peerboard_options;
+	$token = $peerboard_options['auth_token'];
 	echo "<input style='width: 300px;' name='peerboard_options[auth_token]' value='$token' />";
 
 	$hidden_style = 'display: none;';
 	if ($embed_script_url != NULL && $embed_script_url != '') {
 		$hidden_style = 'width: 50%;';
 	}
-	$community_id = $options['community_id'];
+	$community_id = $peerboard_options['community_id'];
 	echo "<input name='peerboard_options[community_id]' value='$community_id' style='display: none;'/>";
-	$mode = $options['mode'];
+	$mode = $peerboard_options['mode'];
 	echo "<input name='peerboard_options[mode]' value='$mode' style='display: none;'/>";
 }
 
