@@ -6,9 +6,9 @@ Description: Forum, Community & User Profile Plugin
 Version: 0.2.7
 Author: <a href='https://peerboard.io' target='_blank'>Peerboard</a>, forumplugin
 */
-DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.dev/embed/embed.js');
-DEFINE('PEERBOARD_PROXY_URL', 'https://peerboard.dev/');
-DEFINE('PEERBOARD_API_BASE', 'https://api.peerboard.dev/v1/');
+DEFINE('PEERBOARD_EMBED_URL', 'https://peerboard.org/embed/embed.js');
+DEFINE('PEERBOARD_PROXY_URL', 'https://peerboard.org/');
+DEFINE('PEERBOARD_API_BASE', 'https://api.peerboard.org/v1/');
 
 require_once plugin_dir_path(__FILE__)."functions.php";
 require_once plugin_dir_path(__FILE__)."settings.php";
