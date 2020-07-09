@@ -1,5 +1,23 @@
 <?php
-
+function peerboard_bloginfo_array() {
+    $fields = array('name', 'wpurl', 'admin_email');
+    $data = array();
+    foreach($fields as $field) {
+      $field_data = get_bloginfo($field);
+      if ($field === 'wpurl') {
+        $field_data = explode('://', $field_data);
+        $field_data = str_replace("www.", "", $field_data[1]);
+      }
+      $data[$field] = $field_data;
+    }
+    $data['type'] = 'wordpress';
+    return array(
+      'name' => $data['name'],
+      'domain' => $data['wpurl'],
+      'email' => $data['admin_email'],
+      'type' => 'wordpress',
+    );
+}
 
 function peerboard_base64url_encode($data)
 {
