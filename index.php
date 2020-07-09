@@ -6,9 +6,9 @@ Description: Forum, Community & User Profile Plugin
 Version: 0.2.7
 Author: <a href='https://peerboard.io' target='_blank'>Peerboard</a>, forumplugin
 */
-DEFINE('PEERBOARD_EMBED_URL', 'http://static.local.is/embed/embed.js');
-DEFINE('PEERBOARD_PROXY_URL', 'http://local.is/');
-DEFINE('PEERBOARD_API_BASE', 'http://api.local.is/v1/');
+DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.dev/embed/embed.js');
+DEFINE('PEERBOARD_PROXY_URL', 'https://peerboard.dev/');
+DEFINE('PEERBOARD_API_BASE', 'https://api.peerboard.dev/v1/');
 
 require_once plugin_dir_path(__FILE__)."functions.php";
 require_once plugin_dir_path(__FILE__)."settings.php";
@@ -138,7 +138,7 @@ add_filter('the_content', function( $content ) {
 		if ($peerboard_mode === 'sdk') {
 			$url_parts = explode('://', get_home_url());
 	    $domain = str_replace("www.", "", $url_parts[1]);
-	    $base_url = 'http://peerboard.'.$domain;
+	    $base_url = 'https://peerboard.'.$domain;
 			$prefix_string = "data-forum-prefix='$peerboard_prefix'";
 		} else {
 			$prefix_string = "data-forum-prefix-proxy='$peerboard_prefix'";
