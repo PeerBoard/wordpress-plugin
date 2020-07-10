@@ -3,51 +3,44 @@
 Plugin Name: WordPress Forum Plugin – PeerBoard
 Plugin URI: https://peerboard.io
 Description: Forum, Community & User Profile Plugin
-Version: 0.2.5
+Version: 0.2.8
 Author: <a href='https://peerboard.io' target='_blank'>Peerboard</a>, forumplugin
 */
-DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.org/embed/embed.js');
+DEFINE('PEERBOARD_EMBED_URL', 'https://peerboard.com/embed/embed.js');
+DEFINE('PEERBOARD_PROXY_URL', 'https://peerboard.com/');
+DEFINE('PEERBOARD_API_BASE', 'https://api.peerboard.com/v1/');
 
-require(plugin_dir_path(__FILE__)."settings.php");
-require(plugin_dir_path(__FILE__)."analytics.php");
-
-function peerboard_base64url_encode($data)
-{
-  // First of all you should encode $data to Base64 string
-  $b64 = base64_encode($data);
-
-  // Make sure you get a valid result, otherwise, return FALSE, as the base64_encode() function do
-  if ($b64 === false) {
-    return false;
-  }
-
-  // Convert Base64 to Base64URL by replacing “+” with “-” and “/” with “_”
-  $url = strtr($b64, '+/', '-_');
-
-  // Remove padding character from the end of line and return the Base64URL result
-  return rtrim($url, '=');
-}
+require_once plugin_dir_path(__FILE__)."functions.php";
+require_once plugin_dir_path(__FILE__)."settings.php";
+require_once plugin_dir_path(__FILE__)."analytics.php";
+require_once plugin_dir_path(__FILE__)."proxy.php";
+require_once plugin_dir_path(__FILE__)."api.php";
 
 add_action( 'init', function() {
 	global $peerboard_options;
-	$options = get_option( 'peerboard_options', array() );
-	if (!array_key_exists('prefix', $options)) {
-		$options['prefix'] = 'community';
+	$peerboard_options = get_option( 'peerboard_options', array() );
+	if (!array_key_exists('mode', $peerboard_options)) {
+		$peerboard_options['mode'] = 'sdk';
 	}
-	if (!array_key_exists('expose_user_data', $options)) {
-		$options['expose_user_data'] = false;
-	}
-  if (!array_key_exists('auth_token', $options)) {
-    $options['auth_token'] = '';
-  }
-  if (!array_key_exists('domain_activated', $options)) {
-    $options['domain_activated'] = '';
-  }
-	$peerboard_options = $options;
 });
 
-register_activation_hook( __FILE__, 'peerboard_plugin_activate' );
-function peerboard_plugin_activate(){
+add_action( 'activated_plugin', function( $plugin ) {
+  global $peerboard_options;
+  $peerboard_options = get_option( 'peerboard_options', array() );
+  if (count($peerboard_options) === 0) {
+    $result = peerboard_create_community();
+    $peerboard_options = peerboard_get_options($result);
+    update_option('peerboard_options', $peerboard_options);
+  }
+  if( $plugin == plugin_basename( __FILE__ ) && array_key_exists('redirect', $peerboard_options)) {
+    if ($peerboard_options['redirect']) {
+      exit( wp_redirect($peerboard_options['redirect']));
+    }
+  }
+});
+
+function peerboard_install() {
+  global $peerboard_options;
   if ( ! current_user_can( 'activate_plugins' ) )
     return;
 
@@ -68,11 +61,8 @@ function peerboard_plugin_activate(){
 	}
 }
 
-register_uninstall_hook( __FILE__, 'peerboard_plugin_uninstall' );
-function peerboard_plugin_uninstall(){
-  if ( ! current_user_can( 'activate_plugins' ) )
-    return;
-
+function peerboard_uninstall() {
+  if ( ! current_user_can( 'activate_plugins' ) ) return;
   $post_id = get_option('peerboard_post');
   wp_delete_post($post_id, true);
   delete_option('peerboard_post');
@@ -80,85 +70,15 @@ function peerboard_plugin_uninstall(){
   peerboard_send_analytics('uninstall_plugin');
 }
 
-
-function peerboard_is_embed_page($prefix) {
-  return (get_the_ID() == get_option("peerboard_post")) || (substr($_SERVER['REQUEST_URI'],0,strlen($prefix) + 1) == "/" . $prefix);
-}
-
-function peerboard_get_tail_path($prefix) {
-	$r = $_SERVER['REQUEST_URI'];
-	$prefix_part = sprintf("/%s/", $prefix);
-  $prefix_part_another = sprintf("/%s", $prefix);
-	return ($r == $prefix_part || $r == $prefix_part_another) ? "/" : str_replace($prefix_part,"",$r);
-}
-
-function peerboard_get_auth_hash($params, $secret) {
-  $strings = array();
-  foreach ($params as $key => $value) {
-    $strings[] = $key . '=' . $value;
-  }
-  sort($strings);
-  return hash_hmac('sha256', implode("\n", $strings), hash('sha256', $secret, true));
-}
-
-function peerboard_process_domain_activation($peerboard_options) {
-  $override_url = $peerboard_options['embed_script_url'];
-  $auth_token = $peerboard_options['auth_token'];
-  echo "PeerBoard integration status:<br/>";
-  if ($auth_token == '') {
-    return "PeerBoard plugin is connected. To continue the setup process please set your PeerBoard community auth token (can be found in Settings → Integrations) in WordPress plugin settings for PeerBoard.";
-  }
-  $api_url = 'https://api.peerboard.org/integration';
-  if ($override_url != NULL && $override_url != '') {
-    if ($override_url == 'http://static.local.is/embed/embed.js') {
-      // Change this val for local testing
-      $peerboard_options['community_id'] = 436885871;
-      $peerboard_options['domain_activated'] = '1';
-      update_option('peerboard_options', $peerboard_options);
-      return peerboard_show_readme();
-    } else {
-      $api_url = 'https://api.peerboard.dev/integration';
-    }
-  }
-  $response = wp_remote_get($api_url, array(
-    'headers' => array(
-      'authorization' => "Bearer $auth_token",
-    ),
-  ));
-  if ( is_wp_error( $response ) ){
-    echo $response->get_error_message();
-  }
-  $result = json_decode(wp_remote_retrieve_body($response), true);
-  if ($peerboard_options['community_id'] != $result['community_id']) {
-    $peerboard_options['community_id'] = $result['community_id'];
-    peerboard_send_analytics('set_auth_token', $result['community_id']);
-    update_option('peerboard_options', $peerboard_options);
-  }
-  $status = $result['status'];
-  if ($status === 3 || $status === 4) {
-    $peerboard_options['domain_activated'] = '1';
-    update_option('peerboard_options', $peerboard_options);
-    echo "Congratulations, it's done! You finished the setup and should get access to your embedded PeerBoard after page refresh!<br/>If you still don't see it, it may be a DNS propagation issue, allow it a few minutes to resolve.<br/><br/>";
-  } else {
-    $left_replaced = str_replace(" **", " <b>", $result['status_text']);
-    $right_replaced = str_replace("** ", "</b> ", $left_replaced);
-    echo str_replace("**.","</b>", $right_replaced);
-  }
-  return peerboard_show_readme();
-}
+register_activation_hook( __FILE__, 'peerboard_install');
+register_uninstall_hook( __FILE__, 'peerboard_uninstall');
 
 add_filter('the_content', function( $content ) {
   global $peerboard_options;
   $peerboard_prefix = $peerboard_options['prefix'];
-  $override_url = $peerboard_options['embed_script_url'];
-  $domain_activated = $peerboard_options['domain_activated'];
-
+	$peerboard_mode = $peerboard_options['mode'];
   if (peerboard_is_embed_page($peerboard_prefix)) {
     $auth_token = $peerboard_options['auth_token'];
-    if ($domain_activated !== "1") {
-      return peerboard_process_domain_activation($peerboard_options);
-    }
-
     $community_id = intval($peerboard_options['community_id']);
     $user = wp_get_current_user();
 
@@ -207,42 +127,46 @@ add_filter('the_content', function( $content ) {
 
       $login_data_string = "data-forum-wp-login='$payload?$userdata'";
     }
+    remove_filter( 'the_content', 'wpautop' );
 
     $script_url = PEERBOARD_EMBED_URL;
-    if ($override_url != NULL && $override_url != '') {
-      $script_url = $override_url;
-    }
-
-    $url_parts = explode('://', get_home_url());
-    $domain = str_replace("www.", "", $url_parts[1]);
-    $base_url = 'https://peerboard.'.$domain;
     $integration_tag_open = "<script defer src='$script_url'";
     $integration_tag_close = '></script>';
-    remove_filter( 'the_content', 'wpautop' );
-    return "$content
-      $integration_tag_open
-        data-forum-id='$community_id'
-        $login_data_string
-        data-forum-prefix='$peerboard_prefix'
-        data-forum-scroll='top'
-        data-forum-hide-menu
-        data-forum-resize
-        data-forum-container-id='circles-forum'
-        data-forum-base-url='$base_url'
-      $integration_tag_close
-      <div id='circles-forum'></div>";
+
+    $base_url = get_home_url() . "/$peerboard_prefix";
+		$prefix_string = '';
+		if ($peerboard_mode === 'sdk') {
+			$url_parts = explode('://', get_home_url());
+	    $domain = str_replace("www.", "", $url_parts[1]);
+	    $base_url = 'https://peerboard.'.$domain;
+			$prefix_string = "data-forum-prefix='$peerboard_prefix'";
+		} else {
+			$prefix_string = "data-forum-prefix-proxy='$peerboard_prefix'";
+		}
+
+		return "$content
+			$integration_tag_open
+				data-forum-id='$community_id'
+				$login_data_string
+				$prefix_string
+				data-forum-scroll='top'
+				data-forum-hide-menu
+				data-forum-resize
+				data-forum-container-id='circles-forum'
+				data-forum-base-url='$base_url'
+			$integration_tag_close
+			<div id='circles-forum'></div>";
   }
   return $content;
 }, 9999999);
 
-add_action( 'wp_enqueue_scripts', 'peerboard_include_files' );
-function peerboard_include_files() {
+add_action( 'wp_enqueue_scripts', function() {
   global $peerboard_options;
 	if (peerboard_is_embed_page($peerboard_options['prefix'])) {
     wp_register_style( 'peerboard_integration_styles', plugin_dir_url(__FILE__)."/static/style.css" );
   	wp_enqueue_style( 'peerboard_integration_styles' );
 	}
-}
+});
 
 add_filter('request', function( array $query_vars ) {
 	global $peerboard_options;
@@ -253,25 +177,18 @@ add_filter('request', function( array $query_vars ) {
 });
 
 add_action('pre_update_option_peerboard_options', function( $value, $old_value, $option ) {
-  if ($old_value['prefix'] !== $value['prefix']) {
-    $override_url = $value['embed_script_url'];
-    $auth_token = $value['auth_token'];
-    $api_url = 'https://api.peerboard.org/integration';
-    if ($override_url != NULL && $override_url != '') {
-      $api_url = 'https://api.peerboard.dev/integration';
-    }
-    wp_remote_post($api_url, array(
-      'timeout'     => 5,
-      'headers' => array(
-        'authorization' => "Bearer $auth_token",
-      ),
-      'body' => json_encode(array(
-        "path_prefix" => $value['prefix'],
-      ))
-    ));
+  if ($old_value === NULL) {
+    return $value;
   }
-  if ($old_value['auth_token'] !== $value['auth_token']) {
-    $value['domain_activated'] = '';
+
+  if ($old_value['auth_token'] !== $value['auth_token'] ) {
+    $data = peerboard_get_community($value['auth_token']);
+    $value = peerboard_get_options($data);
+  }
+  if ($old_value['prefix'] !== $value['prefix']) {
+    if (array_key_exists('community_id', $value) && $value['community_id'] !== '') {
+      peerboard_post_integration($value['auth_token'], $value['prefix']);
+    }
   }
   return $value;
 }, 10, 3);
