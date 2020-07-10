@@ -6,9 +6,22 @@ Description: Forum, Community & User Profile Plugin
 Version: 0.2.8
 Author: <a href='https://peerboard.io' target='_blank'>Peerboard</a>, forumplugin
 */
-DEFINE('PEERBOARD_EMBED_URL', 'https://peerboard.com/embed/embed.js');
-DEFINE('PEERBOARD_PROXY_URL', 'https://peerboard.com/');
-DEFINE('PEERBOARD_API_BASE', 'https://api.peerboard.com/v1/');
+
+$peerboard_env_mode = getenv("PEERBOARD_ENV");
+if ($peerboard_env_mode === "local") {
+	DEFINE('PEERBOARD_EMBED_URL', 'http://static.local.is/embed/embed.js');
+	DEFINE('PEERBOARD_PROXY_URL', 'http://local.is/');
+	DEFINE('PEERBOARD_API_BASE', 'http://api.local.is/v1/');
+} else if ($peerboard_env_mode === "dev") {
+	DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.dev/embed/embed.js');
+	DEFINE('PEERBOARD_PROXY_URL', 'https://peerboard.dev/');
+	DEFINE('PEERBOARD_API_BASE', 'https://api.peerboard.dev/v1/');
+} else {
+	DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.com/embed/embed.js');
+	DEFINE('PEERBOARD_PROXY_URL', 'https://peerboard.com/');
+	DEFINE('PEERBOARD_API_BASE', 'https://api.peerboard.com/v1/');
+}
+
 
 require_once plugin_dir_path(__FILE__)."functions.php";
 require_once plugin_dir_path(__FILE__)."settings.php";
