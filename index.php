@@ -20,12 +20,12 @@ if ($peerboard_env_mode === "local") {
 	DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.com/embed/embed.js');
 	DEFINE('PEERBOARD_PROXY_URL', 'https://peerboard.com/');
 	DEFINE('PEERBOARD_API_BASE', 'https://api.peerboard.com/v1/');
+	DEFINE('PEERBOARD_REDIRECT_URL', 'https://peerboard.com/getstarted');
 }
 
 
 require_once plugin_dir_path(__FILE__)."functions.php";
 require_once plugin_dir_path(__FILE__)."settings.php";
-require_once plugin_dir_path(__FILE__)."analytics.php";
 require_once plugin_dir_path(__FILE__)."proxy.php";
 require_once plugin_dir_path(__FILE__)."api.php";
 
@@ -45,19 +45,21 @@ add_action( 'activated_plugin', function( $plugin ) {
     $peerboard_options = peerboard_get_options($result);
     update_option('peerboard_options', $peerboard_options);
   }
-  if( $plugin == plugin_basename( __FILE__ ) && array_key_exists('redirect', $peerboard_options)) {
-    if ($peerboard_options['redirect']) {
-      exit( wp_redirect($peerboard_options['redirect']));
-    }
-  }
+	if( $plugin == plugin_basename( __FILE__ ) && array_key_exists('redirect', $peerboard_options)) {
+		if ($peerboard_options['redirect']) {
+			$url = $peerboard_options['redirect'];
+			if (defined(PEERBOARD_REDIRECT_URL)) {
+				$url = PEERBOARD_REDIRECT_URL . '?redirect=' . urlencode($peerboard_options['redirect']) . '&communityId=' . $peerboard_options['community_id'];
+			}
+			exit( wp_redirect($url));
+		}
+	}
 });
 
 function peerboard_install() {
   global $peerboard_options;
   if ( ! current_user_can( 'activate_plugins' ) )
     return;
-
-  peerboard_send_analytics('activate_plugin');
 
   $peerboard_post = get_option("peerboard_post");
 	if (is_null($peerboard_post) || !$peerboard_post) {
@@ -80,7 +82,6 @@ function peerboard_uninstall() {
   wp_delete_post($post_id, true);
   delete_option('peerboard_post');
   delete_option('peerboard_options');
-  peerboard_send_analytics('uninstall_plugin');
 }
 
 register_activation_hook( __FILE__, 'peerboard_install');
