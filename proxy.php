@@ -1,5 +1,4 @@
 <?php
-
 function peerboard_match_path($what, $where) {
 	return count(array_intersect($what, $where)) == count($what);
 }

@@ -42,8 +42,8 @@ function peerboard_is_embed_page($prefix) {
 
 function peerboard_get_tail_path($prefix) {
   $r = $_SERVER['REQUEST_URI'];
-	error_log($r);
-	return "/";
+  // Trim /peerboard from request - uses for login redirect
+	return substr($r, strlen($prefix) + 1);
 }
 
 function peerboard_get_auth_hash($params, $secret) {
