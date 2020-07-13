@@ -97,7 +97,6 @@ add_filter('the_content', function( $content ) {
     $community_id = intval($peerboard_options['community_id']);
     $user = wp_get_current_user();
 
-
     $payload = peerboard_base64url_encode(json_encode(
       array(
         'communityID' => $community_id,
@@ -191,6 +190,7 @@ add_filter('request', function( array $query_vars ) {
 	global $peerboard_options;
 	if (peerboard_is_embed_page($peerboard_options['prefix'])) {
 		$query_vars = array("page_id" => get_option("peerboard_post"));
+		unset($query_vars['pagename']);
 	}
 	return $query_vars;
 });
