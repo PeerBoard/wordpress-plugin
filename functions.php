@@ -37,7 +37,7 @@ function peerboard_base64url_encode($data)
 }
 
 function peerboard_is_embed_page($prefix) {
-  return (get_the_ID() == get_option("peerboard_post")) || (substr($_SERVER['REQUEST_URI'],0,strlen($prefix) + 1) == "/" . $prefix);
+  return (substr($_SERVER['REQUEST_URI'],0,strlen($prefix) + 1) == "/" . $prefix);
 }
 
 function peerboard_get_tail_path($prefix) {

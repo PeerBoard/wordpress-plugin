@@ -3,9 +3,10 @@
 Plugin Name: WordPress Forum Plugin – PeerBoard
 Plugin URI: https://peerboard.io
 Description: Forum, Community & User Profile Plugin
-Version: 0.2.8
+Version: 0.2.9
 Author: <a href='https://peerboard.io' target='_blank'>Peerboard</a>, forumplugin
 */
+DEFINE('PEERBOARD_PROXY_PATH', 'peerboard_internal');
 
 $peerboard_env_mode = getenv("PEERBOARD_ENV");
 if ($peerboard_env_mode === "local") {
@@ -96,6 +97,7 @@ add_filter('the_content', function( $content ) {
     $community_id = intval($peerboard_options['community_id']);
     $user = wp_get_current_user();
 
+
     $payload = peerboard_base64url_encode(json_encode(
       array(
         'communityID' => $community_id,
@@ -147,7 +149,9 @@ add_filter('the_content', function( $content ) {
     $integration_tag_open = "<script defer src='$script_url'";
     $integration_tag_close = '></script>';
 
-    $base_url = get_home_url() . "/$peerboard_prefix";
+
+		$proxy_prefix = PEERBOARD_PROXY_PATH;
+    $base_url = get_home_url() . "/$proxy_prefix";
 		$prefix_string = '';
 		if ($peerboard_mode === 'sdk') {
 			$url_parts = explode('://', get_home_url());
@@ -155,7 +159,8 @@ add_filter('the_content', function( $content ) {
 	    $base_url = 'https://peerboard.'.$domain;
 			$prefix_string = "data-forum-prefix='$peerboard_prefix'";
 		} else {
-			$prefix_string = "data-forum-prefix-proxy='$peerboard_prefix'";
+			$prefix_string = "data-forum-prefix='$peerboard_prefix'";
+			$prefix_string .= " data-forum-prefix-proxy='$proxy_prefix'";
 		}
 
 		return "$content

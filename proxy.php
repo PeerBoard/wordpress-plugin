@@ -98,11 +98,12 @@ function peerboard_parse_request($request) {
 	global $peerboard_options;
 	$splitted = explode('/', $request->request);
 	if (count	($splitted) > 1) {
-		if ($splitted[0] != $peerboard_options['prefix']) {
+		if ($splitted[0] != PEERBOARD_PROXY_PATH) {
 			return;
 		}
 		if ($splitted[1] != $peerboard_options['community_id']) {
-			return;
+			echo "Provide community id";
+			exit;
 		}
 		$splitted = array_splice($splitted, 1);
 
