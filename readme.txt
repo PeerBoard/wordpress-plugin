@@ -15,7 +15,7 @@ PeerBoard gives your community a home they'll love. This WordPress forum plugin 
 
 Get full access to all of your member info, contacts and stats without any restrictions.
 
-Instead of a traditional forum, PeerBoard makes it easy to stay up to date with a single Facebook-like feed. Run PeerBoard on your own custom domain/subdomain or use an alias on our Peerboard.io domain. Quickly transfer or add existing members through a simple email invite.
+Instead of a traditional forum, PeerBoard makes it easy to stay up to date with a single Facebook-like feed. Run PeerBoard on your own custom domain/subdomain or use an alias on our peerboard.com domain. Quickly transfer or add existing members through a simple email invite.
 
 PeerBoard’s modern look and feel makes it a sight to behold and delight to use for every single user.
 
@@ -51,7 +51,7 @@ No, we have built PeerBoard to be super easy to use and does not require you to 
 
 Q: Where can I see a demo?
 
-There’s a live demo [here](http://www.peerboard.io).
+There’s a live demo [here](http://www.peerboard.com).
 
 Q: Is PeerBoard mobile responsive?
 
@@ -59,11 +59,11 @@ Yes. PeerBoard is designed to adjust nicely to any screen, including phones, tab
 
 Q: How do I get support?
 
-If you have trouble with PeerBoard plugin, you can get help on the support forums [here](https://community.peerboard.io/) or just drop us an email at support@peerboard.io.
+If you have trouble with PeerBoard plugin, you can get help on the support forums [here](https://community.peerboard.com/) or just drop us an email at support@peerboard.com.
 
 Q: I have a different question than listed here.
 
-Check out our support forums [here](https://community.peerboard.io/) or send us an email at support@peerboard.io.
+Check out our support forums [here](https://community.peerboard.com/) or send us an email at support@peerboard.com.
 
 == Screenshots ==
 1. Newsfeed Style. Instead of a traditional forum, PeerBoard makes it easy to stay up to date with a single Facebook-like feed.

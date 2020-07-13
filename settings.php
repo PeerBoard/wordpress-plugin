@@ -5,7 +5,7 @@ function peerboard_integration_readme() {
 	$domain = str_replace("www.", "", $url_parts[1]);
 	$prefix = $peerboard_options['prefix'];
 	echo "You can find those values in your board settings in Integrations tab. If you don't have a board created yet, please visit ";
-	echo "<a href='https://getstarted.peerboard.io/?wordpressDomain=$domain&pathPrefix=$prefix' target='_blank'>getstarted.peerboard.io</a>";
+	echo "<a href='https://peerboard.com/getstarted?wordpressDomain=$domain&pathPrefix=$prefix' target='_blank'>peerboard.com/getstarted</a>";
 }
 
 function peerboard_options_readme() {
@@ -86,7 +86,7 @@ add_action( 'admin_init', 'peerboard_settings_init' );
 
 function peerboard_show_readme() {
 	$calendly_link = "<a href='https://peerboard.org/integration-call' target='_blank'>calendly link</a>";
-	$contact_email = "<a href='mailto:integrations@peerboard.io' target='_blank'>integrations@peerboard.io</a>";
+	$contact_email = "<a href='mailto:integrations@peerboard.com' target='_blank'>integrations@peerboard.com</a>";
 	echo "<br/><br/>If you experienced any problems during the setup, please don't hesitate to contact us at $contact_email or book a time with our specialist using this $calendly_link";
 }
 
@@ -109,7 +109,7 @@ function peerboard_options_page_html() {
 	settings_fields( 'circles' );
 	do_settings_sections( 'circles' );
 	echo "For more information please check our ";
-	echo "<a href='https://community.peerboard.io/post/396436794' target='_blank'>How-To guide for WordPress</a><br/><br/>";
+	echo "<a href='https://community.peerboard.com/post/396436794' target='_blank'>How-To guide for WordPress</a><br/><br/>";
 	peerboard_show_readme();
 	submit_button( 'Save Settings' );
 	?>

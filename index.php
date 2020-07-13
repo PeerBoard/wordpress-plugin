@@ -1,10 +1,10 @@
 <?php
 /*
 Plugin Name: WordPress Forum Plugin – PeerBoard
-Plugin URI: https://peerboard.io
+Plugin URI: https://peerboard.com
 Description: Forum, Community & User Profile Plugin
 Version: 0.2.9
-Author: <a href='https://peerboard.io' target='_blank'>Peerboard</a>, forumplugin
+Author: <a href='https://peerboard.com' target='_blank'>Peerboard</a>, forumplugin
 */
 DEFINE('PEERBOARD_PROXY_PATH', 'peerboard_internal');
 
