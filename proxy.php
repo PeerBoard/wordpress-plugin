@@ -87,8 +87,12 @@ function peerboard_proxy_get($splitted) {
 		echo $proxy->get_error_message();
 	}
 	$response_headers = $proxy['headers']->getAll();
+	echo "<!doctype html>";
 	if (array_key_exists('content-type', $response_headers)) {
 		header('Content-Type: ', $response_headers['content-type']);
+	}
+	if (array_key_exists('content-length', $response_headers)) {
+		header('Content-Length: ', $response_headers['content-length']);
 	}
 	echo wp_remote_retrieve_body($proxy);
 	exit;
