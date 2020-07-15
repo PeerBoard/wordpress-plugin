@@ -48,8 +48,6 @@ function peerboard_proxy_login($target,$token) {
 	}
 
 	$redirect = str_replace(array("\r", "\n"), '', wp_remote_retrieve_body($proxy));
-	//var_dump($redirect);
-	//error_log(print_r($proxy, 1));
 	header("Location: $redirect");
 	exit;
 }
@@ -87,12 +85,8 @@ function peerboard_proxy_get($splitted) {
 		echo $proxy->get_error_message();
 	}
 	$response_headers = $proxy['headers']->getAll();
-	echo "<!doctype html>";
-	if (array_key_exists('content-type', $response_headers)) {
-		header('Content-Type: ', $response_headers['content-type']);
-	}
-	if (array_key_exists('content-length', $response_headers)) {
-		header('Content-Length: ', $response_headers['content-length']);
+	foreach ($response_headers as $header => $value) {
+		header($header . ': ' . $value);
 	}
 	echo wp_remote_retrieve_body($proxy);
 	exit;
