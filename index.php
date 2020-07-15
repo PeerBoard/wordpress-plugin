@@ -183,7 +183,7 @@ add_filter('the_content', function( $content ) {
 add_action( 'wp_enqueue_scripts', function() {
   global $peerboard_options;
 	if (peerboard_is_embed_page($peerboard_options['prefix'])) {
-    wp_register_style( 'peerboard_integration_styles', plugin_dir_url(__FILE__)."/static/style.css" );
+    wp_register_style( 'peerboard_integration_styles', plugin_dir_url(__FILE__)."/static/style.css", array(), '0.0.2' );
   	wp_enqueue_style( 'peerboard_integration_styles' );
 	}
 });
