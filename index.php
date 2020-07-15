@@ -13,10 +13,12 @@ if ($peerboard_env_mode === "local") {
 	DEFINE('PEERBOARD_EMBED_URL', 'http://static.local.is/embed/embed.js');
 	DEFINE('PEERBOARD_PROXY_URL', 'http://local.is/');
 	DEFINE('PEERBOARD_API_BASE', 'http://api.local.is/v1/');
+	DEFINE('PEERBOARD_REDIRECT_URL', '');
 } else if ($peerboard_env_mode === "dev") {
 	DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.dev/embed/embed.js');
 	DEFINE('PEERBOARD_PROXY_URL', 'https://peerboard.dev/');
 	DEFINE('PEERBOARD_API_BASE', 'https://api.peerboard.dev/v1/');
+	DEFINE('PEERBOARD_REDIRECT_URL', '');
 } else {
 	DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.com/embed/embed.js');
 	DEFINE('PEERBOARD_PROXY_URL', 'https://peerboard.com/');
@@ -49,7 +51,7 @@ add_action( 'activated_plugin', function( $plugin ) {
 	if( $plugin == plugin_basename( __FILE__ ) && array_key_exists('redirect', $peerboard_options)) {
 		if ($peerboard_options['redirect']) {
 			$url = $peerboard_options['redirect'];
-			if (defined(PEERBOARD_REDIRECT_URL)) {
+			if (PEERBOARD_REDIRECT_URL !== '') {
 				$url = PEERBOARD_REDIRECT_URL . '?redirect=' . urlencode($peerboard_options['redirect']) . '&communityId=' . $peerboard_options['community_id'];
 			}
 			exit( wp_redirect($url));
