@@ -27,6 +27,11 @@
     max-width: 100%!important;
 }
 
+#site-content .section-inner {
+	background-color: red;
+	display: none!important;
+}
+
 article header {
 	display: none!important;
 }
