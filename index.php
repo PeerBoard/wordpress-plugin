@@ -210,7 +210,9 @@ add_action('pre_update_option_peerboard_options', function( $value, $old_value, 
   if ($old_value['auth_token'] !== $value['auth_token'] ) {
     $data = peerboard_get_community($value['auth_token']);
     $value = peerboard_get_options($data);
-		$value['prefix'] = $old_value['prefix'];
+		if ($value['prefix'] === '') {
+			$value['prefix'] = $old_value['prefix'];
+		}
 		peerboard_post_integration($value['auth_token'], $value['prefix'], peerboard_get_domain());
 		peerboard_send_analytics('set_auth_token', $value['community_id']);
   }
