@@ -1,4 +1,9 @@
 <?php
+function peerboard_get_domain() {
+  $info = peerboard_bloginfo_array();
+  return $info['domain'];
+}
+
 function peerboard_bloginfo_array() {
     $fields = array('name', 'wpurl', 'admin_email');
     $data = array();

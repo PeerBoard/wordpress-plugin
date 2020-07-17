@@ -1,11 +1,12 @@
 <?php
-function peerboard_post_integration($token, $prefix) {
+function peerboard_post_integration($token, $prefix, $domain) {
   wp_remote_post(PEERBOARD_API_BASE . 'integration', array(
     'timeout'     => 5,
     'headers' => array(
       'authorization' => "Bearer $token",
     ),
     'body' => json_encode(array(
+      "domain" => $domain,
       "path_prefix" => $prefix,
       "type" => 'wordpress',
     ))
