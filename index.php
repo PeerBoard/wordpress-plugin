@@ -31,6 +31,7 @@ require_once plugin_dir_path(__FILE__)."functions.php";
 require_once plugin_dir_path(__FILE__)."settings.php";
 require_once plugin_dir_path(__FILE__)."proxy.php";
 require_once plugin_dir_path(__FILE__)."api.php";
+require_once plugin_dir_path(__FILE__)."analytics.php";
 
 add_action( 'init', function() {
 	global $peerboard_options;
@@ -47,6 +48,7 @@ add_action( 'activated_plugin', function( $plugin ) {
     $result = peerboard_create_community();
     $peerboard_options = peerboard_get_options($result);
     update_option('peerboard_options', $peerboard_options);
+		peerboard_send_analytics('activate_plugin', $peerboard_options['community_id']);
   }
 	if( $plugin == plugin_basename( __FILE__ ) && array_key_exists('redirect', $peerboard_options)) {
 		if ($peerboard_options['redirect']) {
@@ -80,9 +82,11 @@ function peerboard_install() {
 }
 
 function peerboard_uninstall() {
+	global $peerboard_options;
   if ( ! current_user_can( 'activate_plugins' ) ) return;
   $post_id = get_option('peerboard_post');
   wp_delete_post($post_id, true);
+	peerboard_send_analytics('uninstall_plugin', $peerboard_options['community_id']);
   delete_option('peerboard_post');
   delete_option('peerboard_options');
 }
@@ -208,6 +212,7 @@ add_action('pre_update_option_peerboard_options', function( $value, $old_value, 
     $value = peerboard_get_options($data);
 		$value['prefix'] = $old_value['prefix'];
 		peerboard_post_integration($value['auth_token'], $value['prefix'], peerboard_get_domain());
+		peerboard_send_analytics('set_auth_token', $value['community_id']);
   }
   if ($old_value['prefix'] !== $value['prefix']) {
     if (array_key_exists('community_id', $value) && $value['community_id'] !== '') {
