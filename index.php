@@ -3,7 +3,7 @@
 Plugin Name: WordPress Forum Plugin – PeerBoard
 Plugin URI: https://peerboard.com
 Description: Forum, Community & User Profile Plugin
-Version: 0.3.6
+Version: 0.3.9
 Author: <a href='https://peerboard.com' target='_blank'>Peerboard</a>, forumplugin
 */
 DEFINE('PEERBOARD_PROXY_PATH', 'peerboard_internal');
@@ -154,10 +154,8 @@ add_filter('the_content', function( $content ) {
     $integration_tag_open = "<script defer src='$script_url'";
     $integration_tag_close = '></script>';
 
-
 		$proxy_prefix = PEERBOARD_PROXY_PATH;
     $base_url = get_home_url() . "/$proxy_prefix";
-		$base_url = str_replace('www.','',$base_url);
 		$prefix_string = '';
 		if ($peerboard_mode === 'sdk') {
 			$url_parts = explode('://', get_home_url());
@@ -188,7 +186,7 @@ add_filter('the_content', function( $content ) {
 add_action( 'wp_enqueue_scripts', function() {
   global $peerboard_options;
 	if (peerboard_is_embed_page($peerboard_options['prefix'])) {
-    wp_register_style( 'peerboard_integration_styles', plugin_dir_url(__FILE__)."/static/style.css", array(), '0.0.3' );
+    wp_register_style( 'peerboard_integration_styles', plugin_dir_url(__FILE__)."/static/style.css", array(), '0.0.4' );
   	wp_enqueue_style( 'peerboard_integration_styles' );
 	}
 });
