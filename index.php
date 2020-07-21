@@ -45,10 +45,10 @@ add_action( 'activated_plugin', function( $plugin ) {
   global $peerboard_options;
   $peerboard_options = get_option( 'peerboard_options', array() );
   if (count($peerboard_options) === 0) {
+		peerboard_send_analytics('activate_plugin');
     $result = peerboard_create_community();
     $peerboard_options = peerboard_get_options($result);
     update_option('peerboard_options', $peerboard_options);
-		peerboard_send_analytics('activate_plugin', $peerboard_options['community_id']);
   }
 	if( $plugin == plugin_basename( __FILE__ ) && array_key_exists('redirect', $peerboard_options)) {
 		if ($peerboard_options['redirect']) {
