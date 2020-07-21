@@ -11,6 +11,7 @@ function peerboard_bloginfo_array() {
       $field_data = get_bloginfo($field);
       if ($field === 'wpurl') {
         $field_data = explode('://', $field_data);
+        $field_data = $field_data[1];
       }
       $data[$field] = $field_data;
     }
