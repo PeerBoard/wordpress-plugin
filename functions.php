@@ -66,8 +66,8 @@ function peerboard_get_auth_hash($params, $secret) {
 }
 
 function peerboard_get_options($data) {
-  if ($data === false) {
-    return;
+  if (is_wp_error( $data )) {
+    return array("error" => $data);
   }
   $integration_type = $data['integration_type'];
   $mode = 'proxy';
