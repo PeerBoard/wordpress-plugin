@@ -19,7 +19,8 @@ function peerboard_create_community() {
     'headers' => array(
       "Content-type" => "application/json",
     ),
-    'body' => json_encode(peerboard_bloginfo_array())
+    'body' => json_encode(peerboard_bloginfo_array()),
+    'sslverify' => false,
   ));
   if ( is_wp_error( $response ) ){
     error_log(print_r($response, true));

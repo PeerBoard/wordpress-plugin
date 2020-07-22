@@ -78,8 +78,14 @@ function peerboard_proxy_file_post($target, $token) {
 	exit;
 }
 
-function peerboard_proxy_get($splitted) {
-	$proxy = wp_remote_get(PEERBOARD_PROXY_URL . implode('/', $splitted));
+function peerboard_proxy_get($splitted, $token) {
+	$proxy = wp_remote_get(PEERBOARD_PROXY_URL . implode('/', $splitted),
+		array(
+			'headers'			=> array(
+				"Authorization" => "$token",
+			),
+		)
+	);
 	if ( is_wp_error( $proxy ) ){
 		echo $proxy->get_error_message();
 	}
@@ -121,7 +127,7 @@ function peerboard_parse_request($request) {
 			return peerboard_proxy_file_post(PEERBOARD_PROXY_URL . implode('/', $splitted), $peerboard_options['auth_token']);
 		}
 
-		return peerboard_proxy_get($splitted);
+		return peerboard_proxy_get($splitted, $peerboard_options['auth_token']);
 	}
 	global $wp_rewrite;
 	$rewrite = $wp_rewrite->wp_rewrite_rules();
