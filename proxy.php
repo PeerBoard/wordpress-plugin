@@ -43,7 +43,7 @@ function peerboard_proxy_login($target,$token) {
 		$cookie = $proxy['cookies'][0];
 		$domain = str_replace("http://","",get_home_url());
 		$domain = str_replace("https://","",$domain);
-		setcookie('wp-peerboard-auth', $cookie->value, 0, '/', $domain, false, true);
+		setcookie('wp-peerboard-auth', $cookie->value, time() + 60 * 60 * 719, '/', $domain, false, true);
 	}
 
 	$redirect = str_replace(array("\r", "\n"), '', wp_remote_retrieve_body($proxy));
