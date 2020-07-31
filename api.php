@@ -7,7 +7,7 @@ function peerboard_post_integration($token, $prefix, $domain) {
     ),
     'body' => json_encode(array(
       "domain" => $domain,
-      "path_prefix" => $prefix,
+      "path" => $prefix,
       "type" => 'wordpress',
     ))
   ));

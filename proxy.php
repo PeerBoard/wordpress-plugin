@@ -19,8 +19,8 @@ function peerboard_proxy_graphql($target, $token) {
 	}
 	$proxy = wp_remote_post($target, $settings);
 	// Means that there was a problem on wordpress side
-	if ( is_wp_error( $proxy ) ){
-		echo $proxy->get_error_message();
+	if (count($proxy['cookies']) > 0) {
+		error_log(print_r($proxy['cookies'], true));
 	}
 	echo wp_remote_retrieve_body($proxy);
 	exit;
@@ -39,6 +39,7 @@ function peerboard_proxy_login($target,$token) {
 	}
 
 	if (count($proxy['cookies']) > 0) {
+		error_log(print_r($proxy['cookies'], true));
 		// As for now we sure that auth_cookie is first one
 		$cookie = $proxy['cookies'][0];
 		$domain = str_replace("http://","",get_home_url());

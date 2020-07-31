@@ -3,7 +3,7 @@
 Plugin Name: WordPress Forum Plugin – PeerBoard
 Plugin URI: https://peerboard.com
 Description: Forum, Community & User Profile Plugin
-Version: 0.4.2
+Version: 0.4.3
 Author: <a href='https://peerboard.com' target='_blank'>Peerboard</a>, forumplugin
 */
 DEFINE('PEERBOARD_PROXY_PATH', 'peerboard_internal');
@@ -46,8 +46,7 @@ add_action( 'activated_plugin', function( $plugin ) {
   $peerboard_options = get_option( 'peerboard_options', array() );
   if (count($peerboard_options) === 0) {
 		peerboard_send_analytics('activate_plugin');
-    $result = peerboard_create_community();
-    $peerboard_options = peerboard_get_options($result);
+    $peerboard_options = peerboard_get_options(peerboard_create_community());
     update_option('peerboard_options', $peerboard_options);
   }
 	if( $plugin == plugin_basename( __FILE__ ) && array_key_exists('redirect', $peerboard_options)) {
@@ -206,8 +205,7 @@ add_action('pre_update_option_peerboard_options', function( $value, $old_value, 
   }
 
   if ($old_value['auth_token'] !== $value['auth_token'] ) {
-    $data = peerboard_get_community($value['auth_token']);
-    $value = peerboard_get_options($data);
+    $value = peerboard_get_options(peerboard_get_community($value['auth_token']));
 		if ($value['prefix'] === '') {
 			$value['prefix'] = $old_value['prefix'];
 		}
