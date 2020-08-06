@@ -20,7 +20,7 @@ function peerboard_proxy_graphql($target, $token) {
 	$proxy = wp_remote_post($target, $settings);
 	// Means that there was a problem on wordpress side
 	if ( is_wp_error( $proxy ) ){
-		echo $proxy->get_error_message();
+		error_log("proxy graphql wp-error:" . $proxy->get_error_message());
 	}
 	echo wp_remote_retrieve_body($proxy);
 	exit;
@@ -79,21 +79,30 @@ function peerboard_proxy_file_post($target, $token) {
 }
 
 function peerboard_proxy_get($splitted, $token) {
-	$proxy = wp_remote_get(PEERBOARD_PROXY_URL . implode('/', $splitted),
-		array(
-			'headers'			=> array(
-				"Authorization" => "$token",
-			),
-		)
+	$ch = curl_init();
+	$headers = array(
+		'Authorization: '. $token,
 	);
-	if ( is_wp_error( $proxy ) ){
-		echo $proxy->get_error_message();
+
+	curl_setopt_array($ch, array(
+		CURLOPT_RETURNTRANSFER => true,
+		CURLOPT_HTTPHEADER     => $headers,
+		CURLOPT_HEADER 				 => true,
+		CURLOPT_POST 					 => false,
+		CURLOPT_URL            => PEERBOARD_PROXY_URL . implode('/', $splitted),
+		CURLOPT_TIMEOUT => 10
+	));
+
+	$response = curl_exec($ch);
+	$header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+	$headers_raw = substr($response, 0, $header_size);
+	$headers = explode(PHP_EOL, $headers_raw);
+	foreach ($headers as $header) {
+		header($header);
 	}
-	$response_headers = $proxy['headers']->getAll();
-	foreach ($response_headers as $header => $value) {
-		header($header . ': ' . $value);
-	}
-	echo wp_remote_retrieve_body($proxy);
+  $result = substr( $response, $header_size );
+	curl_close($ch);
+	echo $result;
 	exit;
 }
 
