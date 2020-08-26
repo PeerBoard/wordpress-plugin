@@ -1,7 +1,7 @@
 <?php
 function peerboard_get_domain() {
   $info = peerboard_bloginfo_array();
-  return $info['integration']['domain'];
+  return $info['hosting']['domain'];
 }
 
 function peerboard_bloginfo_array() {
@@ -18,8 +18,12 @@ function peerboard_bloginfo_array() {
     $data['type'] = 'wordpress';
     return array(
       'name' => $data['name'],
-      'email' => $data['admin_email'],
-      'integration' => array(
+      'admins' => array(
+        array(
+          'email' => $data['admin_email'],
+        )
+      ),
+      'hosting' => array(
         'domain' => $data['wpurl'],
         'type' => 'wordpress',
       )
@@ -71,7 +75,7 @@ function peerboard_get_options($data) {
   if (is_wp_error( $data )) {
     return array("error" => $data);
   }
-  $integration_type = $data['integration']['type'];
+  $integration_type = $data['hosting']['type'];
   $mode = 'proxy';
   if ($integration_type === 'sdk') {
     $mode = 'sdk';
@@ -80,7 +84,7 @@ function peerboard_get_options($data) {
   return array(
     'community_id' => $data['id'],
     'auth_token' => $data['auth_token'],
-    'prefix' => $data['integration']['path'],
+    'prefix' => $data['hosting']['path'],
     'redirect' => $data['url'],
     'mode' => $mode,
   );

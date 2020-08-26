@@ -3,7 +3,7 @@
 Plugin Name: WordPress Forum Plugin – PeerBoard
 Plugin URI: https://peerboard.com
 Description: Forum, Community & User Profile Plugin
-Version: 0.4.3
+Version: 0.4.4
 Author: <a href='https://peerboard.com' target='_blank'>Peerboard</a>, forumplugin
 */
 DEFINE('PEERBOARD_PROXY_PATH', 'peerboard_internal');
@@ -200,14 +200,23 @@ add_filter('request', function( array $query_vars ) {
 });
 
 add_action('pre_update_option_peerboard_options', function( $value, $old_value, $option ) {
-  if ($old_value === NULL) {
+  if ($old_value === NULL || $old_value === false) {
     return $value;
   }
 
+  error_log(print_r(array('old' => $old_value, 'new' => $value, 'option' => $option), true));
+
   if ($old_value['auth_token'] !== $value['auth_token'] ) {
-    $value = peerboard_get_options(peerboard_get_community($value['auth_token']));
+		$community = peerboard_get_community($value['auth_token']);
+    $value = peerboard_get_options($community);
+		error_log(print_r(array('response' => $value), true));
+		// Case where we are connecting blank community by auth token, that we need to reuse old prefix | 'community'
 		if ($value['prefix'] === '') {
+			if ($old_value['prefix'] === '' || $old_value['prefix'] === NULL) {
+				$old_value['prefix'] = 'community';
+			}
 			$value['prefix'] = $old_value['prefix'];
+			peerboard_post_integration($value['auth_token'], $value['prefix'], peerboard_get_domain());
 		}
 		peerboard_post_integration($value['auth_token'], $value['prefix'], peerboard_get_domain());
 		peerboard_send_analytics('set_auth_token', $value['community_id']);
