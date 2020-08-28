@@ -4,25 +4,26 @@ function peerboard_match_path($what, $where) {
 }
 
 function peerboard_proxy_graphql($target, $token) {
-	$headers = getallheaders();
-	$settings = array(
-		'timeout'     => 5,
-		'body' 				=> file_get_contents('php://input'),
-		'headers'			=> array(
-			"Authorization" => "$token",
-			"Content-type" => "application/json",
-			"Content-length" => $headers['Content-Length'],
-		),
+	$ch = curl_init();
+	$headers = array(
+		'Authorization: '. $token,
+		'Content-type: application/json',
 	);
 	if (isset($_COOKIE['wp-peerboard-auth'])) {
-		$settings['headers']['Cookie'] =  'forum.auth.v2=' . $_COOKIE['wp-peerboard-auth'];
+		$headers[] =  'Cookie: forum.auth.v2=' . $_COOKIE['wp-peerboard-auth'];
 	}
-	$proxy = wp_remote_post($target, $settings);
-	// Means that there was a problem on wordpress side
-	if ( is_wp_error( $proxy ) ){
-		error_log("proxy graphql wp-error:" . $proxy->get_error_message());
-	}
-	echo wp_remote_retrieve_body($proxy);
+
+	curl_setopt_array($ch, array(
+		CURLOPT_RETURNTRANSFER => true,
+		CURLOPT_HTTPHEADER     => $headers,
+		CURLOPT_POST 					 => true,
+		CURLOPT_POSTFIELDS     => file_get_contents('php://input'),
+		CURLOPT_URL            => $target,
+	));
+
+	$result = curl_exec($ch);
+	curl_close($ch);
+	echo $result;
 	exit;
 }
 
