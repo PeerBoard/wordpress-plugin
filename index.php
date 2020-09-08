@@ -32,6 +32,7 @@ require_once plugin_dir_path(__FILE__)."settings.php";
 require_once plugin_dir_path(__FILE__)."proxy.php";
 require_once plugin_dir_path(__FILE__)."api.php";
 require_once plugin_dir_path(__FILE__)."analytics.php";
+require_once plugin_dir_path(__FILE__)."installation.php";
 
 add_action( 'init', function() {
 	global $peerboard_options;
@@ -59,39 +60,6 @@ add_action( 'activated_plugin', function( $plugin ) {
 		}
 	}
 });
-
-function peerboard_install() {
-  global $peerboard_options;
-  if ( ! current_user_can( 'activate_plugins' ) )
-    return;
-
-  $peerboard_post = get_option("peerboard_post");
-	if (is_null($peerboard_post) || !$peerboard_post) {
-		$post_data = array(
-			'post_title'    => 'Community',
-			'post_alias'    => 'community',
-			'post_content'  => '',
-			'post_status'   => 'publish',
-			'post_type'     => 'page',
-			'post_author'   => 1
-		);
-		$post_id = wp_insert_post( $post_data );
-		update_option( "peerboard_post", $post_id);
-	}
-}
-
-function peerboard_uninstall() {
-	global $peerboard_options;
-  if ( ! current_user_can( 'activate_plugins' ) ) return;
-  $post_id = get_option('peerboard_post');
-  wp_delete_post($post_id, true);
-	peerboard_send_analytics('uninstall_plugin', $peerboard_options['community_id']);
-  delete_option('peerboard_post');
-  delete_option('peerboard_options');
-}
-
-register_activation_hook( __FILE__, 'peerboard_install');
-register_uninstall_hook( __FILE__, 'peerboard_uninstall');
 
 add_filter('the_content', function( $content ) {
   global $peerboard_options;
@@ -187,6 +155,10 @@ add_action( 'wp_enqueue_scripts', function() {
 	if (peerboard_is_embed_page($peerboard_options['prefix'])) {
     wp_register_style( 'peerboard_integration_styles', plugin_dir_url(__FILE__)."/static/style.css", array(), '0.0.4' );
   	wp_enqueue_style( 'peerboard_integration_styles' );
+		wp_enqueue_script('peerboard-integration', plugin_dir_url(__FILE__)."/static/peerboard-integration.js", '0.0.1' );
+		wp_localize_script( 'peerboard-integration', '_peerboardSettings', array(
+			'test' => 123,
+		));
 	}
 });
 
