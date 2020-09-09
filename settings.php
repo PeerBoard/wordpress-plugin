@@ -38,6 +38,12 @@ function peerboard_field_expose_cb( $args ) {
 	echo "<input name='peerboard_options[expose_user_data]' type='checkbox' value='1' $checked/>";
 }
 
+function peerboard_field_hide_header( $args ) {
+	$options = get_option( 'peerboard_options', array() );
+	$checked = (array_key_exists('hide_header', $options)) ? checked( '1', $options['hide_header'], false) : '';
+	echo "<input name='peerboard_options[hide_header]' type='checkbox' value='1' $checked/>";
+}
+
 function peerboard_settings_init() {
 	register_setting( 'circles', 'peerboard_options' );
 	add_settings_section(
@@ -74,6 +80,14 @@ function peerboard_settings_init() {
 		'expose_user_data',
 		'Automatically import first and last names',
 		'peerboard_field_expose_cb',
+		'circles',
+		'peerboard_section_options'
+	);
+
+	add_settings_field(
+		'hide_heeader',
+		'Hide peerboard header',
+		'peerboard_field_hide_header',
 		'circles',
 		'peerboard_section_options'
 	);
