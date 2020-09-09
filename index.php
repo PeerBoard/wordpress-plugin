@@ -44,7 +44,7 @@ add_action( 'init', function() {
 add_filter('the_content', function( $content ) {
 	global $peerboard_options;
 	if (peerboard_is_embed_page($peerboard_options['prefix'])) {
-		$content .= "<div id='circles-forum'></div>";
+		$content .= "<div id='peerboard-forum'></div>";
     remove_filter( 'the_content', 'wpautop' );
 	}
   return $content;

@@ -16,7 +16,7 @@ _peerboardSettings['onTitleChanged'] = (title) => window.document.title = "Forum
 _peerboardSettings['onPathChanged'] = location => history.replaceState(null, '', location);
 
 script.onload = function () {
-  let target = document.getElementById('circles-forum');
+  let target = document.getElementById('peerboard-forum');
   if (target === null) {
     // Means that we have no the_content tag
     // Just embed inside the body
