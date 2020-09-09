@@ -46,11 +46,10 @@ function peerboard_uninstall() {
   $post_id = get_option('peerboard_post');
   wp_delete_post($post_id, true);
 	peerboard_send_analytics('uninstall_plugin', $peerboard_options['community_id']);
-  // TODO: send post integration request to switch community to /id
-  // Probably send some sort of notifaction, about availability on our url
+  peerboard_drop_integration($peerboard_options['auth_token']);
   delete_option('peerboard_post');
   delete_option('peerboard_options');
 }
 
-register_activation_hook( __FILE__, 'peerboard_install');
-register_uninstall_hook( __FILE__, 'peerboard_uninstall');
+register_activation_hook( __DIR__ . '/index.php', 'peerboard_install');
+register_uninstall_hook( __DIR__ . '/index.php', 'peerboard_uninstall');
