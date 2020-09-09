@@ -3,10 +3,32 @@ script.src = _peerboardSettings['embed-url'];
 script.setAttribute("async", "");
 script.setAttribute("data-skip-init", "");
 
+const setWaitingForReady = (timeout) => new Promise((resolve, reject) => {
+  _peerboardSettings['onReady'] = () => {
+    resolve();
+  }
+  setTimeout(() => {
+    reject();
+  }, timeout)
+});
+
+_peerboardSettings['onTitleChanged'] = (title) => window.document.title = "Forum: " + title;
+_peerboardSettings['onPathChanged'] = location => history.replaceState(null, '', location);
+
 script.onload = function () {
-  // TODO: detect no id
-  // TODO: detect if went wrong loading and show alert
-  window.PeerboardSDK.createForum(_peerboardSettings['board-id'], document.getElementById('circles-forum'), _peerboardSettings)
+  let target = document.getElementById('circles-forum');
+  if (target === null) {
+    // Means that we have no the_content tag
+    // Just embed inside the body
+    target = document.body;
+    document.body.innerHTML = '';
+  }
+  // Detect that all works within 7.5 sec
+  setWaitingForReady(7500).then().catch(() => {
+    alert("Something really unexpected happened - please contact us at integrations@peerboard.com");
+  });
+
+  window.PeerboardSDK.createForum(_peerboardSettings['board-id'], target, _peerboardSettings);
 };
 
 script.onerror = function (e) {

@@ -26,7 +26,6 @@ if ($peerboard_env_mode === "local") {
 	DEFINE('PEERBOARD_REDIRECT_URL', 'https://peerboard.com/getstarted');
 }
 
-
 require_once plugin_dir_path(__FILE__)."functions.php";
 require_once plugin_dir_path(__FILE__)."settings.php";
 require_once plugin_dir_path(__FILE__)."proxy.php";
@@ -80,11 +79,14 @@ function peerboard_get_script_settings($peerboard_options) {
 	$result = array(
 		'board-id' => $community_id,
 		'prefix' => $peerboard_prefix,
-		'hideMenu' => true,
 		'resize' => true,
 		'scrollTarget' => 'top',
 		'embed-url' => PEERBOARD_EMBED_URL,
 	);
+
+	if ($peerboard_options['hide_header'] == '1') {
+		$result['hideMenu'] = true;
+	}
 
 	if ($isUserLogged) {
     $userdata = array(
@@ -147,13 +149,9 @@ add_action('pre_update_option_peerboard_options', function( $value, $old_value, 
   if ($old_value === NULL || $old_value === false) {
     return $value;
   }
-
-  error_log(print_r(array('old' => $old_value, 'new' => $value, 'option' => $option), true));
-
   if ($old_value['auth_token'] !== $value['auth_token'] ) {
 		$community = peerboard_get_community($value['auth_token']);
     $value = peerboard_get_options($community);
-		error_log(print_r(array('response' => $value), true));
 		// Case where we are connecting blank community by auth token, that we need to reuse old prefix | 'community'
 		if ($value['prefix'] === '') {
 			if ($old_value['prefix'] === '' || $old_value['prefix'] === NULL) {
