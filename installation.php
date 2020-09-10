@@ -47,6 +47,8 @@ function peerboard_uninstall() {
   wp_delete_post($post_id, true);
 	peerboard_send_analytics('uninstall_plugin', $peerboard_options['community_id']);
   peerboard_drop_integration($peerboard_options['auth_token']);
+  $board_id = $peerboard_options['community_id'];
+  echo "<script>alert('Note, that your board is still available at peerboard.com/$board_id');</script>";
   delete_option('peerboard_post');
   delete_option('peerboard_options');
 }
