@@ -100,9 +100,31 @@ function peerboard_show_readme() {
 	echo "<br/><br/>If you experienced any problems during the setup, please don't hesitate to contact us at $contact_email or book a time with our specialist using this $calendly_link";
 }
 
+
 function peerboard_options_page_html() {
 	if ( ! current_user_can( 'manage_options' ) ) {
 		return;
+	}
+	if( get_transient( 'peerboard-http-error' ) ){
+			?>
+				<div class="wrap">
+				<p>
+					Hello, because we are providing full hosting for our boards - we don't serve it for unsecure protocols, such a HTTP.
+					<br/><br/>
+					Consider switching to HTTPS - for most admin panels it's one click action.
+					<br/>
+					<b>Then reactivate plugin and thats it.</b>
+					<br/><br/>
+					Another option is to connect peerboard as a subdomain for your blog, it can be found in hosting section of your board.
+					<br/><br/>
+					If you don't have one yet - you can create it here
+					<br/><br/>
+					Will be happy to answer questions dropped to <a href="mailto:integrations@peerboard.com">integrations@peerboard.com</a>
+					<br/><br/>
+				</p>
+				</div>
+			<?php
+			return;
 	}
 	if ( isset( $_GET['settings-updated'] ) ) {
 		// add settings saved message with the class of "updated"
