@@ -30,7 +30,7 @@ function peerboard_install() {
   if ( ! current_user_can( 'activate_plugins' ) )
     return;
 
-  if (substr( get_site_url(), 0, 4 ) === "http" ) {
+  if (substr( get_site_url(), 0, 5 ) === "http:" ) {
     if (getenv("PEERBOARD_ENV") !== 'local') {
       set_transient( 'peerboard-http-error', true, 60 * 60 * 24 );
     }
