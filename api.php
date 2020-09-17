@@ -13,6 +13,18 @@ function peerboard_post_integration($token, $prefix, $domain) {
   ));
 }
 
+function peerboard_drop_integration($token) {
+  wp_remote_post(PEERBOARD_API_BASE . 'hosting', array(
+    'timeout'     => 5,
+    'headers' => array(
+      'authorization' => "Bearer $token",
+    ),
+    'body' => json_encode(array(
+      "type" => 'none'
+    ))
+  ));
+}
+
 function peerboard_create_community() {
   $response = wp_remote_post(PEERBOARD_API_BASE . 'communities', array(
     'timeout'     => 45,
