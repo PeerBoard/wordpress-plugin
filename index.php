@@ -84,7 +84,7 @@ function peerboard_get_script_settings($peerboard_options) {
 		'embed-url' => PEERBOARD_EMBED_URL,
 	);
 
-	if ($peerboard_options['hide_header'] == '1') {
+	if ($peerboard_options['show_header'] != '1') {
 		$result['hideMenu'] = true;
 	}
 

@@ -10,7 +10,7 @@ add_action( 'activated_plugin', function( $plugin ) {
   if (count($peerboard_options) === 0) {
 		peerboard_send_analytics('activate_plugin');
     $peerboard_options = peerboard_get_options(peerboard_create_community());
-    $peerboard_options['hide_header'] = '1';
+    $peerboard_options['show_header'] = '1';
     $peerboard_options['expose_user_data'] = '1';
     update_option('peerboard_options', $peerboard_options);
   }

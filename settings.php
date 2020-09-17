@@ -38,10 +38,10 @@ function peerboard_field_expose_cb( $args ) {
 	echo "<input name='peerboard_options[expose_user_data]' type='checkbox' value='1' $checked/>";
 }
 
-function peerboard_field_hide_header( $args ) {
+function peerboard_field_show_header( $args ) {
 	$options = get_option( 'peerboard_options', array() );
-	$checked = (array_key_exists('hide_header', $options)) ? checked( '1', $options['hide_header'], false) : '';
-	echo "<input name='peerboard_options[hide_header]' type='checkbox' value='1' $checked/>";
+	$checked = (array_key_exists('show_header', $options)) ? checked( '1', $options['show_header'], false) : '';
+	echo "<input name='peerboard_options[show_header]' type='checkbox' value='1' $checked/>";
 }
 
 function peerboard_settings_init() {
@@ -86,8 +86,8 @@ function peerboard_settings_init() {
 
 	add_settings_field(
 		'hide_heeader',
-		'Hide peerboard header',
-		'peerboard_field_hide_header',
+		'Show peerboard header',
+		'peerboard_field_show_header',
 		'circles',
 		'peerboard_section_options'
 	);
