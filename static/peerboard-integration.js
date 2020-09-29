@@ -23,8 +23,8 @@ script.onload = function () {
     target = document.body;
     document.body.innerHTML = '';
   }
-  // Detect that all works within 7.5 sec
-  setWaitingForReady(7500).then().catch(() => {
+  // Detect that all works within 10 sec
+  setWaitingForReady(10000).then().catch(() => {
     alert("Something really unexpected happened - please contact us at integrations@peerboard.com");
   });
 
