@@ -39,6 +39,8 @@ function peerboard_proxy_login($target,$token) {
 		error_log("proxy login wp-error:" . $proxy->get_error_message());
 	}
 
+	//error_log(print_r($proxy, true));
+
 	if (count($proxy['cookies']) > 0) {
 		// As for now we sure that auth_cookie is first one
 		$cookie = $proxy['cookies'][0];

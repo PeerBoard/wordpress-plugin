@@ -14,6 +14,7 @@ const setWaitingForReady = (timeout) => new Promise((resolve, reject) => {
 
 _peerboardSettings['onTitleChanged'] = (title) => window.document.title = "Forum: " + title;
 _peerboardSettings['onPathChanged'] = location => history.replaceState(null, '', location);
+_peerboardSettings['minHeight'] = window.innerHeight + "px";
 
 script.onload = function () {
   let target = document.getElementById('peerboard-forum');
