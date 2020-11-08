@@ -86,26 +86,18 @@ function peerboard_proxy_get($splitted, $token) {
 	$headers = array(
 		'Authorization: '. $token,
 	);
+	if (isset($_COOKIE['wp-peerboard-auth'])) {
+		$headers[] =  'Cookie: forum.auth.v2=' . $_COOKIE['wp-peerboard-auth'];
+	}
 
 	curl_setopt_array($ch, array(
-		CURLOPT_RETURNTRANSFER => true,
 		CURLOPT_HTTPHEADER     => $headers,
-		CURLOPT_HEADER 				 => true,
 		CURLOPT_POST 					 => false,
 		CURLOPT_URL            => PEERBOARD_PROXY_URL . implode('/', $splitted),
-		CURLOPT_TIMEOUT => 10
+		CURLOPT_TIMEOUT => 10,
 	));
-
-	$response = curl_exec($ch);
-	$header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-	$headers_raw = substr($response, 0, $header_size);
-	$headers = explode(PHP_EOL, $headers_raw);
-	foreach ($headers as $header) {
-		header($header);
-	}
-  $result = substr( $response, $header_size );
+	curl_exec($ch);
 	curl_close($ch);
-	echo $result;
 	exit;
 }
 
