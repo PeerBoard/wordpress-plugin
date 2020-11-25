@@ -49,9 +49,17 @@ function peerboard_proxy_login($target,$token) {
 		setcookie('wp-peerboard-auth', $cookie->value, time() + 60 * 60 * 719, '/', $domain, false, true);
 	}
 
-	$redirect = str_replace(array("\r", "\n"), '', wp_remote_retrieve_body($proxy));
-	header("Location: $redirect");
-	exit;
+
+
+	$result = str_replace(array("\r", "\n"), '', wp_remote_retrieve_body($proxy));
+	if (strpos($mystring, "/login/oauth2") === false) {
+		echo $result;
+		exit;
+	} else {
+		error_log(print_r($redirect, true));
+		header("Location: $redirect");
+		exit;
+	}
 }
 
 function peerboard_proxy_file_post($target, $token) {
