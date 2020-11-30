@@ -49,17 +49,16 @@ function peerboard_proxy_login($target,$token) {
 		setcookie('wp-peerboard-auth', $cookie->value, time() + 60 * 60 * 719, '/', $domain, false, true);
 	}
 
-
-
 	$result = str_replace(array("\r", "\n"), '', wp_remote_retrieve_body($proxy));
-	if (strpos($mystring, "/login/oauth2") === false) {
-		echo $result;
-		exit;
+
+	// If its not oath login then we just redirect by result
+	if (strpos($target, "/login/oauth2") === false) {
+		header("Location: $result");
 	} else {
-		error_log(print_r($redirect, true));
-		header("Location: $redirect");
-		exit;
+		// Else we are printing script result (redirects by frontend)
+		echo $result;
 	}
+	exit;
 }
 
 function peerboard_proxy_file_post($target, $token) {

@@ -27,6 +27,10 @@
     max-width: 100%!important;
 }
 
+.et_section_regular {
+	display: none;
+}
+
 article header {
 	display: none!important;
 }
