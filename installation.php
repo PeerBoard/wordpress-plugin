@@ -58,7 +58,7 @@ function peerboard_uninstall() {
   $post_id = get_option('peerboard_post');
   wp_delete_post($post_id, true);
   $board_id = $peerboard_options['community_id'];
-  peerboard_send_analytics('uninstall_plugin', $board_id);
+  peerboard_send_analytics('deactivate_plugin', $board_id);
   peerboard_drop_integration($peerboard_options['auth_token']);
   if( !get_transient( 'peerboard-http-error' ) ){
     echo "<script>alert(`Note, that your board is still available at peerboard.com/$board_id`)</script>";
@@ -86,4 +86,4 @@ function fx_admin_notice_example_notice(){
 }
 
 register_activation_hook( __DIR__ . '/index.php', 'peerboard_install');
-register_uninstall_hook( __DIR__ . '/index.php', 'peerboard_uninstall');
+register_deactivation_hook( __DIR__ . '/index.php', 'peerboard_uninstall');
