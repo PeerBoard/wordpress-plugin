@@ -3,7 +3,7 @@
 Plugin Name: WordPress Forum Plugin – PeerBoard
 Plugin URI: https://peerboard.com
 Description: Forum, Community & User Profile Plugin
-Version: 0.5.7
+Version: 0.5.8
 Author: <a href='https://peerboard.com' target='_blank'>Peerboard</a>, forumplugin
 */
 DEFINE('PEERBOARD_PROXY_PATH', 'peerboard_internal');
@@ -94,7 +94,7 @@ function peerboard_get_script_settings($peerboard_options) {
     $userdata = array(
       'email' =>  $user->user_email,
       'username' => $user->nickname,
-      'bio' => $user->description,
+      'bio' => urlencode($user->description),
       'photo_url' => get_avatar_url($user->user_email),
       'first_name' => '',
       'last_name' => ''
