@@ -1,7 +1,6 @@
 <?php
 add_action( 'activated_plugin', function( $plugin ) {
   global $peerboard_options;
-
   $peerboard_options = get_option( 'peerboard_options', array() );
   if (count($peerboard_options) === 0) {
 		peerboard_send_analytics('activate_plugin');

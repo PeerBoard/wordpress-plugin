@@ -44,7 +44,24 @@ add_action( 'init', function() {
 add_filter('the_content', function( $content ) {
 	global $peerboard_options;
 	if (peerboard_is_embed_page($peerboard_options['prefix'])) {
-		$content = "<div id='peerboard-forum'></div>";
+		if (substr( get_site_url(), 0, 5 ) === "http:" && getenv("PEERBOARD_ENV") !== 'local') {
+			$content = "<div id='peerboard-forum' class='disabled'>
+				Hello, because we are providing full hosting for our boards - we don't serve it for unsecure protocols, such a HTTP.
+				<br/><br/>
+				Consider switching to HTTPS - for most admin panels it's one click action.
+				<br/>
+				<b>Then reactivate plugin and thats it.</b>
+				<br/><br/>
+				Another option is to connect peerboard as a subdomain for your blog, it can be found in hosting section of your board.
+				<br/><br/>
+				If you don't have one yet - you can create it here
+				<br/><br/>
+				Will be happy to answer questions dropped to <a href='mailto:integrations@peerboard.com'>integrations@peerboard.com</a>
+				<br/><br/>
+			</div>";
+		} else {
+			$content = "<div id='peerboard-forum'></div>";
+		}
     remove_filter( 'the_content', 'wpautop' );
 	}
   return $content;
@@ -133,7 +150,7 @@ add_action( 'wp_enqueue_scripts', function() {
     wp_register_style( 'peerboard_integration_styles', plugin_dir_url(__FILE__)."/static/style.css", array(), '0.0.5' );
   	wp_enqueue_style( 'peerboard_integration_styles' );
 
-		wp_enqueue_script('peerboard-integration', plugin_dir_url(__FILE__)."/static/peerboard-integration.js", array(), '0.0.4' );
+		wp_enqueue_script('peerboard-integration', plugin_dir_url(__FILE__)."/static/peerboard-integration.js", array(), '0.0.5' );
 		wp_localize_script( 'peerboard-integration', '_peerboardSettings', peerboard_get_script_settings($peerboard_options));
 	}
 });

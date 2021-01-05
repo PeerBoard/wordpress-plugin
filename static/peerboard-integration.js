@@ -23,6 +23,10 @@ script.onload = function () {
     // Just embed inside the body
     target = document.body;
     document.body.innerHTML = '';
+  } else {
+    if (target.className === 'disabled') {
+      return;
+    }
   }
   // Detect that all works within 10 sec
   setWaitingForReady(30000).then().catch(() => {
