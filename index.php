@@ -3,7 +3,7 @@
 Plugin Name: WordPress Forum Plugin – PeerBoard
 Plugin URI: https://peerboard.com
 Description: Forum, Community & User Profile Plugin
-Version: 0.5.8
+Version: 0.6.0
 Author: <a href='https://peerboard.com' target='_blank'>Peerboard</a>, forumplugin
 */
 DEFINE('PEERBOARD_PROXY_PATH', 'peerboard_internal');
@@ -44,7 +44,7 @@ add_action( 'init', function() {
 add_filter('the_content', function( $content ) {
 	global $peerboard_options;
 	if (peerboard_is_embed_page($peerboard_options['prefix'])) {
-		$content .= "<div id='peerboard-forum'></div>";
+		$content = "<div id='peerboard-forum'></div>";
     remove_filter( 'the_content', 'wpautop' );
 	}
   return $content;
@@ -171,4 +171,27 @@ add_action('pre_update_option_peerboard_options', function( $value, $old_value, 
     }
   }
   return $value;
+}, 10, 3);
+
+add_action('pre_update_option_peerboard_users_count', function( $value, $old_value, $option ) {
+	global $peerboard_options;
+	$users = get_users();
+	$result = [];
+	foreach( $users as $user ){
+		$userdata = array(
+			'email' =>  $user->user_email,
+			'bio' => urlencode($user->description),
+			'profile_url' => get_avatar_url($user->user_email),
+			'name' => $user->nickname,
+			'last_name' => ''
+		);
+		if ($peerboard_options['expose_user_data'] == '1') {
+			$userdata['name'] = $user->first_name;
+			$userdata['last_name'] = $user->last_name;
+		}
+		$result[] = $userdata;
+	}
+	$response = peerboard_sync_users($peerboard_options['auth_token'], $result);
+	//error_log(print_r($response, true));
+  return $response['result'] + intval($value);
 }, 10, 3);
