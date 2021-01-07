@@ -48,12 +48,23 @@ function peerboard_users_sync_info( $args ) {
 		$option_count = 1;
 	}
 
+
+
 	$synced = intval($option_count);
 	$diff =  $users_count - $synced;
+	$sync_enabled = get_option('peerboard_users_sync_enabled');
+	if ($sync_enabled === '1') {
+		// 0 is a flag value for sync disable
+		$option_count = 0;
+	}
 	if ($diff !== 0) {
-		echo "You have " . $diff . " users that can be synced with peerboard.<br/>";
+		echo "You have " . $diff . " users that can be imported to PeerBoard.<br/><br/><i>Note that this will send them a welcome email and subscribe to digests.</i><br/>";
 	} else {
-		echo "All users are synchronized. Here will be a button if some diff happens.";
+		if ($option_count === 0) {
+			echo "Automatic user import is activated.<br/><br/>All WordPress registrations automatically receive welcome email and are subscribed to PeerBoard digest..<br/>";
+		} else {
+			echo "Enable automatic import of your new WordPress users to PeerBoard.<br/><br/><i>Note that they will be receiving welcome emails and get subscribed to email digests.</i><br/>";
+		}
 	}
 	echo "<input name='peerboard_users_count' style='display:none' value='$option_count' />";
 }
@@ -153,9 +164,18 @@ function peerboard_options_page_html() {
 				settings_fields( 'peerboard_users_count' );
 				do_settings_sections( 'peerboard_users_count' );
 				$users_count = (count_users())['total_users'];
-				$option_count = intval(get_option('peerboard_users_count'));
-				if ($users_count !== $option_count) {
-					submit_button( 'Synchronise users' );
+				$option_count = get_option('peerboard_users_count');
+				$sync_enabled = get_option('peerboard_users_sync_enabled');
+				if ($sync_enabled === '0') {
+					// 0 is a flag value for sync disable
+					$option_count = 0;
+				}
+				if ($option_count === false || $option_count === 0) {
+					// initial run - show button
+					submit_button( 'Activate Automatic Import' );
+				} else {
+					// auto import enabled
+					submit_button( 'Deactivate Automatic Import' );
 				}
 			?>
 		</div>

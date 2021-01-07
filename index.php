@@ -193,6 +193,15 @@ add_action('pre_update_option_peerboard_options', function( $value, $old_value, 
 add_action('pre_update_option_peerboard_users_count', function( $value, $old_value, $option ) {
 	global $peerboard_options;
 	$users = get_users();
+
+	$sync_enabled = get_option('peerboard_users_sync_enabled');
+	if ($sync_enabled === '1' && $value === 0) {
+		update_option('peerboard_users_sync_enabled', '0');
+		return $old_value;
+	}
+	if ($value === $old_value + 1) {
+		return $value;
+	}
 	$result = [];
 	foreach( $users as $user ){
 		$userdata = array(
@@ -210,5 +219,32 @@ add_action('pre_update_option_peerboard_users_count', function( $value, $old_val
 	}
 	$response = peerboard_sync_users($peerboard_options['auth_token'], $result);
 	//error_log(print_r($response, true));
+	update_option('peerboard_users_sync_enabled', '1');
+	if ($value === 0) {
+		$value = $old_value;
+	}
   return $response['result'] + intval($value);
 }, 10, 3);
+
+
+add_action( 'user_register', 'peerboard_sync_user_if_enabled' );
+function peerboard_sync_user_if_enabled( $user_id ) {
+	global $peerboard_options;
+	$sync_enabled = get_option('peerboard_users_sync_enabled');
+	if ($sync_enabled === '1') {
+		$userdata = array(
+			'email' =>  $user->user_email,
+			'bio' => urlencode($user->description),
+			'profile_url' => get_avatar_url($user->user_email),
+			'name' => $user->nickname,
+			'last_name' => ''
+		);
+		if ($peerboard_options['expose_user_data'] == '1') {
+			$userdata['name'] = $user->first_name;
+			$userdata['last_name'] = $user->last_name;
+		}
+		peerboard_create_user($peerboard_options['auth_token'], $userdata);
+		$count = intval(get_option('peerboard_users_count'));
+		update_option('peerboard_users_count', $count);
+	}
+}
