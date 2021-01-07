@@ -61,7 +61,7 @@ function peerboard_users_sync_info( $args ) {
 		echo "You have " . $diff . " users that can be imported to PeerBoard.<br/><br/><i>Note that this will send them a welcome email and subscribe to digests.</i><br/>";
 	} else {
 		if ($option_count === 0) {
-			echo "Automatic user import is activated.<br/><br/>All WordPress registrations automatically receive welcome email and are subscribed to PeerBoard digest..<br/>";
+			echo "Automatic user import is activated.<br/><br/><i>All WordPress registrations automatically receive welcome email and are subscribed to PeerBoard digest.</i><br/>";
 		} else {
 			echo "Enable automatic import of your new WordPress users to PeerBoard.<br/><br/><i>Note that they will be receiving welcome emails and get subscribed to email digests.</i><br/>";
 		}
