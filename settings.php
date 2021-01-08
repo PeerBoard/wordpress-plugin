@@ -40,8 +40,46 @@ function peerboard_field_show_header( $args ) {
 	echo "<input name='peerboard_options[show_header]' type='checkbox' value='1' $checked/>";
 }
 
+function peerboard_users_sync_info( $args ) {
+	$users_count = (count_users())['total_users'];
+
+	$option_count = get_option('peerboard_users_count');
+	if ($option_count === false) {
+		$option_count = 1;
+	}
+
+
+
+	$synced = intval($option_count);
+	$diff =  $users_count - $synced;
+	$sync_enabled = get_option('peerboard_users_sync_enabled');
+	if ($sync_enabled === '1') {
+		// 0 is a flag value for sync disable
+		$option_count = 0;
+	}
+	if ($diff !== 0) {
+		echo "You have " . $diff . " users that can be imported to PeerBoard.<br/><br/><i>Note that this will send them a welcome email and subscribe to digests.</i><br/>";
+	} else {
+		if ($option_count === 0) {
+			echo "Automatic user import is activated.<br/><br/><i>All WordPress registrations automatically receive welcome email and are subscribed to PeerBoard digest.</i><br/>";
+		} else {
+			echo "Enable automatic import of your new WordPress users to PeerBoard.<br/><br/><i>Note that they will be receiving welcome emails and get subscribed to email digests.</i><br/>";
+		}
+	}
+	echo "<input name='peerboard_users_count' style='display:none' value='$option_count' />";
+}
+
 function peerboard_settings_init() {
 	register_setting( 'circles', 'peerboard_options' );
+	register_setting( 'peerboard_users_count', 'peerboard_users_count', 'intval');
+
+	add_settings_section(
+		'peerboard_section_users_sync',
+		'Users synchronisation',
+		'peerboard_users_sync_info',
+		'peerboard_users_count'
+	);
+
 	add_settings_section(
 		'peerboard_section_integration',
 		'Integration Settings',
@@ -101,27 +139,6 @@ function peerboard_options_page_html() {
 	if ( ! current_user_can( 'manage_options' ) ) {
 		return;
 	}
-	if( get_transient( 'peerboard-http-error' ) ){
-			?>
-				<div class="wrap">
-				<p>
-					Hello, because we are providing full hosting for our boards - we don't serve it for unsecure protocols, such a HTTP.
-					<br/><br/>
-					Consider switching to HTTPS - for most admin panels it's one click action.
-					<br/>
-					<b>Then reactivate plugin and thats it.</b>
-					<br/><br/>
-					Another option is to connect peerboard as a subdomain for your blog, it can be found in hosting section of your board.
-					<br/><br/>
-					If you don't have one yet - you can create it here
-					<br/><br/>
-					Will be happy to answer questions dropped to <a href="mailto:integrations@peerboard.com">integrations@peerboard.com</a>
-					<br/><br/>
-				</p>
-				</div>
-			<?php
-			return;
-	}
 	if ( isset( $_GET['settings-updated'] ) ) {
 		// add settings saved message with the class of "updated"
 		add_settings_error( 'peerboard_messages', 'peerboard_message', __( 'Settings Saved', 'circles' ), 'updated' );
@@ -131,17 +148,36 @@ function peerboard_options_page_html() {
 	settings_errors( 'peerboard_messages' );
 	?>
 		<div class="wrap">
-		<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
-		<form action="options.php" method="post">
-	<?php
-	settings_fields( 'circles' );
-	do_settings_sections( 'circles' );
-	echo "For more information please check our ";
-	echo "<a href='https://community.peerboard.com/post/396436794' target='_blank'>How-To guide for WordPress</a><br/><br/>";
-	peerboard_show_readme();
-	submit_button( 'Save Settings' );
-	?>
-		</form>
+			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
+			<form action="options.php" method="post">
+			<?php
+				settings_fields( 'circles' );
+				do_settings_sections( 'circles' );
+				echo "For more information please check our ";
+				echo "<a href='https://community.peerboard.com/post/396436794' target='_blank'>How-To guide for WordPress</a><br/><br/>";
+				peerboard_show_readme();
+				submit_button( 'Save Settings' );
+			?>
+			</form>
+			<form action="options.php" method="post">
+			<?php
+				settings_fields( 'peerboard_users_count' );
+				do_settings_sections( 'peerboard_users_count' );
+				$users_count = (count_users())['total_users'];
+				$option_count = get_option('peerboard_users_count');
+				$sync_enabled = get_option('peerboard_users_sync_enabled');
+				if ($sync_enabled === '0') {
+					// 0 is a flag value for sync disable
+					$option_count = 0;
+				}
+				if ($option_count === false || $option_count === 0) {
+					// initial run - show button
+					submit_button( 'Activate Automatic Import' );
+				} else {
+					// auto import enabled
+					submit_button( 'Deactivate Automatic Import' );
+				}
+			?>
 		</div>
 	<?php
 }

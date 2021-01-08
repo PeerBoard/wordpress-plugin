@@ -25,6 +25,34 @@ function peerboard_drop_integration($token) {
   ));
 }
 
+function peerboard_sync_users($token, $users) {
+  $response = wp_remote_post(PEERBOARD_API_BASE . 'users/batch', array(
+    'timeout'     => 5,
+    'headers' => array(
+      'authorization' => "Bearer $token",
+    ),
+    'body' => json_encode($users)
+  ));
+  if ( is_wp_error( $response )) {
+    return $response;
+	}
+  return json_decode(wp_remote_retrieve_body($response), true);
+}
+
+function peerboard_create_user($token, $user) {
+  $response = wp_remote_post(PEERBOARD_API_BASE . 'users', array(
+    'timeout'     => 5,
+    'headers' => array(
+      'authorization' => "Bearer $token",
+    ),
+    'body' => json_encode($user)
+  ));
+  if ( is_wp_error( $response )) {
+    return $response;
+	}
+  return json_decode(wp_remote_retrieve_body($response), true);
+}
+
 function peerboard_create_community() {
   $response = wp_remote_post(PEERBOARD_API_BASE . 'communities', array(
     'timeout'     => 45,
