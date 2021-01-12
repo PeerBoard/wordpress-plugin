@@ -3,7 +3,7 @@
 Plugin Name: WordPress Forum Plugin – PeerBoard
 Plugin URI: https://peerboard.com
 Description: Forum, Community & User Profile Plugin
-Version: 0.6.0
+Version: 0.6.1
 Author: <a href='https://peerboard.com' target='_blank'>Peerboard</a>, forumplugin
 */
 DEFINE('PEERBOARD_PROXY_PATH', 'peerboard_internal');
@@ -195,13 +195,14 @@ add_action('pre_update_option_peerboard_users_count', function( $value, $old_val
 	$users = get_users();
 
 	$sync_enabled = get_option('peerboard_users_sync_enabled');
-	if ($sync_enabled === '1' && $value === 0) {
-		update_option('peerboard_users_sync_enabled', '0');
-		return $old_value;
-	}
-	if ($value === $old_value + 1) {
+	if ($sync_enabled === '1') {
+		if ($value === 0) {
+			update_option('peerboard_users_sync_enabled', '0');
+			return $old_value;
+		}
 		return $value;
 	}
+
 	$result = [];
 	foreach( $users as $user ){
 		$userdata = array(
@@ -245,6 +246,6 @@ function peerboard_sync_user_if_enabled( $user_id ) {
 		}
 		peerboard_create_user($peerboard_options['auth_token'], $userdata);
 		$count = intval(get_option('peerboard_users_count'));
-		update_option('peerboard_users_count', $count);
+		update_option('peerboard_users_count', $count + 1);
 	}
 }
