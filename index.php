@@ -184,6 +184,9 @@ add_action('pre_update_option_peerboard_options', function( $value, $old_value, 
 		$value['community_id'] = $community['id'];
 		peerboard_send_analytics('set_auth_token', $community['id']);
 		peerboard_post_integration($value['auth_token'], $value['prefix'], peerboard_get_domain());
+		if ($old_value['auth_token'] !== '' && $old_value['auth_token'] !== NULL) {
+			peerboard_drop_integration($old_value['auth_token']);
+		}
   }
 
   return $value;
