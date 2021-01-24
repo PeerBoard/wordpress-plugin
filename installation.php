@@ -4,7 +4,18 @@ add_action( 'activated_plugin', function( $plugin ) {
   $peerboard_options = get_option( 'peerboard_options', array() );
   if (count($peerboard_options) === 0) {
 		peerboard_send_analytics('activate_plugin');
-    $peerboard_options = peerboard_get_options(peerboard_create_community());
+    $peerboard_options = array();
+
+    $recovery = get_option( 'peerboard_recovery_token');
+    if ($recovery !== false && $recovery !== NULL && $recovery !== '') {
+      $peerboard_options = peerboard_get_options(peerboard_get_community($recovery));
+      $peerboard_options['prefix'] = 'community';
+      peerboard_post_integration($peerboard_options['auth_token'], $peerboard_options['prefix'], peerboard_get_domain());
+      delete_option('peerboard_recovery_token');
+    } else {
+      $peerboard_options = peerboard_get_options(peerboard_create_community());
+    }
+
     $peerboard_options['show_header'] = '1';
     $peerboard_options['expose_user_data'] = '1';
     update_option('peerboard_options', $peerboard_options);
@@ -47,6 +58,7 @@ function peerboard_uninstall() {
   peerboard_drop_integration($peerboard_options['auth_token']);
   echo "<script>alert(`Note, that your board is still available at peerboard.com/$board_id`)</script>";
 
+  update_option( "peerboard_recovery_token", $peerboard_options['auth_token']);
   delete_option('peerboard_post');
   delete_option('peerboard_options');
 }

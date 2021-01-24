@@ -75,3 +75,7 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 7. Rich user profiles. Let your members get recognized with taglines, rich bios, avatars and more.
 8. No code integration.
 9. White Label Forum. Make it a seamless part of your entire brand experience.
+
+== Changelog ==
+= 0.6.4 - 2021-01-24 =
+* Fix: plugin reactivation now uses old community instead of creating new one
