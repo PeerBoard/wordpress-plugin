@@ -77,5 +77,7 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 9. White Label Forum. Make it a seamless part of your entire brand experience.
 
 == Changelog ==
+= 0.6.5 - 2021-01-24 =
+* Fix: login out from wordpress now leads to peerboard logout
 = 0.6.4 - 2021-01-24 =
 * Fix: plugin reactivation now uses old community instead of creating new one
