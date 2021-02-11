@@ -16,7 +16,6 @@ add_action( 'activated_plugin', function( $plugin ) {
       $peerboard_options = peerboard_get_options(peerboard_create_community());
     }
 
-    $peerboard_options['show_header'] = '1';
     $peerboard_options['expose_user_data'] = '1';
     update_option('peerboard_options', $peerboard_options);
   }
