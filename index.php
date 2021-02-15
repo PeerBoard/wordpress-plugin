@@ -3,7 +3,7 @@
 Plugin Name: WordPress Forum Plugin – PeerBoard
 Plugin URI: https://peerboard.com
 Description: Forum, Community & User Profile Plugin
-Version: 0.6.7
+Version: 0.6.8
 Author: <a href='https://peerboard.com' target='_blank'>Peerboard</a>, forumplugin
 */
 DEFINE('PEERBOARD_PROXY_PATH', 'peerboard_internal');
@@ -251,5 +251,6 @@ add_action( 'wp_logout', 'peerboard_logout_user' );
 function peerboard_logout_user( $user_id ){
 	$domain = str_replace("http://","",get_home_url());
 	$domain = str_replace("https://","",$domain);
-	setcookie('wp-peerboard-auth', null, -1, '/', $domain);
+	setcookie('wp-peerboard-auth', null, -1, '/', $domain, false, false);
+	unset($_COOKIE['wp-peerboard-auth']);
 }

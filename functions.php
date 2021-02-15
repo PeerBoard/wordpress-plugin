@@ -1,4 +1,22 @@
 <?php
+
+// Used to set cookie after login - we need to do it through JS because of different proxies and cache setups
+function peerboard_set_auth_cookie($cookie, $redirect = '') {
+  echo "<script>
+  function p_b_setCookie(value) {
+    let expires = 'expires=0;';
+    if (value === '') {
+      expires = 'expires=-1;';
+    }
+    document.cookie = 'wp-peerboard-auth=' + value + '; ' + expires + ' path=/;';
+  }
+  p_b_setCookie('$cookie');";
+  if ($redirect !== '') {
+    echo "window.location.replace('$redirect');";
+  }
+  echo '</script>';
+}
+
 function peerboard_get_domain() {
   $info = peerboard_bloginfo_array();
   return $info['hosting']['domain'];

@@ -77,6 +77,8 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 9. Private or public. Control your community’s visibility, access rights and registration options.
 
 == Changelog ==
+= 0.6.8 - 2021-02-16 =
+* Fixed session related bugs
 = 0.6.7 - 2021-02-15 =
 * Path prefix change now leads to peerboard page slug change
 = 0.6.6 - 2021-02-11 =
