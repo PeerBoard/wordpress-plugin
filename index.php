@@ -3,7 +3,7 @@
 Plugin Name: WordPress Forum Plugin – PeerBoard
 Plugin URI: https://peerboard.com
 Description: Forum, Community & User Profile Plugin
-Version: 0.6.6
+Version: 0.6.7
 Author: <a href='https://peerboard.com' target='_blank'>Peerboard</a>, forumplugin
 */
 DEFINE('PEERBOARD_PROXY_PATH', 'peerboard_internal');
@@ -170,7 +170,7 @@ add_action('pre_update_option_peerboard_options', function( $value, $old_value, 
 			}
 			$value['prefix'] = $old_value['prefix'];
 		}
-
+		peerboard_update_post_slug($value['prefix']);
 		peerboard_post_integration($value['auth_token'], $value['prefix'], peerboard_get_domain());
   }
 

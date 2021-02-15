@@ -89,3 +89,10 @@ function peerboard_get_options($data) {
     'mode' => $mode,
   );
 }
+
+function peerboard_update_post_slug($slug) {
+  wp_update_post( array(
+    "ID" => get_option('peerboard_post'),
+    "post_name" => $slug,
+  ), false, false );
+}

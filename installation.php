@@ -37,7 +37,7 @@ function peerboard_install() {
 
 	$post_data = array(
 		'post_title'    => 'Community',
-		'post_alias'    => 'peerboard_internal_post',
+		'post_name'    => 'community',
 		'post_content'  => '',
 		'post_status'   => 'publish',
 		'post_type'     => 'page',
