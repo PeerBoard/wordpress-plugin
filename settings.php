@@ -35,7 +35,8 @@ function peerboard_field_expose_cb( $args ) {
 }
 
 function peerboard_users_sync_info( $args ) {
-	$users_count = (count_users())['total_users'];
+	$wp_users_count = count_users();
+	$users_count = $wp_users_count['total_users'];
 
 	$option_count = get_option('peerboard_users_count');
 	if ($option_count === false) {
@@ -149,7 +150,8 @@ function peerboard_options_page_html() {
 			<?php
 				settings_fields( 'peerboard_users_count' );
 				do_settings_sections( 'peerboard_users_count' );
-				$users_count = (count_users())['total_users'];
+				$wp_users_count = count_users();
+				$users_count = $wp_users_count['total_users'];
 				$option_count = get_option('peerboard_users_count');
 				$sync_enabled = get_option('peerboard_users_sync_enabled');
 				if ($sync_enabled === '0') {

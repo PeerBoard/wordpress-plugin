@@ -77,6 +77,8 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 9. Private or public. Control your community’s visibility, access rights and registration options.
 
 == Changelog ==
+= 0.6.9 - 2021-02-17 =
+* Minor bugfixes
 = 0.6.8 - 2021-02-16 =
 * Fixed session related bugs
 = 0.6.7 - 2021-02-15 =
