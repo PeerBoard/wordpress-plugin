@@ -6,7 +6,7 @@ function peerboard_set_auth_cookie($cookie, $redirect = '') {
   function p_b_setCookie(value) {
     let expires = 'expires=0;';
     if (value === '') {
-      expires = 'expires=-1;';
+      expires = 'expires=Thu, 01 Jan 1970 00:00:00 GMT;';
     }
     document.cookie = 'wp-peerboard-auth=' + value + '; ' + expires + ' path=/;';
   }
