@@ -60,7 +60,8 @@ function peerboard_proxy_login($target,$token) {
 	if (strpos($target, "/login/oauth2") === false) {
 		peerboard_set_auth_cookie($cookie->value, $result);
 	} else {
-		// Else we are printing script result (redirects by frontend)
+  	// otherwise we are printing script result (redirects by frontend)
+    peerboard_set_auth_cookie($cookie->value);
 		echo $result;
 	}
 	exit;
