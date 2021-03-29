@@ -9,6 +9,7 @@ function peerboard_post_integration($token, $prefix, $domain) {
       "domain" => $domain,
       "path" => $prefix,
       "type" => 'wordpress',
+      "version" => PEERBOARD_PLUGIN_VERSION
     ))
   ));
 }

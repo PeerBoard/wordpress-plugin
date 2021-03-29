@@ -22,6 +22,10 @@ function peerboard_get_domain() {
   return $info['hosting']['domain'];
 }
 
+function peerboard_get_full_domain() {
+  return get_bloginfo('wpurl');
+}
+
 function peerboard_bloginfo_array() {
     $fields = array('name', 'wpurl', 'admin_email');
     $data = array();
@@ -44,6 +48,7 @@ function peerboard_bloginfo_array() {
       'hosting' => array(
         'domain' => $data['wpurl'],
         'type' => 'wordpress',
+        'version' => PEERBOARD_PLUGIN_VERSION
       )
     );
 }

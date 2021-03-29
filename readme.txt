@@ -77,6 +77,8 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 9. Private or public. Control your community’s visibility, access rights and registration options.
 
 == Changelog ==
+= 0.7.1 - 2021-03-12 =
+* Social logins fixed
 = 0.7.0 - 2021-02-25 =
 * Login and logout reworked
 = 0.6.9 - 2021-02-17 =

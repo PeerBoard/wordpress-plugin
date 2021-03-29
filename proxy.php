@@ -1,6 +1,7 @@
 <?php
 if ( ! defined( 'DONOTCACHEPAGE' ) )
   define( 'DONOTCACHEPAGE', true );
+
 function peerboard_match_path($what, $where) {
 	return count(array_intersect($what, $where)) == count($what);
 }
@@ -12,7 +13,7 @@ function peerboard_proxy_graphql($target, $token) {
 		'Content-type: application/json',
 	);
 	if (isset($_COOKIE['wp-peerboard-auth'])) {
-		$headers[] =  'Cookie: forum.auth.v2=' . $_COOKIE['wp-peerboard-auth'];
+		$headers[] = 'Cookie: forum.auth.v2=' . $_COOKIE['wp-peerboard-auth'];
 	}
 
 	curl_setopt_array($ch, array(
@@ -29,13 +30,30 @@ function peerboard_proxy_graphql($target, $token) {
 	exit;
 }
 
-function peerboard_proxy_login($target,$token) {
-	$proxy = wp_remote_get($target, array(
-		'timeout'     => 5,
-		'headers'			=> array(
-			"Authorization" => "$token",
-		),
-	));
+function peerboard_proxy_password_login() {
+  global $peerboard_options;
+  peerboard_set_auth_cookie($_GET['token'], peerboard_get_full_domain() . "/" . $peerboard_options['prefix'] . '/login/finish?from=proxy');
+  exit;
+}
+
+function peerboard_proxy_login($target, $token, $method) {
+  $proxy = array();
+  if ($method == 'GET') {
+    $proxy = wp_remote_get($target, array(
+  		'timeout'     => 5,
+  		'headers'			=> array(
+  			"Authorization" => "$token",
+  		),
+  	));
+  } else {
+    $proxy = wp_remote_post($target, array(
+  		'timeout'     => 5,
+  		'headers'			=> array(
+  			"Authorization" => "$token",
+  		),
+  	));
+  }
+
 	// Means that there was a problem on wordpress side
 	if ( is_wp_error( $proxy ) ){
 		error_log("proxy login wp-error:" . $proxy->get_error_message());
@@ -58,6 +76,11 @@ function peerboard_proxy_login($target,$token) {
 
 	// If its not oath login then we just redirect by result
 	if (strpos($target, "/login/oauth2") === false) {
+    if ($method == 'POST') {
+      global $peerboard_options;
+      echo peerboard_get_full_domain() . "/peerboard_internal/" . $peerboard_options['community_id'] . '/proxy/login?token=' . $cookie->value;
+      exit;
+    }
 		peerboard_set_auth_cookie($cookie->value, $result);
 	} else {
   	// otherwise we are printing script result (redirects by frontend)
@@ -128,17 +151,37 @@ function peerboard_parse_request($request) {
 		}
 		$splitted = array_splice($splitted, 1);
 
+    // Proxy login requests
+		if (peerboard_match_path(array('api','v2','forum','login'), $splitted)) {
+			$query = '?' . http_build_query($_GET);
+			$proxy_url = PEERBOARD_PROXY_URL . implode('/', $splitted) . $query;
+      $method = 'GET';
+      if (isset($_GET['password'])) {
+        $method = 'POST';
+      }
+			return peerboard_proxy_login($proxy_url, $peerboard_options['auth_token'], $method);
+		}
+
 		// Proxy graphql requests
 		if (peerboard_match_path(array('api','v2','forum','graphql'), $splitted)) {
 			return peerboard_proxy_graphql(PEERBOARD_PROXY_URL . implode('/', $splitted), $peerboard_options['auth_token']);
 		}
 
-		// Proxy login requests
-		if (peerboard_match_path(array('api','v2','forum','login'), $splitted)) {
-			$query = '?' . http_build_query($_GET);
-			$proxy_url = PEERBOARD_PROXY_URL . implode('/', $splitted) . $query;
-			return peerboard_proxy_login($proxy_url, $peerboard_options['auth_token']);
+    // Proxy graphql requests
+		if (peerboard_match_path(array('api','v2','forum','graphql'), $splitted)) {
+			return peerboard_proxy_graphql(PEERBOARD_PROXY_URL . implode('/', $splitted), $peerboard_options['auth_token']);
 		}
+
+    // Proxy graphql requests
+		if (peerboard_match_path(array('api','v2','forum','reset-password'), $splitted)) {
+      $query = '?' . http_build_query($_GET);
+			$proxy_url = PEERBOARD_PROXY_URL . implode('/', $splitted) . $query;
+			return peerboard_proxy_graphql($proxy_url, $peerboard_options['auth_token']);
+		}
+
+    if (peerboard_match_path(array('proxy', 'login'), $splitted)) {
+      return peerboard_proxy_password_login();
+    }
 
 		if (peerboard_match_path(array('file'), $splitted) && $_SERVER['REQUEST_METHOD'] === 'POST') {
 			return peerboard_proxy_file_post(PEERBOARD_PROXY_URL . implode('/', $splitted), $peerboard_options['auth_token']);

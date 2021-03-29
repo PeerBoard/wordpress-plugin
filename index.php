@@ -3,10 +3,11 @@
 Plugin Name: WordPress Forum Plugin – PeerBoard
 Plugin URI: https://peerboard.com
 Description: Forum, Community & User Profile Plugin
-Version: 0.7.2
+Version: 0.7.3
 Author: <a href='https://peerboard.com' target='_blank'>Peerboard</a>, forumplugin
 */
 DEFINE('PEERBOARD_PROXY_PATH', 'peerboard_internal');
+DEFINE('PEERBOARD_PLUGIN_VERSION', '0.7.3');
 
 $peerboard_env_mode = getenv("PEERBOARD_ENV");
 if ($peerboard_env_mode === "local") {
@@ -38,6 +39,15 @@ add_action( 'init', function() {
 	$peerboard_options = get_option( 'peerboard_options', array() );
 	if (!array_key_exists('mode', $peerboard_options)) {
 		$peerboard_options['mode'] = 'sdk';
+	}
+	if (!array_key_exists('peerboard_version_synced', $peerboard_options)) {
+		peerboard_post_integration($peerboard_options['auth_token'], $peerboard_options['prefix'], peerboard_get_domain());
+		$peerboard_options['peerboard_version_synced'] = PEERBOARD_PLUGIN_VERSION;
+		update_option('peerboard_options', $peerboard_options);
+	} else if ($peerboard_options['peerboard_version_synced'] != PEERBOARD_PLUGIN_VERSION){
+		peerboard_post_integration($peerboard_options['auth_token'], $peerboard_options['prefix'], peerboard_get_domain());
+		$peerboard_options['peerboard_version_synced'] = PEERBOARD_PLUGIN_VERSION;
+		update_option('peerboard_options', $peerboard_options);
 	}
 });
 
@@ -141,8 +151,6 @@ function peerboard_get_script_settings($peerboard_options) {
 add_action( 'wp_enqueue_scripts', function() {
   global $peerboard_options;
 	if (peerboard_is_embed_page($peerboard_options['prefix'])) {
-
-
     wp_register_style( 'peerboard_integration_styles', plugin_dir_url(__FILE__)."/static/style.css", array(), '0.0.5' );
   	wp_enqueue_style( 'peerboard_integration_styles' );
 
