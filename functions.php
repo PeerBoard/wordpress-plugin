@@ -29,7 +29,8 @@ function peerboard_bloginfo_array() {
       $field_data = get_bloginfo($field);
       if ($field === 'wpurl') {
         $field_data = explode('://', $field_data);
-        $field_data = $field_data[1];
+        $field_data = explode('/', $field_data[1]);
+        $field_data = $field_data[0];
       }
       $data[$field] = $field_data;
     }
@@ -44,6 +45,7 @@ function peerboard_bloginfo_array() {
       'hosting' => array(
         'domain' => $data['wpurl'],
         'type' => 'wordpress',
+        'version' => PEERBOARD_PLUGIN_VERSION
       )
     );
 }
