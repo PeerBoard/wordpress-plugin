@@ -43,6 +43,7 @@ function peerboard_proxy_login($target,$token) {
 	}
 
 	if (count($proxy['cookies']) == 0) {
+    echo wp_remote_retrieve_body($proxy);
 		exit;
 	}
 	// As for now we sure that auth_cookie is first one
