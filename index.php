@@ -242,11 +242,12 @@ function peerboard_sync_user_if_enabled( $user_id ) {
 	global $peerboard_options;
 	$sync_enabled = get_option('peerboard_users_sync_enabled');
 	if ($sync_enabled === '1') {
+		$user = get_userdata( $user_id );
 		$userdata = array(
 			'email' =>  $user->user_email,
 			'bio' => urlencode($user->description),
 			'profile_url' => get_avatar_url($user->user_email),
-			'name' => $user->nickname,
+			'name' => $user->display_name,
 			'last_name' => ''
 		);
 		if ($peerboard_options['expose_user_data'] == '1') {
