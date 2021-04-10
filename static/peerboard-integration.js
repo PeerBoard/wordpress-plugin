@@ -25,6 +25,10 @@ function docReady(fn) {
 _peerboardSettings['onTitleChanged'] = (title) => window.document.title = "Forum: " + title;
 _peerboardSettings['onPathChanged'] = location => history.replaceState(null, '', location);
 _peerboardSettings['minHeight'] = window.innerHeight + "px";
+_peerboardSettings['onLogout'] = () => {
+  document.cookie = 'wp-peerboard-auth=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;';
+}
+
 
 script.onload = function () {
   docReady(function() {

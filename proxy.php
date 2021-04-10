@@ -1,4 +1,6 @@
 <?php
+if ( ! defined( 'DONOTCACHEPAGE' ) )
+  define( 'DONOTCACHEPAGE', true );
 function peerboard_match_path($what, $where) {
 	return count(array_intersect($what, $where)) == count($what);
 }
@@ -37,25 +39,30 @@ function peerboard_proxy_login($target,$token) {
 	// Means that there was a problem on wordpress side
 	if ( is_wp_error( $proxy ) ){
 		error_log("proxy login wp-error:" . $proxy->get_error_message());
+		exit;
 	}
 
-	//error_log(print_r($proxy, true));
-
-	if (count($proxy['cookies']) > 0) {
-		// As for now we sure that auth_cookie is first one
-		$cookie = $proxy['cookies'][0];
-		$domain = str_replace("http://","",get_home_url());
-		$domain = str_replace("https://","",$domain);
-		setcookie('wp-peerboard-auth', $cookie->value, time() + 60 * 60 * 719, '/', $domain, false, true);
+	if (count($proxy['cookies']) == 0) {
+    echo wp_remote_retrieve_body($proxy);
+		exit;
 	}
+	// As for now we sure that auth_cookie is first one
+	$cookie = $proxy['cookies'][0];
+
+	header("Expires: on, 01 Jan 1970 00:00:00 GMT");
+	header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+	header('Cache-Control: no-store, no-cache="Set-Cookie", must-revalidate, public');
+	header("Cache-Control: post-check=0, pre-check=0", false);
+	header("Pragma: no-cache");
 
 	$result = str_replace(array("\r", "\n"), '', wp_remote_retrieve_body($proxy));
 
 	// If its not oath login then we just redirect by result
 	if (strpos($target, "/login/oauth2") === false) {
-		header("Location: $result");
+		peerboard_set_auth_cookie($cookie->value, $result);
 	} else {
-		// Else we are printing script result (redirects by frontend)
+  	// otherwise we are printing script result (redirects by frontend)
+    peerboard_set_auth_cookie($cookie->value);
 		echo $result;
 	}
 	exit;

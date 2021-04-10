@@ -2,7 +2,7 @@
 Contributors: peerboard, forumplugin
 Tags: forum, plugin, wordpress forum, WordPress forum plugin, forums, community, member, user profile, user registration
 Requires at least: 5.1
-Tested up to: 5.4
+Tested up to: 5.7
 Requires PHP: 5.5
 Stable tag: trunk
 License: GPLv2
@@ -66,17 +66,36 @@ Q: I have a different question than listed here.
 Check out our support forums [here](https://community.peerboard.com/) or send us an email at support@peerboard.com.
 
 == Screenshots ==
-1. Newsfeed Style. Instead of a traditional forum, PeerBoard makes it easy to stay up to date with a single Facebook-like feed.
-2. Real-time threads. Facilitate valuable in-depth conversations with multi-level discussions.
-3. PeerBoard's modern look and feel makes it a sight to behold and delight to use for every single user.
-4. Private or public. Control your community’s visibility, access rights and registration options.
-5. Built-In CRM. Get full access to all of your member info, contacts and stats without any restrictions.
-6. Easy Email Invite. Quickly transfer or add existing members through a simple email invite.
-7. Rich user profiles. Let your members get recognized with taglines, rich bios, avatars and more.
-8. No code integration.
-9. White Label Forum. Make it a seamless part of your entire brand experience.
+1. Newsfeed style. Instead of a traditional forum, PeerBoard makes it easy to stay up to date with a single Facebook-like feed.
+2. Real-time conversations. PeerBoard updates forum pages in real time so that users can enjoy a deeper level of discussion.
+3. Modern forum software. PeerBoard’s modern look and feel make it a sight to behold and delight to use for every single user.
+4. Complete white label. Add custom colors, logos, categories, and topics to deliver a fully branded experience for every user.
+5. No-code integration. Embed PeerBoard as a fully customizable page in your WordPress configuration in 10 minutes.
+6. Robust user profiles. Allow users to create bios, receive badges, and build a history that identifies them to other members.
+7. Easy email invite. Quickly transfer or add existing members through a simple email invite.
+8. Rich editor. Allow users to create long-form content by including photos, videos, and formatted content.
+9. Private or public. Control your community’s visibility, access rights and registration options.
 
 == Changelog ==
+= 0.7.4 - 2021-04-07 =
+* Minor login fixes
+= 0.7.3 - 2021-03-29 =
+* Push plugin version to peerboard
+= 0.7.2 - 2021-03-13 =
+* Minor fixes
+= 0.7.1 - 2021-03-12 =
+* Social logins fixed
+= 0.7.0 - 2021-02-25 =
+* Login and logout reworked
+= 0.6.9 - 2021-02-17 =
+* Minor bugfixes
+= 0.6.8 - 2021-02-16 =
+* Fixed session related bugs
+= 0.6.7 - 2021-02-15 =
+* Path prefix change now leads to peerboard page slug change
+= 0.6.6 - 2021-02-11 =
+* Remove "hide header" option
+* Update plugin screenshots descriptions
 = 0.6.5 - 2021-01-24 =
 * Fix: login out from wordpress now leads to peerboard logout
 = 0.6.4 - 2021-01-24 =

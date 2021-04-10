@@ -1,4 +1,22 @@
 <?php
+
+// Used to set cookie after login - we need to do it through JS because of different proxies and cache setups
+function peerboard_set_auth_cookie($cookie, $redirect = '') {
+  echo "<script>
+  function p_b_setCookie(value) {
+    let expires = 'expires=0;';
+    if (value === '') {
+      expires = 'expires=Thu, 01 Jan 1970 00:00:00 GMT;';
+    }
+    document.cookie = 'wp-peerboard-auth=' + value + '; ' + expires + ' path=/;';
+  }
+  p_b_setCookie('$cookie');";
+  if ($redirect !== '') {
+    echo "window.location.replace('$redirect');";
+  }
+  echo '</script>';
+}
+
 function peerboard_get_domain() {
   $info = peerboard_bloginfo_array();
   return $info['hosting']['domain'];
@@ -11,7 +29,8 @@ function peerboard_bloginfo_array() {
       $field_data = get_bloginfo($field);
       if ($field === 'wpurl') {
         $field_data = explode('://', $field_data);
-        $field_data = $field_data[1];
+        $field_data = explode('/', $field_data[1]);
+        $field_data = $field_data[0];
       }
       $data[$field] = $field_data;
     }
@@ -26,6 +45,7 @@ function peerboard_bloginfo_array() {
       'hosting' => array(
         'domain' => $data['wpurl'],
         'type' => 'wordpress',
+        'version' => PEERBOARD_PLUGIN_VERSION
       )
     );
 }
@@ -88,4 +108,11 @@ function peerboard_get_options($data) {
     'redirect' => $data['url'],
     'mode' => $mode,
   );
+}
+
+function peerboard_update_post_slug($slug) {
+  wp_update_post( array(
+    "ID" => get_option('peerboard_post'),
+    "post_name" => $slug,
+  ), false, false );
 }

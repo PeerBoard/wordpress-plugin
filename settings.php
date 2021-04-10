@@ -34,14 +34,9 @@ function peerboard_field_expose_cb( $args ) {
 	echo "<input name='peerboard_options[expose_user_data]' type='checkbox' value='1' $checked/>";
 }
 
-function peerboard_field_show_header( $args ) {
-	$options = get_option( 'peerboard_options', array() );
-	$checked = (array_key_exists('show_header', $options)) ? checked( '1', $options['show_header'], false) : '';
-	echo "<input name='peerboard_options[show_header]' type='checkbox' value='1' $checked/>";
-}
-
 function peerboard_users_sync_info( $args ) {
-	$users_count = (count_users())['total_users'];
+	$wp_users_count = count_users();
+	$users_count = $wp_users_count['total_users'];
 
 	$option_count = get_option('peerboard_users_count');
 	if ($option_count === false) {
@@ -117,14 +112,6 @@ function peerboard_settings_init() {
 		'circles',
 		'peerboard_section_options'
 	);
-
-	add_settings_field(
-		'hide_heeader',
-		'Show peerboard header',
-		'peerboard_field_show_header',
-		'circles',
-		'peerboard_section_options'
-	);
 }
 add_action( 'admin_init', 'peerboard_settings_init' );
 
@@ -163,7 +150,8 @@ function peerboard_options_page_html() {
 			<?php
 				settings_fields( 'peerboard_users_count' );
 				do_settings_sections( 'peerboard_users_count' );
-				$users_count = (count_users())['total_users'];
+				$wp_users_count = count_users();
+				$users_count = $wp_users_count['total_users'];
 				$option_count = get_option('peerboard_users_count');
 				$sync_enabled = get_option('peerboard_users_sync_enabled');
 				if ($sync_enabled === '0') {
