@@ -9,12 +9,20 @@ Author: <a href='https://peerboard.com' target='_blank'>Peerboard</a>, forumplug
 DEFINE('PEERBOARD_PROXY_PATH', 'peerboard_internal');
 DEFINE('PEERBOARD_PLUGIN_VERSION', '0.7.3');
 
+function peerboard_env_helper ($env, $default) {
+    $val = getenv($env);
+    if (!$val) {
+        return $default;
+    }
+    return $val;
+}
+
 $peerboard_env_mode = getenv("PEERBOARD_ENV");
 if ($peerboard_env_mode === "local") {
-	DEFINE('PEERBOARD_EMBED_URL', 'http://static.local.is/embed/embed.js');
-	DEFINE('PEERBOARD_PROXY_URL', 'http://local.is/');
-	DEFINE('PEERBOARD_API_BASE', 'http://api.local.is/v1/');
-	DEFINE('PEERBOARD_REDIRECT_URL', '');
+	DEFINE('PEERBOARD_EMBED_URL', peerboard_env_helper('PEERBOARD_EMBED_URL', 'http://static.local.is/embed/embed.js'));
+	DEFINE('PEERBOARD_PROXY_URL', peerboard_env_helper('PEERBOARD_PROXY_URL', 'http://local.is/'));
+	DEFINE('PEERBOARD_API_BASE', peerboard_env_helper('PEERBOARD_API_BASE', 'http://api.local.is/v1/'));
+	DEFINE('PEERBOARD_REDIRECT_URL', peerboard_env_helper('PEERBOARD_REDIRECT_URL', ''));
 } else if ($peerboard_env_mode === "dev") {
 	DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.dev/embed/embed.js');
 	DEFINE('PEERBOARD_PROXY_URL', 'https://peerboard.dev/');
