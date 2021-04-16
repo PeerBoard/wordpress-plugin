@@ -21,11 +21,7 @@ add_action( 'activated_plugin', function( $plugin ) {
   }
 	if( $plugin == plugin_basename( __DIR__ . '/index.php' ) && array_key_exists('redirect', $peerboard_options)) {
 		if ($peerboard_options['redirect']) {
-			$url = $peerboard_options['redirect'];
-			if (PEERBOARD_REDIRECT_URL !== '') {
-				$url = PEERBOARD_REDIRECT_URL . '?redirect=' . urlencode($peerboard_options['redirect']) . '&communityId=' . $peerboard_options['community_id'];
-			}
-			exit( wp_redirect($url));
+			exit( wp_redirect($peerboard_options['redirect']));
 		}
 	}
 });

@@ -3,28 +3,25 @@
 Plugin Name: WordPress Forum Plugin – PeerBoard
 Plugin URI: https://peerboard.com
 Description: Forum, Community & User Profile Plugin
-Version: 0.7.4
+Version: 0.7.5
 Author: <a href='https://peerboard.com' target='_blank'>Peerboard</a>, forumplugin
 */
 DEFINE('PEERBOARD_PROXY_PATH', 'peerboard_internal');
-DEFINE('PEERBOARD_PLUGIN_VERSION', '0.7.3');
+DEFINE('PEERBOARD_PLUGIN_VERSION', '0.7.5');
 
 $peerboard_env_mode = getenv("PEERBOARD_ENV");
 if ($peerboard_env_mode === "local") {
 	DEFINE('PEERBOARD_EMBED_URL', 'http://static.local.is/embed/embed.js');
 	DEFINE('PEERBOARD_PROXY_URL', 'http://local.is/');
 	DEFINE('PEERBOARD_API_BASE', 'http://api.local.is/v1/');
-	DEFINE('PEERBOARD_REDIRECT_URL', '');
 } else if ($peerboard_env_mode === "dev") {
 	DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.dev/embed/embed.js');
 	DEFINE('PEERBOARD_PROXY_URL', 'https://peerboard.dev/');
 	DEFINE('PEERBOARD_API_BASE', 'https://api.peerboard.dev/v1/');
-	DEFINE('PEERBOARD_REDIRECT_URL', '');
 } else {
 	DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.com/embed/embed.js');
 	DEFINE('PEERBOARD_PROXY_URL', 'https://peerboard.com/');
 	DEFINE('PEERBOARD_API_BASE', 'https://api.peerboard.com/v1/');
-	DEFINE('PEERBOARD_REDIRECT_URL', 'https://peerboard.com/getstarted');
 }
 
 require_once plugin_dir_path(__FILE__)."functions.php";
