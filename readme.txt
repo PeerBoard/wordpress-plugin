@@ -1,4 +1,4 @@
-=== PeerBoard - WordPress Forum Plugin ===
+=== PeerBoard - Forum and Community Plugin ===
 Contributors: peerboard, forumplugin
 Tags: forum, forums, community, discussion, knowledge base, membership, member, profile, profiles
 Requires at least: 5.1
