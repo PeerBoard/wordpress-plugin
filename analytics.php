@@ -1,16 +1,16 @@
 <?php
 DEFINE('PEERBOARD_AMPLITUDE_ENDPOINT', 'https://api.amplitude.com/2/httpapi');
-DEFINE('PEERBOARD_AMPLITUDE_API_KEY', '58fd9c4d27c06daaed207bda06b7985c');
+$amp_api_key = getenv("PEERBOARD_AMPLITUDE_API_KEY");
+if (!$amp_api_key) {
+    $amp_api_key = '58fd9c4d27c06daaed207bda06b7985c';
+}
+DEFINE('PEERBOARD_AMPLITUDE_API_KEY', $amp_api_key);
 
 function peerboard_send_analytics($type, $community_id = 0) {
   $user = wp_get_current_user();
-  $url_parts = explode('://', get_home_url());
-  $domain = str_replace("www.", "", $url_parts[1]);
-  $domain = str_replace(".","_", $domain);
 
   $params = array(
     'event_type' => 'wordpress_' . $type,
-    'device_id' => 'wordpress_' . $domain,
     'user_properties' => array(
      'email' => $user->user_email
     )

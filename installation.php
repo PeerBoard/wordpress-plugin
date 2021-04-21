@@ -3,7 +3,6 @@ add_action( 'activated_plugin', function( $plugin ) {
   global $peerboard_options;
   $peerboard_options = get_option( 'peerboard_options', array() );
   if (count($peerboard_options) === 0) {
-		peerboard_send_analytics('activate_plugin');
     $peerboard_options = array();
 
     $recovery = get_option( 'peerboard_recovery_token');
@@ -15,6 +14,7 @@ add_action( 'activated_plugin', function( $plugin ) {
     } else {
       $peerboard_options = peerboard_get_options(peerboard_create_community());
     }
+    peerboard_send_analytics('activate_plugin', $peerboard_options["community_id"]);
 
     $peerboard_options['expose_user_data'] = '1';
     update_option('peerboard_options', $peerboard_options);
