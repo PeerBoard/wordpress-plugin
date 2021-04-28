@@ -26,7 +26,6 @@ if ($peerboard_env_mode === "local") {
 
 require_once plugin_dir_path(__FILE__)."functions.php";
 require_once plugin_dir_path(__FILE__)."settings.php";
-require_once plugin_dir_path(__FILE__)."proxy.php";
 require_once plugin_dir_path(__FILE__)."api.php";
 require_once plugin_dir_path(__FILE__)."analytics.php";
 require_once plugin_dir_path(__FILE__)."installation.php";
@@ -34,9 +33,6 @@ require_once plugin_dir_path(__FILE__)."installation.php";
 add_action( 'init', function() {
 	global $peerboard_options;
 	$peerboard_options = get_option( 'peerboard_options', array() );
-	if (!array_key_exists('mode', $peerboard_options)) {
-		$peerboard_options['mode'] = 'sdk';
-	}
 	if (!array_key_exists('peerboard_version_synced', $peerboard_options)) {
 		peerboard_post_integration($peerboard_options['auth_token'], $peerboard_options['prefix'], peerboard_get_domain());
 		$peerboard_options['peerboard_version_synced'] = PEERBOARD_PLUGIN_VERSION;
@@ -76,7 +72,6 @@ add_filter('the_content', function( $content ) {
 
 function peerboard_get_script_settings($peerboard_options) {
 	$peerboard_prefix = $peerboard_options['prefix'];
-	$peerboard_mode = $peerboard_options['mode'];
   $auth_token = $peerboard_options['auth_token'];
   $community_id = intval($peerboard_options['community_id']);
   $user = wp_get_current_user();
@@ -134,22 +129,13 @@ function peerboard_get_script_settings($peerboard_options) {
 		$result['wpPayload'] = "$payload?$userdata";
   }
 
-	if ($peerboard_mode === 'sdk') {
-		$url_parts = explode('://', get_home_url());
-    $domain = str_replace("www.", "", $url_parts[1]);
-		$resut['baseURL'] = 'https://peerboard.'.$domain;
-	} else {
-		$result['baseURL'] = get_home_url() . '/' . PEERBOARD_PROXY_PATH;
-		$result['prefixProxy'] = PEERBOARD_PROXY_PATH;
-	}
+	$result['baseURL'] = PEERBOARD_PROXY_URL;
 	return $result;
 }
 
 add_action( 'wp_enqueue_scripts', function() {
   global $peerboard_options;
 	if (peerboard_is_embed_page($peerboard_options['prefix'])) {
-
-
     wp_register_style( 'peerboard_integration_styles', plugin_dir_url(__FILE__)."/static/style.css", array(), '0.0.5' );
   	wp_enqueue_style( 'peerboard_integration_styles' );
 
@@ -255,9 +241,4 @@ function peerboard_sync_user_if_enabled( $user_id ) {
 		$count = intval(get_option('peerboard_users_count'));
 		update_option('peerboard_users_count', $count + 1);
 	}
-}
-
-add_action( 'wp_logout', 'peerboard_logout_user' );
-function peerboard_logout_user(){
-	peerboard_set_auth_cookie('', home_url());
 }
