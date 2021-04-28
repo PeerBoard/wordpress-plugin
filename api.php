@@ -10,6 +10,7 @@ function peerboard_post_integration($token, $prefix, $domain) {
       "domain" => $domain,
       "path" => $prefix,
       "type" => 'sdk',
+      "js_storage_auth" => true,
       "version" => PEERBOARD_PLUGIN_VERSION
     ))
   ));
