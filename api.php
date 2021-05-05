@@ -4,21 +4,23 @@ function peerboard_post_integration($token, $prefix, $domain) {
     'timeout'     => 5,
     'headers' => array(
       'authorization' => "Bearer $token",
+      "Partner" => "wordpress_default_partner_token"
     ),
     'body' => json_encode(array(
       "domain" => $domain,
       "path" => $prefix,
-      "type" => 'wordpress',
+      "type" => 'sdk',
+      "js_storage_auth" => true,
       "version" => PEERBOARD_PLUGIN_VERSION
     ))
   ));
 }
-
 function peerboard_drop_integration($token) {
   wp_remote_post(PEERBOARD_API_BASE . 'hosting', array(
     'timeout'     => 5,
     'headers' => array(
       'authorization' => "Bearer $token",
+      "Partner" => "wordpress_default_partner_token"
     ),
     'body' => json_encode(array(
       "type" => 'none'
@@ -31,6 +33,7 @@ function peerboard_sync_users($token, $users) {
     'timeout'     => 5,
     'headers' => array(
       'authorization' => "Bearer $token",
+      "Partner" => "wordpress_default_partner_token"
     ),
     'body' => json_encode($users)
   ));
@@ -45,6 +48,7 @@ function peerboard_create_user($token, $user) {
     'timeout'     => 5,
     'headers' => array(
       'authorization' => "Bearer $token",
+      "Partner" => "wordpress_default_partner_token"
     ),
     'body' => json_encode($user)
   ));
@@ -74,6 +78,7 @@ function peerboard_get_community($auth_token) {
   $response = wp_remote_get(PEERBOARD_API_BASE . 'communities', array(
    'headers' => array(
      'authorization' => "Bearer $auth_token",
+     "Partner" => "wordpress_default_partner_token"
    ),
   ));
   if ( is_wp_error( $response ) ){
