@@ -3,7 +3,7 @@
 Plugin Name: WordPress Forum Plugin – PeerBoard
 Plugin URI: https://peerboard.com
 Description: Forum, Community & User Profile Plugin
-Version: 0.7.6
+Version: 0.7.7
 Author: <a href='https://peerboard.com' target='_blank'>Peerboard</a>, forumplugin
 */
 DEFINE('PEERBOARD_PROXY_PATH', 'peerboard_internal');
@@ -241,4 +241,13 @@ function peerboard_sync_user_if_enabled( $user_id ) {
 		$count = intval(get_option('peerboard_users_count'));
 		update_option('peerboard_users_count', $count + 1);
 	}
+}
+
+/**
+ * Remove plugin data on plugin uninstall
+ */
+register_uninstall_hook(__FILE__, 'peerboard_uninstall');
+
+function peerboard_uninstall() {
+	delete_option('peerboard_recovery_token');
 }

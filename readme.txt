@@ -77,7 +77,9 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 9. Private or public. Control your community’s visibility, access rights and registration options.
 
 == Changelog ==
-= 0.7.5 - 2021-04-16
+= 0.7.7 =
+* Remove plugin data on plugin uninstall
+= 0.7.5 - 2021-04-16 =
 * Minor fixes
 = 0.7.4 - 2021-04-07 =
 * Minor login fixes
