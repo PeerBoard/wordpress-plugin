@@ -43,7 +43,7 @@ function peerboard_install() {
 	update_option( "peerboard_post", $post_id);
 }
 
-function peerboard_uninstall() {
+function peerboard_deactivation() {
 	global $peerboard_options;
   if ( ! current_user_can( 'activate_plugins' ) ) return;
   $post_id = get_option('peerboard_post');
@@ -59,4 +59,4 @@ function peerboard_uninstall() {
 }
 
 register_activation_hook( __DIR__ . '/index.php', 'peerboard_install');
-register_deactivation_hook( __DIR__ . '/index.php', 'peerboard_uninstall');
+register_deactivation_hook( __DIR__ . '/index.php', 'peerboard_deactivation');

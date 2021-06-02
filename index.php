@@ -246,8 +246,8 @@ function peerboard_sync_user_if_enabled( $user_id ) {
 /**
  * Remove plugin data on plugin uninstall
  */
-register_uninstall_hook(__FILE__, 'peerboard_delete');
+register_uninstall_hook(__FILE__, 'peerboard_uninstall');
 
-function peerboard_delete() {
+function peerboard_uninstall() {
 	delete_option('peerboard_recovery_token');
 }
