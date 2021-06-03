@@ -53,6 +53,11 @@ class PeerBoard
 		add_action('init', [__CLASS__, 'init_plugin_logic_on_page']);
 
 		/**
+		 * Check if page have shortcode or not (for migration)
+		 */
+		add_filter( 'the_content', [__CLASS__, 'check_page_shortcode']);
+
+		/**
 		 * Creating shortcode
 		 */
 		add_shortcode('peerboard', [__CLASS__, 'shortcode']);
@@ -95,6 +100,36 @@ class PeerBoard
 			$peerboard_options['peerboard_version_synced'] = PEERBOARD_PLUGIN_VERSION;
 			update_option('peerboard_options', $peerboard_options);
 		}
+	}
+
+	/**
+	 * check if page have shortcode if not add
+	 *
+	 * @return void
+	 */
+	public static function check_page_shortcode($content)
+	{
+
+		if (!is_page()) {
+			return;
+		}
+
+		$post_id = intval(get_option('peerboard_post'));
+		$current_page_id = get_the_ID();
+
+		if ($post_id !== $current_page_id) {
+			return;
+		}
+
+		if (!has_shortcode($content, 'peerboard')) {
+			$content .= '[peerboard]';
+			wp_update_post([
+				'ID' => $post_id,
+				'post_content' => $content
+			]);
+		}
+
+		return $content;
 	}
 
 	/**
