@@ -29,8 +29,6 @@ function peerboard_get_script_settings($peerboard_options)
 	$result = array(
 		'board-id' => $community_id,
 		'prefix' => $peerboard_prefix,
-		'resize' => true,
-		'scrollTarget' => 'top',
 		'embed-url' => PEERBOARD_EMBED_URL,
 	);
 
