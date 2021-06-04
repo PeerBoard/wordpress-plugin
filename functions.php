@@ -60,7 +60,7 @@ function peerboard_get_script_settings($peerboard_options)
 		$result['wpPayload'] = "$payload?$userdata";
 	}
 
-	$result['baseURL'] = PEERBOARD_PROXY_URL;
+	$result['baseURL'] = PEERBOARD_URL;
 	return $result;
 }
 
