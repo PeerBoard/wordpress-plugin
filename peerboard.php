@@ -78,8 +78,6 @@ class PeerBoard
 		 */
 		add_action('user_register', [__CLASS__, 'peerboard_sync_user_if_enabled']);
 
-		//TODO check do we need this hook because i did not found any registered action with this name
-		add_action('pre_update_option_peerboard_options', [__CLASS__, 'pre_update_option_peerboard_options'], 10, 3);
 	}
 
 	/**
@@ -229,37 +227,6 @@ class PeerBoard
 			$count = intval(get_option('peerboard_users_count'));
 			update_option('peerboard_users_count', $count + 1);
 		}
-	}
-
-	//TODO check do we need this hook because it did not found any registered action with this nam
-	public static function pre_update_option_peerboard_options($value, $old_value, $option)
-	{
-		if ($old_value === NULL || $old_value === false) {
-			return $value;
-		}
-		if ($value['prefix'] !== $old_value['prefix']) {
-			// Case where we are connecting blank community by auth token, that we need to reuse old prefix | 'community'
-			if ($value['prefix'] === '' || $value['prefix'] === NULL) {
-				if ($old_value['prefix'] === '' || $old_value['prefix'] === NULL) {
-					$old_value['prefix'] = 'community';
-				}
-				$value['prefix'] = $old_value['prefix'];
-			}
-			peerboard_update_post_slug($value['prefix']);
-			peerboard_post_integration($value['auth_token'], $value['prefix'], peerboard_get_domain());
-		}
-
-		if ($value['auth_token'] !== $old_value['auth_token']) {
-			$community = peerboard_get_community($value['auth_token']);
-			$value['community_id'] = $community['id'];
-			peerboard_send_analytics('set_auth_token', $community['id']);
-			peerboard_post_integration($value['auth_token'], $value['prefix'], peerboard_get_domain());
-			if ($old_value['auth_token'] !== '' && $old_value['auth_token'] !== NULL) {
-				peerboard_drop_integration($old_value['auth_token']);
-			}
-		}
-
-		return $value;
 	}
 }
 
