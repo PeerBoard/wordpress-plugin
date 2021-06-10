@@ -26,6 +26,8 @@ class PeerBoard
 
 		DEFINE('PEERBOARD_PROXY_PATH', 'peerboard_internal');
 		DEFINE('PEERBOARD_PLUGIN_VERSION', '0.7.8');
+		DEFINE('PEERBOARD_PLUGIN_URL', plugins_url('', __FILE__));
+        DEFINE('PEERBOARD_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
 		$peerboard_env_mode = getenv("PEERBOARD_ENV");
 		if ($peerboard_env_mode === "local") {
@@ -137,8 +139,10 @@ class PeerBoard
 	 */
 	public static function add_scripts()
 	{
-		wp_register_style('peerboard_integration_styles', plugin_dir_url(__FILE__) . "/static/style.css", array(), '0.0.5');
-		wp_register_script('peerboard-integration', plugin_dir_url(__FILE__) . "/static/peerboard-integration.js", array(), '0.0.7');
+		$assets = require PEERBOARD_PLUGIN_DIR_PATH . '/assets/frontend/frontend.asset.php';
+
+		wp_register_style('peerboard_integration_styles', plugin_dir_url(__FILE__) . "/assets/frontend/main.css", array(), $assets['version']);
+		wp_register_script('peerboard-integration', plugin_dir_url(__FILE__) . "/assets/frontend/frontend.js", array(), $assets['version']);
 	}
 
 	/**
