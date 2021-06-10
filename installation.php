@@ -50,7 +50,7 @@ function peerboard_install()
   $post_data = array(
     'post_title'    => 'Community',
     'post_name'    => 'community',
-    'post_content'  => '',
+    'post_content'  => '[peerboard]',
     'post_status'   => 'publish',
     'post_type'     => 'page',
     'post_author'   => 1
@@ -59,7 +59,7 @@ function peerboard_install()
   update_option("peerboard_post", $post_id);
 }
 
-register_activation_hook(__DIR__ . '/index.php', 'peerboard_install');
+add_action('peerboard_activate','peerboard_install');
 
 /**
  * On plugin deactivation
@@ -82,4 +82,4 @@ function peerboard_deactivation()
   delete_option('peerboard_options');
 }
 
-register_deactivation_hook(__DIR__ . '/index.php', 'peerboard_deactivation');
+add_action('peerboard_deactivate','peerboard_deactivation');

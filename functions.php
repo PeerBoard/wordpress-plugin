@@ -1,4 +1,67 @@
 <?php
+
+function peerboard_get_script_settings($peerboard_options)
+{
+	$peerboard_prefix = $peerboard_options['prefix'];
+	$auth_token = $peerboard_options['auth_token'];
+	$community_id = intval($peerboard_options['community_id']);
+	$user = wp_get_current_user();
+
+	$payload = peerboard_base64url_encode(json_encode(
+		array(
+			'communityID' => $community_id,
+			'location' => peerboard_get_tail_path($peerboard_prefix),
+		)
+	));
+
+	$login_data_string = "";
+	$isUserLogged = false;
+	if (!function_exists('is_user_logged_in')) {
+		if (!empty($user->ID)) {
+			$isUserLogged = true;
+		}
+	} else {
+		if (is_user_logged_in()) {
+			$isUserLogged = true;
+		}
+	}
+
+	$result = array(
+		'board-id' => $community_id,
+		'prefix' => $peerboard_prefix,
+		'embed-url' => PEERBOARD_EMBED_URL,
+	);
+
+	if ($isUserLogged) {
+		$userdata = array(
+			'email' =>  $user->user_email,
+			'username' => $user->nickname,
+			'bio' => urlencode($user->description),
+			'photo_url' => get_avatar_url($user->user_email),
+			'first_name' => '',
+			'last_name' => ''
+		);
+
+		// Will send first and last name only if this true
+		if ($peerboard_options['expose_user_data'] == '1') {
+			$userdata['first_name'] = $user->first_name;
+			$userdata['last_name'] = $user->last_name;
+		}
+
+		if (current_user_can('manage_options')) {
+			$userdata['role'] = 'admin';
+		}
+
+		$hash = peerboard_get_auth_hash($userdata, $auth_token);
+		$userdata['hash'] = $hash;
+		$userdata = http_build_query($userdata);
+		$result['wpPayload'] = "$payload?$userdata";
+	}
+
+	$result['baseURL'] = PEERBOARD_URL;
+	return $result;
+}
+
 function peerboard_get_domain() {
   $info = peerboard_bloginfo_array();
   return $info['hosting']['domain'];

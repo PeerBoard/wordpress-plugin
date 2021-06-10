@@ -1,0 +1,27 @@
+{
+  "name": "peerboard",
+  "version": "1.0.0",
+  "description": "",
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@wordpress/components": "^9.5.0",
+    "@wordpress/scripts": "^16.1.2",
+    "array-move": "^2.2.1",
+    "autoprefixer": "^10.2.6",
+    "cross-fetch": "^3.1.4",
+    "cssnano": "^5.0.5",
+    "gulp": "^4.0.2",
+    "gulp-concat": "^2.6.1",
+    "gulp-plumber": "^1.2.1",
+    "gulp-postcss": "^9.0.0",
+    "gulp-run-command": "0.0.10",
+    "gulp-sass": "^4.0.2",
+    "gulp-sass-glob": "^1.1.0",
+    "gulp-sourcemaps": "^2.6.5"
+  },
+  "dependencies": {
+    "@peerboard/core": "^0.0.8",
+    "caniuse-lite": "^1.0.30001214"
+  }
+}
