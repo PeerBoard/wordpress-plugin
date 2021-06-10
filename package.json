@@ -5,6 +5,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@peerboard/core": "^0.0.8",
     "@wordpress/scripts": "^16.1.2",
     "array-move": "^2.2.1",
     "autoprefixer": "^10.2.6",
@@ -18,9 +19,5 @@
     "gulp-sass": "^4.0.2",
     "gulp-sass-glob": "^1.1.0",
     "gulp-sourcemaps": "^2.6.5"
-  },
-  "dependencies": {
-    "@peerboard/core": "^0.0.8",
-    "caniuse-lite": "^1.0.30001214"
   }
 }
