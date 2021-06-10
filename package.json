@@ -5,7 +5,6 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@wordpress/components": "^9.5.0",
     "@wordpress/scripts": "^16.1.2",
     "array-move": "^2.2.1",
     "autoprefixer": "^10.2.6",
