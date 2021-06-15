@@ -49,9 +49,9 @@ Q: Do I need to know any coding to use this plugin?
 
 No, we have built PeerBoard to be super easy to use and does not require you to manually build shortcodes or have any coding knowledge.
 
-Q: Where can I see a demo?
+Q: Where can I see a sample community?
 
-There’s a live demo [here](http://www.peerboard.com).
+Check out our [product community](https://community.peerboard.com/). 
 
 Q: Is PeerBoard mobile responsive?
 
