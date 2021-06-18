@@ -27,7 +27,7 @@ class PeerBoard
 		DEFINE('PEERBOARD_PROXY_PATH', 'peerboard_internal');
 		DEFINE('PEERBOARD_PLUGIN_VERSION', '0.7.8');
 		DEFINE('PEERBOARD_PLUGIN_URL', plugins_url('', __FILE__));
-        DEFINE('PEERBOARD_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
+		DEFINE('PEERBOARD_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
 		$peerboard_env_mode = getenv("PEERBOARD_ENV");
 		if ($peerboard_env_mode === "local") {
@@ -57,15 +57,26 @@ class PeerBoard
 		/**
 		 * Check if page have shortcode or not (for migration)
 		 */
-		add_filter( 'the_content', [__CLASS__, 'check_page_shortcode']);
+		add_filter('the_content', [__CLASS__, 'check_page_shortcode']);
 
 		/**
 		 * Creating shortcode
 		 */
 		add_shortcode('peerboard', [__CLASS__, 'shortcode']);
 
+		/**
+		 * Front scripts
+		 */
 		add_action('wp_enqueue_scripts', [__CLASS__, 'add_scripts']);
 
+		/**
+		 * Admin script
+		 */
+		add_action( 'admin_enqueue_scripts', [__CLASS__, 'load_admin_scripts']);
+
+		/**
+		 * Request function //TODO check this function do we need this
+		 */
 		add_filter('request', function (array $query_vars) {
 			global $peerboard_options;
 			if (peerboard_is_embed_page($peerboard_options['prefix'])) {
@@ -80,6 +91,10 @@ class PeerBoard
 		 */
 		add_action('user_register', [__CLASS__, 'peerboard_sync_user_if_enabled']);
 
+		/**
+		 * Feedback dialog on deactivation
+		 */
+		add_action('admin_footer', [__CLASS__, 'add_deactivation_feedback_dialog_box']);
 	}
 
 	/**
@@ -143,6 +158,17 @@ class PeerBoard
 
 		wp_register_style('peerboard_integration_styles', plugin_dir_url(__FILE__) . "/assets/frontend/main.css", array(), $assets['version']);
 		wp_register_script('peerboard-integration', plugin_dir_url(__FILE__) . "/assets/frontend/frontend.js", array(), $assets['version']);
+	}
+
+	/**
+	 * Register admin scripts
+	 *
+	 * @return void
+	 */
+	public static function load_admin_scripts(){
+		$assets = require PEERBOARD_PLUGIN_DIR_PATH . '/assets/frontend/frontend.asset.php';
+
+		wp_enqueue_style('peerboard_integration_styles', plugin_dir_url(__FILE__) . "/assets/admin/admin.css", array(), $assets['version']);
 	}
 
 	/**
@@ -231,6 +257,42 @@ class PeerBoard
 			$count = intval(get_option('peerboard_users_count'));
 			update_option('peerboard_users_count', $count + 1);
 		}
+	}
+
+	/**
+	 * Feedback dialog on deactivation
+	 */
+	public static function add_deactivation_feedback_dialog_box()
+	{
+		$reasons = [
+			[
+				'id' => '1',
+				'text' => __('I found a better plugin','peerboard'),
+				'input_text' => __("What's the plugin's name?",'peerboard')
+			],
+			[
+				'id' => '2',
+				'text' => __("The plugin didn't work",'peerboard'),
+			], 
+			[
+				'id' => '3',
+				'text' => __("I don't like to share my information with you",'peerboard'),
+			], 
+			[
+				'id' => '4',
+				'text' => __("It's a temporary deactivation. I'm just debugging an issue.",'peerboard'),
+			],
+			[
+				'id' => '5',
+				'text' => __("Other",'peerboard'),
+				'input_text' => __("Kindly tell us the reason so we can improve.",'peerboard')
+			], 
+		];
+
+		ob_start();
+		
+		require PEERBOARD_PLUGIN_DIR_PATH.'/templates/admin/feedback-form.php';
+		echo  ob_get_clean();
 	}
 }
 

@@ -17,6 +17,12 @@ const config = {
       file: "main.css",
       watchSrc: "src/scss/**/*.scss"
     },
+    admin: {
+      src: "src/scss/admin.scss",
+      dest: "assets/admin",
+      file: "admin.css",
+      watchSrc: "src/scss/**/*.scss"
+    },
     frontend: {
       src: "src/scss/frontend.scss",
       dest: "assets/frontend",
