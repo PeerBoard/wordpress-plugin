@@ -3,14 +3,14 @@ pipeline {
         label 'wp-devpeerboardclub'
     }
     stages {
-        stage('copy from git repo to peerboard dir'){
+        stage('Copy from git repo to peerboard plugin dir'){
             steps{
                 sh 'sudo mkdir -p /opt/bitnami/apps/wordpress/htdocs/wp-content/peerboard'
                 sh 'sudo rsync -av --delete ${PWD}/ /opt/bitnami/apps/wordpress/htdocs/wp-content/peerboard/'
                 sh 'sudo rm -rf /opt/bitnami/apps/wordpress/htdocs/wp-content/peerboard/.git*'
             }
         }
-        stage('print list of new files'){
+        stage('List file directory'){
             steps{
                 sh 'sudo ls -la /opt/bitnami/apps/wordpress/htdocs/wp-content/peerboard/'
             }
