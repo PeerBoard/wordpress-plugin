@@ -8,6 +8,10 @@ const config = {
     frontend: {
       src: "src/js/frontend.js",
       dest: "assets/frontend/"
+    },
+    admin: {
+      src: "src/js/admin.js",
+      dest: "assets/admin/"
     }
   },
   styles: {

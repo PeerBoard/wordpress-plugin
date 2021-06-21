@@ -166,9 +166,11 @@ class PeerBoard
 	 * @return void
 	 */
 	public static function load_admin_scripts(){
-		$assets = require PEERBOARD_PLUGIN_DIR_PATH . '/assets/frontend/frontend.asset.php';
+		$assets = require PEERBOARD_PLUGIN_DIR_PATH . '/assets/admin/admin.asset.php';
 
 		wp_enqueue_style('peerboard_integration_styles', plugin_dir_url(__FILE__) . "/assets/admin/admin.css", array(), $assets['version']);
+		wp_enqueue_script('peerboard-admin-js', plugin_dir_url(__FILE__) . "/assets/admin/admin.js", array(), $assets['version'],true);
+
 	}
 
 	/**
