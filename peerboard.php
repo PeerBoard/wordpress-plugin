@@ -2,7 +2,7 @@
 
 /**
  * Plugin Name: WordPress Forum Plugin – PeerBoard
- * Plugin URI: https://peerboard.com
+ * Plugin URI: https://peerboard.com/integrations/wordpress-forum-plugin
  * Description: Forum, Community & User Profile Plugin
  * Version: 0.7.8
  * Text Domain: peerboard
