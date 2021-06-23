@@ -21,7 +21,7 @@ export default (createForum) => {
 
   _peerboardSettings['onTitleChanged'] = (title) => window.document.title = "Forum: " + title;
   _peerboardSettings['onPathChanged'] = location => history.replaceState(null, '', location);
-  _peerboardSettings['minHeight'] = window.innerHeight + "px";
+  _peerboardSettings['minHeight'] = window.innerHeight * 0.5 + "px";
   _peerboardSettings['onLogout'] = () => {
     document.cookie = 'wp-peerboard-auth=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;';
   }
