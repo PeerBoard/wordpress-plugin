@@ -19,6 +19,18 @@ Instead of a traditional forum, PeerBoard makes it easy to stay up to date with 
 
 PeerBoard’s modern look and feel makes it a sight to behold and delight to use for every single user.
 
+**WHY HAVE A FORUM ON MY WORDPRESS SITE?**
+
+- **Connect with your customers** – Stand out from the competition by talking, helping, and building personal and lasting relationships with your customers.
+- **Retain your members long-term –** Foster the kind of valuable networks and strong connections between your members that keep them coming back.
+- **Improve** **SEO with UGC content** –  Create a place where your users can share their own posts and read other people\'s content. This will lead to Increased dwell time, one of the factors that influences your website ranking on Google.
+
+**WHAT CAN I USE THIS FOR?**
+
+- **Product communities:** Open the doors for your customers to share, discuss, and provide valuable feedback for your product. You’ll have a direct ear to what’s most important to them.
+- **Professional communities:** Ready to unlock a super-power of community generated content? PeerBoard takes Crowdsourcing and UGC from mere buzzwords to your secret weapon for growing your engagement.
+- **Other scenarios:** An ideal fit for gaming, hobbies, and any niche that has a dedicated user base. If there’s knowledge to be shared, PeerBoard is the perfect place to share it on.
+
 **FEATURES OF THE PLUGIN INCLUDE:**
 
 - **Rich user profiles**: Let your members get recognized with taglines, rich bios, avatars and more
@@ -27,18 +39,6 @@ PeerBoard’s modern look and feel makes it a sight to behold and delight to use
 - **Real-time threads**: Facilitate valuable in-depth conversations with multi-level discussions
 - **Intelligent feed**: Our algorithm shoots the highest value posts to the top, based on engagement and recency
 - **And much more**: Real-time updates, a versatile admin panel and a full suite of powerful features
-
-**WHAT CAN I USE THIS FOR?**
-
-- **Product communities:** Open the doors for your customers to share, discuss, and provide valuable feedback for your product. You’ll have a direct ear to what’s most important to them.
-- **Professional communities:** Ready to unlock a super-power of community generated content? PeerBoard takes Crowdsourcing and UGC from mere buzzwords to your secret weapon for growing your engagement.
-- **Other scenarios:** An ideal fit for gaming, hobbies, and any niche that has a dedicated user base. If there’s knowledge to be shared, PeerBoard is the perfect place to share it on.
-
-**WHY HAVE A FORUM ON MY WORDPRESS SITE?**
-
-- **Connect with your customers** – Stand out from the competition by talking, helping, and building personal and lasting relationships with your customers.
-- **Retain your members long-term –** Foster the kind of valuable networks and strong connections between your members that keep them coming back.
-- **Improve** **SEO with UGC content** –  Create a place where your users can share their own posts and read other people\'s content. This will lead to Increased dwell time, one of the factors that influences your website ranking on Google.
 
 == Installation ==
 1. Activate the plugin
