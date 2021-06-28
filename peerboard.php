@@ -45,9 +45,8 @@ class PeerBoard
 			DEFINE('PEERBOARD_API_BASE', 'https://api.peerboard.com/v1/');
 		}
 		
-
+		require_once plugin_dir_path(__FILE__) . "/inc/Settings.php";
 		require_once plugin_dir_path(__FILE__) . "functions.php";
-		require_once plugin_dir_path(__FILE__) . "/inc/settings.php";
 		require_once plugin_dir_path(__FILE__) . "/inc/api.php";
 		require_once plugin_dir_path(__FILE__) . "/inc/analytics.php";
 		require_once plugin_dir_path(__FILE__) . "/inc/installation.php";
