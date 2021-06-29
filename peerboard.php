@@ -154,6 +154,14 @@ class PeerBoard
 	public static function shortcode($atts)
 	{
 		global $peerboard_options;
+
+		$post_id = intval(get_option('peerboard_post'));
+		$current_page_id = get_the_ID();
+
+		if ($post_id !== $current_page_id) {
+			return;
+		}
+		
 		/**
 		 * Init styles and scripts
 		 */
