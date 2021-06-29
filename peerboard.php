@@ -2,9 +2,9 @@
 
 /**
  * Plugin Name: WordPress Forum Plugin – PeerBoard
- * Plugin URI: https://peerboard.com
+ * Plugin URI: https://peerboard.com/integrations/wordpress-forum-plugin
  * Description: Forum, Community & User Profile Plugin
- * Version: 0.7.8
+ * Version: 0.7.9
  * Text Domain: peerboard
  * Domain Path: /languages
  * Author: <a href='https://peerboard.com' target='_blank'>Peerboard</a>, forumplugin
@@ -25,30 +25,15 @@ class PeerBoard
 	{
 
 		DEFINE('PEERBOARD_PROXY_PATH', 'peerboard_internal');
-		DEFINE('PEERBOARD_PLUGIN_VERSION', '0.7.8');
+		DEFINE('PEERBOARD_PLUGIN_VERSION', '0.7.9');
 		DEFINE('PEERBOARD_PLUGIN_URL', plugins_url('', __FILE__));
         DEFINE('PEERBOARD_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
-
-		$peerboard_env_mode = getenv("PEERBOARD_ENV");
-		if ($peerboard_env_mode === "local") {
-			DEFINE('PEERBOARD_EMBED_URL', 'http://static.local.is/embed/embed.js');
-			DEFINE('PEERBOARD_URL', 'http://local.is/');
-			DEFINE('PEERBOARD_API_BASE', 'http://api.local.is/v1/');
-		} else if ($peerboard_env_mode === "dev") {
-			DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.dev/embed/embed.js');
-			DEFINE('PEERBOARD_URL', 'https://peerboard.dev/');
-			DEFINE('PEERBOARD_API_BASE', 'https://api.peerboard.dev/v1/');
-		} else {
-			DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.com/embed/embed.js');
-			DEFINE('PEERBOARD_URL', 'https://peerboard.com/');
-			DEFINE('PEERBOARD_API_BASE', 'https://api.peerboard.com/v1/');
-		}
-
+		
+		require_once plugin_dir_path(__FILE__) . "/inc/Settings.php";
 		require_once plugin_dir_path(__FILE__) . "functions.php";
-		require_once plugin_dir_path(__FILE__) . "settings.php";
-		require_once plugin_dir_path(__FILE__) . "api.php";
-		require_once plugin_dir_path(__FILE__) . "analytics.php";
-		require_once plugin_dir_path(__FILE__) . "installation.php";
+		require_once plugin_dir_path(__FILE__) . "/inc/api.php";
+		require_once plugin_dir_path(__FILE__) . "/inc/analytics.php";
+		require_once plugin_dir_path(__FILE__) . "/inc/installation.php";
 
 		add_action('plugins_loaded', [__CLASS__, 'true_load_plugin_textdomain']);
 
@@ -153,6 +138,14 @@ class PeerBoard
 	public static function shortcode($atts)
 	{
 		global $peerboard_options;
+
+		$post_id = intval(get_option('peerboard_post'));
+		$current_page_id = get_the_ID();
+
+		if ($post_id !== $current_page_id) {
+			return;
+		}
+
 		/**
 		 * Init styles and scripts
 		 */
@@ -214,7 +207,7 @@ class PeerBoard
 	{
 		global $peerboard_options;
 		$sync_enabled = get_option('peerboard_users_sync_enabled');
-		if ($sync_enabled === '1') {
+		if ($sync_enabled) {
 			$user = get_userdata($user_id);
 			$userdata = array(
 				'email' =>  $user->user_email,
