@@ -39,6 +39,7 @@ class Settings
     {
         register_setting('circles', 'peerboard_options');
         register_setting('peerboard_users_count', 'peerboard_users_count', 'intval');
+        register_setting('peerboard_users_count', 'peerboard_users_sync_enabled', 'intval');
 
         add_settings_section(
             'peerboard_section_users_sync',
@@ -126,6 +127,12 @@ class Settings
         echo "<input name='peerboard_options[expose_user_data]' type='checkbox' value='1' $checked/>";
     }
 
+    /**
+     * User sync settings 
+     *
+     * @param [type] $args
+     * @return void
+     */
     public static function peerboard_users_sync_info($args)
     {
         $wp_users_count = count_users();
@@ -139,20 +146,18 @@ class Settings
         $synced = intval($option_count);
         $diff =  $users_count - $synced;
         $sync_enabled = get_option('peerboard_users_sync_enabled');
-        if ($sync_enabled === '1') {
-            // 0 is a flag value for sync disable
-            $option_count = 0;
-        }
+        
         if ($diff !== 0) {
             printf(__("You have %s users that can be imported to PeerBoard.<br/><br/><i>Note that this will send them a welcome email and subscribe to digests.</i><br/>", 'peerboard'), $diff);
         } else {
-            if ($option_count === 0) {
+            if ($sync_enabled) {
                 _e("Automatic user import is activated.<br/><br/><i>All WordPress registrations automatically receive welcome email and are subscribed to PeerBoard digest.</i><br/>", 'peerboard');
             } else {
                 _e("Enable automatic import of your new WordPress users to PeerBoard.<br/><br/><i>Note that they will be receiving welcome emails and get subscribed to email digests.</i><br/>", 'peerboard');
             }
         }
         printf("<input name='peerboard_users_count' style='display:none' value='%s' />", $option_count);
+        printf("<input name='peerboard_users_sync_enabled' style='display:none' value='%s' />", $sync_enabled?0:1);
     }
 
 
@@ -195,15 +200,13 @@ class Settings
                 <?php
                 settings_fields('peerboard_users_count');
                 do_settings_sections('peerboard_users_count');
-                $wp_users_count = count_users();
-                $users_count = $wp_users_count['total_users'];
-                $option_count = get_option('peerboard_users_count');
+                
                 $sync_enabled = get_option('peerboard_users_sync_enabled');
-                if ($sync_enabled === '0') {
-                    // 0 is a flag value for sync disable
-                    $option_count = 0;
-                }
-                if ($option_count === false || $option_count === 0) {
+                // if ($sync_enabled === '0') {
+                //     // 0 is a flag value for sync disable
+                //     $option_count = 0;
+                // }
+                if (!$sync_enabled) {
                     // initial run - show button
                     submit_button(__('Activate Automatic Import','peerboard'));
                 } else {
