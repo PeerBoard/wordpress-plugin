@@ -45,25 +45,21 @@ PeerBoard’s modern look and feel makes it a sight to behold and delight to use
 2. Go to PeerBoard > Settings and set required fields
 
 == Frequently Asked Questions ==
-Q: Do I need to know any coding to use this plugin?
-
+**Do I need to know any coding to use this plugin?**
 No, we have built PeerBoard to be super easy to use and does not require you to manually build shortcodes or have any coding knowledge.
-
-Q: Where can I see a sample community?
-
-Check out our [product community](https://community.peerboard.com/). 
-
-Q: Is PeerBoard mobile responsive?
-
+**Where can I see a sample community?**
+Check out our [product community](https://community.peerboard.com/).
+**Is PeerBoard mobile responsive?**
 Yes. PeerBoard is designed to adjust nicely to any screen, including phones, tablets and desktops.
-
-Q: How do I get support?
-
+**How do I get support?**
 If you have trouble with PeerBoard plugin, you can get help on the support forums [here](https://community.peerboard.com/) or just drop us an email at support@peerboard.com.
-
-Q: I have a different question than listed here.
-
+**I have a different question than listed here.**
 Check out our support forums [here](https://community.peerboard.com/) or send us an email at support@peerboard.com.
+
+== Translations ==
+
+* English - default, always included
+* Russian - ru_RU
 
 == Screenshots ==
 1. Newsfeed style. Instead of a traditional forum, PeerBoard makes it easy to stay up to date with a single Facebook-like feed.
@@ -77,6 +73,12 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 9. Private or public. Control your community’s visibility, access rights and registration options.
 
 == Changelog ==
+
+= 0.7.9 =
+* Ability to select forum page template on plugin settings page
+* Added ability to translate settings page
+* Fixed some minor issues
+* Updated user sync logic
 = 0.7.8 =
 * Added shortcode to be able add content before or after on forum page
 = 0.7.7 =
@@ -106,3 +108,13 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 * Fix: login out from wordpress now leads to peerboard logout
 = 0.6.4 - 2021-01-24 =
 * Fix: plugin reactivation now uses old community instead of creating new one
+
+== Upgrade Notice ==
+
+= 0.7.9 =
+* Ability to select forum page template on plugin settings page
+* Added ability to translate settings page
+* Fixed some minor issues
+* Updated user sync logic
+= 0.7.8 =
+* Added shortcode to be able add content before or after on forum page
