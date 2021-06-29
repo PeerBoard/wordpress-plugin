@@ -146,7 +146,7 @@ class Settings
         $synced = intval($option_count);
         $diff =  $users_count - $synced;
         $sync_enabled = get_option('peerboard_users_sync_enabled');
-        
+
         if ($diff !== 0) {
             printf(__("You have %s users that can be imported to PeerBoard.<br/><br/><i>Note that this will send them a welcome email and subscribe to digests.</i><br/>", 'peerboard'), $diff);
         } else {
@@ -157,7 +157,7 @@ class Settings
             }
         }
         printf("<input name='peerboard_users_count' style='display:none' value='%s' />", $option_count);
-        printf("<input name='peerboard_users_sync_enabled' style='display:none' value='%s' />", $sync_enabled?0:1);
+        printf("<input name='peerboard_users_sync_enabled' style='display:none' value='%s' />", $sync_enabled ? 0 : 1);
     }
 
 
@@ -171,6 +171,11 @@ class Settings
     }
 
 
+    /**
+     * Show settings page forms
+     *
+     * @return void
+     */
     public static function peerboard_options_page_html()
     {
         if (!current_user_can('manage_options')) {
@@ -183,39 +188,37 @@ class Settings
 
         // show error/update messages
         settings_errors('peerboard_messages');
-?>
-        <div class="wrap">
-            <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
-            <form action="options.php" method="post">
-                <?php
-                settings_fields('circles');
-                do_settings_sections('circles');
-                _e("For more information please check our ",'peerboard');
-                printf("<a href='https://community.peerboard.com/post/396436794' target='_blank'>%s</a><br/><br/>",__('How-To guide for WordPress','peerboard'));
-                self::peerboard_show_readme();
-                submit_button('Save Settings');
-                ?>
-            </form>
-            <form action="options.php" method="post">
-                <?php
-                settings_fields('peerboard_users_count');
-                do_settings_sections('peerboard_users_count');
-                
-                $sync_enabled = get_option('peerboard_users_sync_enabled');
-                // if ($sync_enabled === '0') {
-                //     // 0 is a flag value for sync disable
-                //     $option_count = 0;
-                // }
-                if (!$sync_enabled) {
-                    // initial run - show button
-                    submit_button(__('Activate Automatic Import','peerboard'));
-                } else {
-                    // auto import enabled
-                    submit_button(__('Deactivate Automatic Import','peerboard'));
-                }
-                ?>
-        </div>
-<?php
+        echo '<div class="wrap">';
+        printf('<h1></h1>', esc_html(get_admin_page_title()));
+        echo '<form action="options.php" method="post">';
+
+        settings_fields('circles');
+
+        do_settings_sections('circles');
+
+        _e("For more information please check our ", 'peerboard');
+
+        printf("<a href='https://community.peerboard.com/post/396436794' target='_blank'>%s</a><br/><br/>", __('How-To guide for WordPress', 'peerboard'));
+
+        self::peerboard_show_readme();
+        
+        submit_button('Save Settings');
+
+        echo '</form>';
+        echo '<form action="options.php" method="post">';
+
+        settings_fields('peerboard_users_count');
+        do_settings_sections('peerboard_users_count');
+
+        $sync_enabled = get_option('peerboard_users_sync_enabled');
+
+        if (!$sync_enabled) {
+            submit_button(__('Activate Automatic Import', 'peerboard'));
+        } else {
+            submit_button(__('Deactivate Automatic Import', 'peerboard'));
+        }
+        echo '</form>';
+        echo '</div>';
     }
 }
 

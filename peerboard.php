@@ -161,7 +161,7 @@ class PeerBoard
 		if ($post_id !== $current_page_id) {
 			return;
 		}
-		
+
 		/**
 		 * Init styles and scripts
 		 */
@@ -223,7 +223,7 @@ class PeerBoard
 	{
 		global $peerboard_options;
 		$sync_enabled = get_option('peerboard_users_sync_enabled');
-		if ($sync_enabled === '1') {
+		if ($sync_enabled) {
 			$user = get_userdata($user_id);
 			$userdata = array(
 				'email' =>  $user->user_email,
