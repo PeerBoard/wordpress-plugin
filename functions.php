@@ -58,6 +58,8 @@ function peerboard_get_script_settings($peerboard_options)
 	}
 
 	$result['baseURL'] = PEERBOARD_URL;
+  $result['sdkURL'] = PEERBOARD_EMBED_URL;
+  
 	return $result;
 }
 
