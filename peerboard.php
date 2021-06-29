@@ -28,22 +28,6 @@ class PeerBoard
 		DEFINE('PEERBOARD_PLUGIN_VERSION', '0.7.8');
 		DEFINE('PEERBOARD_PLUGIN_URL', plugins_url('', __FILE__));
         DEFINE('PEERBOARD_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
-
-		if ( defined('PEERBOARD_ENV')) {
-			if (PEERBOARD_ENV === "local") {
-				DEFINE('PEERBOARD_EMBED_URL', 'http://static.local.is/embed/embed.js');
-				DEFINE('PEERBOARD_URL', 'http://local.is/');
-				DEFINE('PEERBOARD_API_BASE', 'http://api.local.is/v1/');
-			} else if (PEERBOARD_ENV === "dev") {
-				DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.dev/embed/embed.js');
-				DEFINE('PEERBOARD_URL', 'https://peerboard.dev/');
-				DEFINE('PEERBOARD_API_BASE', 'https://api.peerboard.dev/v1/');
-			} 
-		} else {
-			DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.com/embed/embed.js');
-			DEFINE('PEERBOARD_URL', 'https://peerboard.com/');
-			DEFINE('PEERBOARD_API_BASE', 'https://api.peerboard.com/v1/');
-		}
 		
 		require_once plugin_dir_path(__FILE__) . "/inc/Settings.php";
 		require_once plugin_dir_path(__FILE__) . "functions.php";

@@ -10,6 +10,22 @@ class Settings
 
     public static function init()
     {
+        if ( defined('PEERBOARD_ENV')) {
+			if (PEERBOARD_ENV === "local") {
+				DEFINE('PEERBOARD_EMBED_URL', 'http://static.local.is/embed/embed.js');
+				DEFINE('PEERBOARD_URL', 'http://local.is/');
+				DEFINE('PEERBOARD_API_BASE', 'http://api.local.is/v1/');
+			} else if (PEERBOARD_ENV === "dev") {
+				DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.dev/embed/embed.js');
+				DEFINE('PEERBOARD_URL', 'https://peerboard.dev/');
+				DEFINE('PEERBOARD_API_BASE', 'https://api.peerboard.dev/v1/');
+			} 
+		} else {
+			DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.com/embed/embed.js');
+			DEFINE('PEERBOARD_URL', 'https://peerboard.com/');
+			DEFINE('PEERBOARD_API_BASE', 'https://api.peerboard.com/v1/');
+		}
+        
         add_action('admin_init', [__CLASS__, 'peerboard_settings_init']);
         add_action('admin_menu', [__CLASS__, 'peerboard_options_page']);
     }
@@ -201,7 +217,7 @@ class Settings
         printf("<a href='https://community.peerboard.com/post/396436794' target='_blank'>%s</a><br/><br/>", __('How-To guide for WordPress', 'peerboard'));
 
         self::peerboard_show_readme();
-        
+
         submit_button('Save Settings');
 
         echo '</form>';
