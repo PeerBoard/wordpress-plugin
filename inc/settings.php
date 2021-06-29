@@ -10,22 +10,22 @@ class Settings
 
     public static function init()
     {
-        if ( defined('PEERBOARD_ENV')) {
-			if (PEERBOARD_ENV === "local") {
-				DEFINE('PEERBOARD_EMBED_URL', 'http://static.local.is/embed/embed.js');
-				DEFINE('PEERBOARD_URL', 'http://local.is/');
-				DEFINE('PEERBOARD_API_BASE', 'http://api.local.is/v1/');
-			} else if (PEERBOARD_ENV === "dev") {
-				DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.dev/embed/embed.js');
-				DEFINE('PEERBOARD_URL', 'https://peerboard.dev/');
-				DEFINE('PEERBOARD_API_BASE', 'https://api.peerboard.dev/v1/');
-			} 
-		} else {
-			DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.com/embed/embed.js');
-			DEFINE('PEERBOARD_URL', 'https://peerboard.com/');
-			DEFINE('PEERBOARD_API_BASE', 'https://api.peerboard.com/v1/');
-		}
-        
+        if (defined('PEERBOARD_ENV')) {
+            if (PEERBOARD_ENV === "local") {
+                DEFINE('PEERBOARD_EMBED_URL', 'http://static.local.is/embed/embed.js');
+                DEFINE('PEERBOARD_URL', 'http://local.is/');
+                DEFINE('PEERBOARD_API_BASE', 'http://api.local.is/v1/');
+            } else if (PEERBOARD_ENV === "dev") {
+                DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.dev/embed/embed.js');
+                DEFINE('PEERBOARD_URL', 'https://peerboard.dev/');
+                DEFINE('PEERBOARD_API_BASE', 'https://api.peerboard.dev/v1/');
+            }
+        } else {
+            DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.com/embed/embed.js');
+            DEFINE('PEERBOARD_URL', 'https://peerboard.com/');
+            DEFINE('PEERBOARD_API_BASE', 'https://api.peerboard.com/v1/');
+        }
+
         add_action('admin_init', [__CLASS__, 'peerboard_settings_init']);
         add_action('admin_menu', [__CLASS__, 'peerboard_options_page']);
     }
@@ -90,6 +90,14 @@ class Settings
             'prefix',
             __('Board path', 'peerboard'),
             [__CLASS__, 'peerboard_field_prefix_cb'],
+            'circles',
+            'peerboard_section_integration'
+        );
+
+        add_settings_field(
+            'forum_page_template',
+            __('Select forum page template', 'peerboard'),
+            [__CLASS__, 'field_select_forum_page_template'],
             'circles',
             'peerboard_section_integration'
         );
@@ -181,9 +189,47 @@ class Settings
 
     public static function peerboard_show_readme()
     {
-        $calendly_link = "<a href='https://peerboard.org/integration-call' target='_blank'>calendly link</a>";
+        $calendly_link = sprintf("<a href='https://peerboard.org/integration-call' target='_blank'>%s</a>", __('calendly link', 'peerboard'));
         $contact_email = "<a href='mailto:integrations@peerboard.com' target='_blank'>integrations@peerboard.com</a>";
         printf(__("<br/><br/>If you experienced any problems during the setup, please don't hesitate to contact us at %s or book a time with our specialist using this %s", 'peerboard'), $contact_email, $calendly_link);
+    }
+
+    /**
+     * Select forum page template
+     *
+     * @return void
+     */
+    public static function field_select_forum_page_template()
+    {
+        global $peerboard_options;
+        $id = 'forum_page_template';
+        $sel_template = $peerboard_options['forum_page_template'] ?? 'default';
+        $forum_page = intval(get_option('peerboard_post'));
+        $templates = get_page_templates($forum_page);
+
+        // in wordpress if '' mean default template
+        if ($sel_template === 'default') {
+            $sel_template = '';
+        }
+        /**
+         * Updating page template
+         */
+        update_post_meta($forum_page, '_wp_page_template', $sel_template);
+
+        $options = [
+            'default' => __('Default', 'peerboard'),
+        ];
+
+        foreach ($templates as $template => $file) {
+            $options[$file] = $template;
+        }
+
+        echo sprintf('<select name="peerboard_options[%s]">', $id);
+        foreach ($options as $val => $option) {
+            $selected = selected($val, $sel_template, false);
+            echo sprintf('<option value="%s" %s >%s</option>', $val, $selected, $option);
+        }
+        echo '</select>';
     }
 
 
