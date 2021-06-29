@@ -29,7 +29,6 @@ function peerboard_get_script_settings($peerboard_options)
 	$result = array(
 		'board-id' => $community_id,
 		'prefix' => $peerboard_prefix,
-		'embed-url' => PEERBOARD_EMBED_URL,
 	);
 
 	if ($isUserLogged) {
