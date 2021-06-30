@@ -83,7 +83,6 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 * Fixed readme FAQ block to show correctly
 * Redirecting issue solved and function refactored
 * Now taking page url from wordpress not from api response url
-
 = 0.7.8 =
 * Added shortcode to be able add content before or after on forum page
 = 0.7.7 =
