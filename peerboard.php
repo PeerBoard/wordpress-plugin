@@ -29,26 +29,28 @@ class PeerBoard
 		DEFINE('PEERBOARD_PLUGIN_URL', plugins_url('', __FILE__));
         DEFINE('PEERBOARD_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
-		$peerboard_env_mode = getenv("PEERBOARD_ENV");
-		if ($peerboard_env_mode === "local") {
-			DEFINE('PEERBOARD_EMBED_URL', 'http://static.local.is/embed/embed.js');
-			DEFINE('PEERBOARD_URL', 'http://local.is/');
-			DEFINE('PEERBOARD_API_BASE', 'http://api.local.is/v1/');
-		} else if ($peerboard_env_mode === "dev") {
-			DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.dev/embed/embed.js');
-			DEFINE('PEERBOARD_URL', 'https://peerboard.dev/');
-			DEFINE('PEERBOARD_API_BASE', 'https://api.peerboard.dev/v1/');
+		if ( defined('PEERBOARD_ENV')) {
+			if (PEERBOARD_ENV === "local") {
+				DEFINE('PEERBOARD_EMBED_URL', 'http://static.local.is/embed/embed.js');
+				DEFINE('PEERBOARD_URL', 'http://local.is/');
+				DEFINE('PEERBOARD_API_BASE', 'http://api.local.is/v1/');
+			} else if (PEERBOARD_ENV === "dev") {
+				DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.dev/embed/embed.js');
+				DEFINE('PEERBOARD_URL', 'https://peerboard.dev/');
+				DEFINE('PEERBOARD_API_BASE', 'https://api.peerboard.dev/v1/');
+			} 
 		} else {
 			DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.com/embed/embed.js');
 			DEFINE('PEERBOARD_URL', 'https://peerboard.com/');
 			DEFINE('PEERBOARD_API_BASE', 'https://api.peerboard.com/v1/');
 		}
+		
 
 		require_once plugin_dir_path(__FILE__) . "functions.php";
-		require_once plugin_dir_path(__FILE__) . "settings.php";
-		require_once plugin_dir_path(__FILE__) . "api.php";
-		require_once plugin_dir_path(__FILE__) . "analytics.php";
-		require_once plugin_dir_path(__FILE__) . "installation.php";
+		require_once plugin_dir_path(__FILE__) . "/inc/settings.php";
+		require_once plugin_dir_path(__FILE__) . "/inc/api.php";
+		require_once plugin_dir_path(__FILE__) . "/inc/analytics.php";
+		require_once plugin_dir_path(__FILE__) . "/inc/installation.php";
 
 		add_action('plugins_loaded', [__CLASS__, 'true_load_plugin_textdomain']);
 
