@@ -1,4 +1,31 @@
 <?php
+// Exit if accessed directly
+defined('ABSPATH') || exit;
+
+/**
+ * On plugin installation
+ *
+ * @return void
+ */
+function peerboard_install()
+{
+  global $peerboard_options;
+  if (!current_user_can('activate_plugins'))
+    return;
+
+  $post_data = array(
+    'post_title'    => 'Community',
+    'post_name'    => 'community',
+    'post_content'  => '[peerboard]',
+    'post_status'   => 'publish',
+    'post_type'     => 'page',
+    'post_author'   => 1
+  );
+  $post_id = wp_insert_post($post_data);
+  update_option("peerboard_post", $post_id);
+}
+
+add_action('peerboard_activate', 'peerboard_install', 10);
 
 /**
  * On plugin activation
@@ -27,39 +54,28 @@ function peerboard_activate($plugin)
     $peerboard_options['expose_user_data'] = '1';
     update_option('peerboard_options', $peerboard_options);
   }
-  if ($plugin == plugin_basename(__DIR__ . '/index.php') && array_key_exists('redirect', $peerboard_options)) {
-    if ($peerboard_options['redirect']) {
-      exit(wp_redirect($peerboard_options['redirect']));
-    }
+
+  if (isset($peerboard_options['redirect'])) {
+      add_option('peerboard_plugin_do_activation_redirect', true);
   }
 }
 
-add_action('activated_plugin', 'peerboard_activate');
+add_action('peerboard_activate', 'peerboard_activate', 11);
 
 /**
- * On plugin installation
- *
- * @return void
+ * peerboard redirect to forum page
  */
-function peerboard_install()
+function peerboard_plugin_redirect()
 {
-  global $peerboard_options;
-  if (!current_user_can('activate_plugins'))
-    return;
-
-  $post_data = array(
-    'post_title'    => 'Community',
-    'post_name'    => 'community',
-    'post_content'  => '[peerboard]',
-    'post_status'   => 'publish',
-    'post_type'     => 'page',
-    'post_author'   => 1
-  );
-  $post_id = wp_insert_post($post_data);
-  update_option("peerboard_post", $post_id);
+  if (get_option('peerboard_plugin_do_activation_redirect', false)) {
+    delete_option('peerboard_plugin_do_activation_redirect');
+    $page_id = get_option('peerboard_post');
+    $page_link = get_page_link($page_id);
+    wp_redirect($page_link);
+  }
 }
 
-add_action('peerboard_activate','peerboard_install');
+add_action('admin_init', 'peerboard_plugin_redirect');
 
 /**
  * On plugin deactivation
@@ -82,4 +98,4 @@ function peerboard_deactivation()
   delete_option('peerboard_options');
 }
 
-add_action('peerboard_deactivate','peerboard_deactivation');
+add_action('peerboard_deactivate', 'peerboard_deactivation');
