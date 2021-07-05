@@ -95,14 +95,14 @@ class PeerBoard
 	{
 
 		if (!is_page()) {
-			return;
+			return $content;
 		}
 
 		$post_id = intval(get_option('peerboard_post'));
 		$current_page_id = get_the_ID();
 
 		if ($post_id !== $current_page_id) {
-			return;
+			return $content;
 		}
 
 		if (!has_shortcode($content, 'peerboard')) {
