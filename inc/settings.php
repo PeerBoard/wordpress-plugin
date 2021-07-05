@@ -210,9 +210,9 @@ class Settings
         $id = 'forum_page_template';
         $forum_page = intval(get_option('peerboard_post'));
         $templates = get_page_templates($forum_page);
-        $sel_template = get_post_meta($forum_page, '_wp_page_template',true);
+        $sel_template = get_post_meta($forum_page, '_wp_page_template', true);
 
-        if(empty($sel_template)){
+        if (empty($sel_template)) {
             $sel_template = 'default';
         }
 
@@ -237,25 +237,27 @@ class Settings
      */
     public static function forum_page_template_updated($option_name, $old_value, $option_value)
     {
-        if($option_name !== 'peerboard_options'){
+        if ($option_name !== 'peerboard_options') {
             return;
         }
 
-        if($old_value['forum_page_template'] === $option_value['forum_page_template']){
+        if (empty($old_value['forum_page_template']) || empty($option_value['forum_page_template'])) {
             return;
         }
 
-        $sel_template = $option_value['forum_page_template'] ?? 'default';
-        $forum_page = intval(get_option('peerboard_post'));
+        if ($old_value['forum_page_template'] !== $option_value['forum_page_template']) {
+            $sel_template = $option_value['forum_page_template'] ?? 'default';
+            $forum_page = intval(get_option('peerboard_post'));
 
-        // in wordpress if '' mean default template
-        if ($sel_template === 'default') {
-            $sel_template = '';
+            // in wordpress if '' mean default template
+            if ($sel_template === 'default') {
+                $sel_template = '';
+            }
+            /**
+             * Updating page template
+             */
+            update_post_meta($forum_page, '_wp_page_template', $sel_template);
         }
-        /**
-         * Updating page template
-         */
-        update_post_meta($forum_page, '_wp_page_template', $sel_template);
     }
 
     /**
