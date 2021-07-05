@@ -27,8 +27,8 @@ class PeerBoard
 		DEFINE('PEERBOARD_PROXY_PATH', 'peerboard_internal');
 		DEFINE('PEERBOARD_PLUGIN_VERSION', '0.7.9');
 		DEFINE('PEERBOARD_PLUGIN_URL', plugins_url('', __FILE__));
-    DEFINE('PEERBOARD_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
-		
+		DEFINE('PEERBOARD_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
+
 		require_once plugin_dir_path(__FILE__) . "/inc/settings.php";
 		require_once plugin_dir_path(__FILE__) . "functions.php";
 		require_once plugin_dir_path(__FILE__) . "/inc/api.php";
@@ -42,7 +42,7 @@ class PeerBoard
 		/**
 		 * Check if page have shortcode or not (for migration)
 		 */
-		add_filter( 'the_content', [__CLASS__, 'check_page_shortcode']);
+		add_filter('the_content', [__CLASS__, 'check_page_shortcode']);
 
 		/**
 		 * Creating shortcode
@@ -64,7 +64,6 @@ class PeerBoard
 		 * Sync users
 		 */
 		add_action('user_register', [__CLASS__, 'peerboard_sync_user_if_enabled']);
-
 	}
 
 	/**

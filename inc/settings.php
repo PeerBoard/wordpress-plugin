@@ -28,6 +28,11 @@ class Settings
 
         add_action('admin_init', [__CLASS__, 'peerboard_settings_init']);
         add_action('admin_menu', [__CLASS__, 'peerboard_options_page']);
+
+        /**
+         * After forum_page_template option updated
+         */
+        add_action('updated_option', [__CLASS__, 'forum_page_template_updated'], 10, 3);
     }
 
     /**
@@ -203,18 +208,13 @@ class Settings
     {
         global $peerboard_options;
         $id = 'forum_page_template';
-        $sel_template = $peerboard_options['forum_page_template'] ?? 'default';
         $forum_page = intval(get_option('peerboard_post'));
         $templates = get_page_templates($forum_page);
+        $sel_template = get_post_meta($forum_page, '_wp_page_template',true);
 
-        // in wordpress if '' mean default template
-        if ($sel_template === 'default') {
-            $sel_template = '';
+        if(empty($sel_template)){
+            $sel_template = 'default';
         }
-        /**
-         * Updating page template
-         */
-        update_post_meta($forum_page, '_wp_page_template', $sel_template);
 
         $options = [
             'default' => __('Default', 'peerboard'),
@@ -232,6 +232,31 @@ class Settings
         echo '</select>';
     }
 
+    /**
+     * After forum_page_template option updated
+     */
+    public static function forum_page_template_updated($option_name, $old_value, $option_value)
+    {
+        if($option_name !== 'peerboard_options'){
+            return;
+        }
+
+        if($old_value['forum_page_template'] === $option_value['forum_page_template']){
+            return;
+        }
+
+        $sel_template = $option_value['forum_page_template'] ?? 'default';
+        $forum_page = intval(get_option('peerboard_post'));
+
+        // in wordpress if '' mean default template
+        if ($sel_template === 'default') {
+            $sel_template = '';
+        }
+        /**
+         * Updating page template
+         */
+        update_post_meta($forum_page, '_wp_page_template', $sel_template);
+    }
 
     /**
      * Show settings page forms
