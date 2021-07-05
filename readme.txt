@@ -73,6 +73,8 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 9. Private or public. Control your community’s visibility, access rights and registration options.
 
 == Changelog ==
+= 0.8.0 =
+* page selector bug fixed
 
 = 0.7.9 =
 * Ability to select forum page template on plugin settings page
