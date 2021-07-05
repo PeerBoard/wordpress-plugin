@@ -187,6 +187,7 @@ class PeerBoard
 	function peerboard_uninstall()
 	{
 		delete_option('peerboard_recovery_token');
+		delete_option('peerboard_post');
 	}
 
 	/**
