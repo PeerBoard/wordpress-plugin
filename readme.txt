@@ -73,6 +73,8 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 9. Private or public. Control your community’s visibility, access rights and registration options.
 
 == Changelog ==
+= 0.8.1 =
+* Fixed bug for some user that do not have footer and header
 = 0.8.0 =
 * page selector bug fixed
 * page duplication issue solved
