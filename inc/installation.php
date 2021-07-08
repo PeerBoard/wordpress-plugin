@@ -12,6 +12,12 @@ function peerboard_install()
   global $peerboard_options;
   if (!current_user_can('activate_plugins'))
     return;
+  
+  $forum_page_exist = get_option("peerboard_post");
+
+  if($forum_page_exist){
+    return;
+  }
 
   $post_data = array(
     'post_title'    => 'Community',

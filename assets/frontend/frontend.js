@@ -304,6 +304,10 @@ __webpack_require__.r(__webpack_exports__);
     document.cookie = 'wp-peerboard-auth=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;';
   };
 
+  _peerboardSettings['onFail'] = () => {
+    console.log('Failed to load forum - please contact us at integrations@peerboard.com');
+  };
+
   docReady(function () {
     let target = document.getElementById('peerboard-forum');
 

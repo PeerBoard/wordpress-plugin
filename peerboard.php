@@ -4,7 +4,7 @@
  * Plugin Name: WordPress Forum Plugin – PeerBoard
  * Plugin URI: https://peerboard.com/integrations/wordpress-forum-plugin
  * Description: Forum, Community & User Profile Plugin
- * Version: 0.7.9
+ * Version: 0.8.1
  * Text Domain: peerboard
  * Domain Path: /languages
  * Author: <a href='https://peerboard.com' target='_blank'>Peerboard</a>, forumplugin
@@ -25,10 +25,10 @@ class PeerBoard
 	{
 
 		DEFINE('PEERBOARD_PROXY_PATH', 'peerboard_internal');
-		DEFINE('PEERBOARD_PLUGIN_VERSION', '0.7.9');
+		DEFINE('PEERBOARD_PLUGIN_VERSION', '0.8.1');
 		DEFINE('PEERBOARD_PLUGIN_URL', plugins_url('', __FILE__));
-    DEFINE('PEERBOARD_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
-		
+		DEFINE('PEERBOARD_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
+
 		require_once plugin_dir_path(__FILE__) . "/inc/settings.php";
 		require_once plugin_dir_path(__FILE__) . "functions.php";
 		require_once plugin_dir_path(__FILE__) . "/inc/api.php";
@@ -42,7 +42,7 @@ class PeerBoard
 		/**
 		 * Check if page have shortcode or not (for migration)
 		 */
-		add_filter( 'the_content', [__CLASS__, 'check_page_shortcode']);
+		add_filter('the_content', [__CLASS__, 'check_page_shortcode']);
 
 		/**
 		 * Creating shortcode
@@ -64,7 +64,6 @@ class PeerBoard
 		 * Sync users
 		 */
 		add_action('user_register', [__CLASS__, 'peerboard_sync_user_if_enabled']);
-
 	}
 
 	/**
@@ -96,14 +95,14 @@ class PeerBoard
 	{
 
 		if (!is_page()) {
-			return;
+			return $content;
 		}
 
 		$post_id = intval(get_option('peerboard_post'));
 		$current_page_id = get_the_ID();
 
 		if ($post_id !== $current_page_id) {
-			return;
+			return $content;
 		}
 
 		if (!has_shortcode($content, 'peerboard')) {
@@ -157,7 +156,8 @@ class PeerBoard
 
 		ob_start();
 
-		require_once plugin_dir_path(__FILE__) . '/templates/front-template.php';
+		// include over required_once potentially fixes missing main header menu on the page
+		include plugin_dir_path(__FILE__) . '/templates/front-template.php';
 
 		return ob_get_clean();
 	}
@@ -188,6 +188,7 @@ class PeerBoard
 	function peerboard_uninstall()
 	{
 		delete_option('peerboard_recovery_token');
+		delete_option('peerboard_post');
 	}
 
 	/**
