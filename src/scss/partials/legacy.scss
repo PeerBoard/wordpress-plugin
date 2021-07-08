@@ -27,10 +27,14 @@
     max-width: 100%!important;
 }
 
-.et_section_regular {
-	display: none;
-}
+// .et_section_regular {
+// 	display: none;
+// }
 
 article header {
 	display: none!important;
+}
+
+article h1.entry-title.main_title{
+	display:none;
 }
