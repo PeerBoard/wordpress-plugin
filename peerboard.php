@@ -156,6 +156,7 @@ class PeerBoard
 
 		ob_start();
 
+		// include over required_once potentially fixes missing main header menu on the page
 		include plugin_dir_path(__FILE__) . '/templates/front-template.php';
 
 		return ob_get_clean();
