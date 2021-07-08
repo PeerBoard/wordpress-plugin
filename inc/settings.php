@@ -33,6 +33,8 @@ class Settings
          * After forum_page_template option updated
          */
         add_action('updated_option', [__CLASS__, 'forum_page_template_updated'], 10, 3);
+
+        add_action('pre_update_option_peerboard_options', [__CLASS__, 'pre_update_option_peerboard_options'], 10, 3);
     }
 
     /**
@@ -231,6 +233,44 @@ class Settings
         }
         echo '</select>';
     }
+
+    /**
+     * On peerboard options update
+     *
+     * @param [type] $value
+     * @param [type] $old_value
+     * @param [type] $option
+     * @return void
+     */
+    public static function pre_update_option_peerboard_options($value, $old_value, $option)
+	{
+		if ($old_value === NULL || $old_value === false) {
+			return $value;
+		}
+		if ($value['prefix'] !== $old_value['prefix']) {
+			// Case where we are connecting blank community by auth token, that we need to reuse old prefix | 'community'
+			if ($value['prefix'] === '' || $value['prefix'] === NULL) {
+				if ($old_value['prefix'] === '' || $old_value['prefix'] === NULL) {
+					$old_value['prefix'] = 'community';
+				}
+				$value['prefix'] = $old_value['prefix'];
+			}
+			peerboard_update_post_slug($value['prefix']);
+			peerboard_post_integration($value['auth_token'], $value['prefix'], peerboard_get_domain());
+		}
+
+		if ($value['auth_token'] !== $old_value['auth_token']) {
+			$community = peerboard_get_community($value['auth_token']);
+			$value['community_id'] = $community['id'];
+			peerboard_send_analytics('set_auth_token', $community['id']);
+			peerboard_post_integration($value['auth_token'], $value['prefix'], peerboard_get_domain());
+			if ($old_value['auth_token'] !== '' && $old_value['auth_token'] !== NULL) {
+				peerboard_drop_integration($old_value['auth_token']);
+			}
+		}
+
+		return $value;
+	}
 
     /**
      * After forum_page_template option updated
