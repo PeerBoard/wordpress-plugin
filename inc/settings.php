@@ -243,34 +243,34 @@ class Settings
      * @return void
      */
     public static function pre_update_option_peerboard_options($value, $old_value, $option)
-	{
-		if ($old_value === NULL || $old_value === false) {
-			return $value;
-		}
-		if ($value['prefix'] !== $old_value['prefix']) {
-			// Case where we are connecting blank community by auth token, that we need to reuse old prefix | 'community'
-			if ($value['prefix'] === '' || $value['prefix'] === NULL) {
-				if ($old_value['prefix'] === '' || $old_value['prefix'] === NULL) {
-					$old_value['prefix'] = 'community';
-				}
-				$value['prefix'] = $old_value['prefix'];
-			}
-			peerboard_update_post_slug($value['prefix']);
-			peerboard_post_integration($value['auth_token'], $value['prefix'], peerboard_get_domain());
-		}
+    {
+        if ($old_value === NULL || $old_value === false) {
+            return $value;
+        }
+        if ($value['prefix'] !== $old_value['prefix']) {
+            // Case where we are connecting blank community by auth token, that we need to reuse old prefix | 'community'
+            if ($value['prefix'] === '' || $value['prefix'] === NULL) {
+                if ($old_value['prefix'] === '' || $old_value['prefix'] === NULL) {
+                    $old_value['prefix'] = 'community';
+                }
+                $value['prefix'] = $old_value['prefix'];
+            }
+            peerboard_update_post_slug($value['prefix']);
+            peerboard_post_integration($value['auth_token'], $value['prefix'], peerboard_get_domain());
+        }
 
-		if ($value['auth_token'] !== $old_value['auth_token']) {
-			$community = peerboard_get_community($value['auth_token']);
-			$value['community_id'] = $community['id'];
-			peerboard_send_analytics('set_auth_token', $community['id']);
-			peerboard_post_integration($value['auth_token'], $value['prefix'], peerboard_get_domain());
-			if ($old_value['auth_token'] !== '' && $old_value['auth_token'] !== NULL) {
-				peerboard_drop_integration($old_value['auth_token']);
-			}
-		}
+        if ($value['auth_token'] !== $old_value['auth_token']) {
+            $community = peerboard_get_community($value['auth_token']);
+            $value['community_id'] = $community['id'];
+            peerboard_send_analytics('set_auth_token', $community['id']);
+            peerboard_post_integration($value['auth_token'], $value['prefix'], peerboard_get_domain());
+            if ($old_value['auth_token'] !== '' && $old_value['auth_token'] !== NULL) {
+                peerboard_drop_integration($old_value['auth_token']);
+            }
+        }
 
-		return $value;
-	}
+        return $value;
+    }
 
     /**
      * After forum_page_template option updated
@@ -281,7 +281,7 @@ class Settings
             return;
         }
 
-        if (empty($old_value['forum_page_template']) || empty($option_value['forum_page_template'])) {
+        if (empty($option_value['forum_page_template'])) {
             return;
         }
 
