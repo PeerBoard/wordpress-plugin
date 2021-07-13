@@ -118,7 +118,11 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 * Fix: plugin reactivation now uses old community instead of creating new one
 
 == Upgrade Notice ==
-
+= 0.8.1 =
+* Fixed bug for some user that do not have footer and header
+= 0.8.0 =
+* page selector bug fixed
+* page duplication issue solved
 = 0.7.9 =
 * Ability to select forum page template on plugin settings page
 * Added ability to translate settings page
