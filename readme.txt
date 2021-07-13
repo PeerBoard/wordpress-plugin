@@ -4,7 +4,7 @@ Tags: forum, forums, community, discussion, knowledge base, membership, member, 
 Requires at least: 5.1
 Tested up to: 5.7
 Requires PHP: 5.5
-Stable tag: trunk
+Stable tag: 0.8.0
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -45,25 +45,21 @@ PeerBoard’s modern look and feel makes it a sight to behold and delight to use
 2. Go to PeerBoard > Settings and set required fields
 
 == Frequently Asked Questions ==
-Q: Do I need to know any coding to use this plugin?
-
+**Do I need to know any coding to use this plugin?**
 No, we have built PeerBoard to be super easy to use and does not require you to manually build shortcodes or have any coding knowledge.
-
-Q: Where can I see a demo?
-
-There’s a live demo [here](http://www.peerboard.com).
-
-Q: Is PeerBoard mobile responsive?
-
+**Where can I see a sample community?**
+Check out our [product community](https://community.peerboard.com/).
+**Is PeerBoard mobile responsive?**
 Yes. PeerBoard is designed to adjust nicely to any screen, including phones, tablets and desktops.
-
-Q: How do I get support?
-
+**How do I get support?**
 If you have trouble with PeerBoard plugin, you can get help on the support forums [here](https://community.peerboard.com/) or just drop us an email at support@peerboard.com.
-
-Q: I have a different question than listed here.
-
+**I have a different question than listed here.**
 Check out our support forums [here](https://community.peerboard.com/) or send us an email at support@peerboard.com.
+
+== Translations ==
+
+* English - default, always included
+* Russian - ru_RU
 
 == Screenshots ==
 1. Newsfeed style. Instead of a traditional forum, PeerBoard makes it easy to stay up to date with a single Facebook-like feed.
@@ -77,6 +73,20 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 9. Private or public. Control your community’s visibility, access rights and registration options.
 
 == Changelog ==
+= 0.8.1 =
+* Fixed bug for some user that do not have footer and header
+= 0.8.0 =
+* page selector bug fixed
+* page duplication issue solved
+= 0.7.9 =
+* Ability to select forum page template on plugin settings page
+* Added ability to translate settings page
+* Fixed some minor issues
+* Updated user sync logic
+* Some Refactoring
+* Fixed readme FAQ block to show correctly
+* Redirecting issue solved and function refactored
+* Now taking page url from wordpress not from api response url
 = 0.7.8 =
 * Added shortcode to be able add content before or after on forum page
 = 0.7.7 =
@@ -106,3 +116,17 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 * Fix: login out from wordpress now leads to peerboard logout
 = 0.6.4 - 2021-01-24 =
 * Fix: plugin reactivation now uses old community instead of creating new one
+
+== Upgrade Notice ==
+
+= 0.7.9 =
+* Ability to select forum page template on plugin settings page
+* Added ability to translate settings page
+* Fixed some minor issues
+* Updated user sync logic
+* Some Refactoring
+* Fixed readme FAQ block to show correctly
+* Redirecting issue solved and function refactored
+* Now taking page url from wordpress not from api response url
+= 0.7.8 =
+* Added shortcode to be able add content before or after on forum page

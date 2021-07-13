@@ -2,9 +2,9 @@
 
 /**
  * Plugin Name: WordPress Forum Plugin – PeerBoard
- * Plugin URI: https://peerboard.com
+ * Plugin URI: https://peerboard.com/integrations/wordpress-forum-plugin
  * Description: Forum, Community & User Profile Plugin
- * Version: 0.7.8
+ * Version: 0.8.1
  * Text Domain: peerboard
  * Domain Path: /languages
  * Author: <a href='https://peerboard.com' target='_blank'>Peerboard</a>, forumplugin
@@ -25,30 +25,15 @@ class PeerBoard
 	{
 
 		DEFINE('PEERBOARD_PROXY_PATH', 'peerboard_internal');
-		DEFINE('PEERBOARD_PLUGIN_VERSION', '0.7.8');
+		DEFINE('PEERBOARD_PLUGIN_VERSION', '0.8.1');
 		DEFINE('PEERBOARD_PLUGIN_URL', plugins_url('', __FILE__));
 		DEFINE('PEERBOARD_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
-		$peerboard_env_mode = getenv("PEERBOARD_ENV");
-		if ($peerboard_env_mode === "local") {
-			DEFINE('PEERBOARD_EMBED_URL', 'http://static.local.is/embed/embed.js');
-			DEFINE('PEERBOARD_URL', 'http://local.is/');
-			DEFINE('PEERBOARD_API_BASE', 'http://api.local.is/v1/');
-		} else if ($peerboard_env_mode === "dev") {
-			DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.dev/embed/embed.js');
-			DEFINE('PEERBOARD_URL', 'https://peerboard.dev/');
-			DEFINE('PEERBOARD_API_BASE', 'https://api.peerboard.dev/v1/');
-		} else {
-			DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.com/embed/embed.js');
-			DEFINE('PEERBOARD_URL', 'https://peerboard.com/');
-			DEFINE('PEERBOARD_API_BASE', 'https://api.peerboard.com/v1/');
-		}
-
+		require_once plugin_dir_path(__FILE__) . "/inc/settings.php";
 		require_once plugin_dir_path(__FILE__) . "functions.php";
-		require_once plugin_dir_path(__FILE__) . "settings.php";
-		require_once plugin_dir_path(__FILE__) . "api.php";
-		require_once plugin_dir_path(__FILE__) . "analytics.php";
-		require_once plugin_dir_path(__FILE__) . "installation.php";
+		require_once plugin_dir_path(__FILE__) . "/inc/api.php";
+		require_once plugin_dir_path(__FILE__) . "/inc/analytics.php";
+		require_once plugin_dir_path(__FILE__) . "/inc/installation.php";
 
 		add_action('plugins_loaded', [__CLASS__, 'true_load_plugin_textdomain']);
 
@@ -90,11 +75,6 @@ class PeerBoard
 		 * Sync users
 		 */
 		add_action('user_register', [__CLASS__, 'peerboard_sync_user_if_enabled']);
-
-		/**
-		 * Feedback dialog on deactivation
-		 */
-		add_action('admin_footer', [__CLASS__, 'add_deactivation_feedback_dialog_box']);
 	}
 
 	/**
@@ -126,14 +106,14 @@ class PeerBoard
 	{
 
 		if (!is_page()) {
-			return;
+			return $content;
 		}
 
 		$post_id = intval(get_option('peerboard_post'));
 		$current_page_id = get_the_ID();
 
 		if ($post_id !== $current_page_id) {
-			return;
+			return $content;
 		}
 
 		if (!has_shortcode($content, 'peerboard')) {
@@ -181,6 +161,14 @@ class PeerBoard
 	public static function shortcode($atts)
 	{
 		global $peerboard_options;
+
+		$post_id = intval(get_option('peerboard_post'));
+		$current_page_id = get_the_ID();
+
+		if ($post_id !== $current_page_id) {
+			return;
+		}
+
 		/**
 		 * Init styles and scripts
 		 */
@@ -192,7 +180,8 @@ class PeerBoard
 
 		ob_start();
 
-		require_once plugin_dir_path(__FILE__) . '/templates/front-template.php';
+		// include over required_once potentially fixes missing main header menu on the page
+		include plugin_dir_path(__FILE__) . '/templates/front-template.php';
 
 		return ob_get_clean();
 	}
@@ -223,6 +212,7 @@ class PeerBoard
 	function peerboard_uninstall()
 	{
 		delete_option('peerboard_recovery_token');
+		delete_option('peerboard_post');
 	}
 
 	/**
@@ -242,7 +232,7 @@ class PeerBoard
 	{
 		global $peerboard_options;
 		$sync_enabled = get_option('peerboard_users_sync_enabled');
-		if ($sync_enabled === '1') {
+		if ($sync_enabled) {
 			$user = get_userdata($user_id);
 			$userdata = array(
 				'email' =>  $user->user_email,
