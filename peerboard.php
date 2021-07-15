@@ -33,7 +33,7 @@ class PeerBoard
 		require_once plugin_dir_path(__FILE__) . "functions.php";
 		require_once plugin_dir_path(__FILE__) . "/inc/API.php";
 		require_once plugin_dir_path(__FILE__) . "/inc/analytics.php";
-		require_once plugin_dir_path(__FILE__) . "/inc/installation.php";
+		require_once plugin_dir_path(__FILE__) . "/inc/Installation.php";
 
 		add_action('plugins_loaded', [__CLASS__, 'true_load_plugin_textdomain']);
 
@@ -87,11 +87,11 @@ class PeerBoard
 		global $peerboard_options;
 		$peerboard_options = get_option('peerboard_options', array());
 		if (!array_key_exists('peerboard_version_synced', $peerboard_options)) {
-			peerboard_post_integration($peerboard_options['auth_token'], $peerboard_options['prefix'], peerboard_get_domain());
+			API::peerboard_post_integration($peerboard_options['auth_token'], $peerboard_options['prefix'], peerboard_get_domain());
 			$peerboard_options['peerboard_version_synced'] = PEERBOARD_PLUGIN_VERSION;
 			update_option('peerboard_options', $peerboard_options);
 		} else if ($peerboard_options['peerboard_version_synced'] != PEERBOARD_PLUGIN_VERSION) {
-			peerboard_post_integration($peerboard_options['auth_token'], $peerboard_options['prefix'], peerboard_get_domain());
+			API::peerboard_post_integration($peerboard_options['auth_token'], $peerboard_options['prefix'], peerboard_get_domain());
 			$peerboard_options['peerboard_version_synced'] = PEERBOARD_PLUGIN_VERSION;
 			update_option('peerboard_options', $peerboard_options);
 		}

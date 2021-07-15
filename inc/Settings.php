@@ -256,16 +256,16 @@ class Settings
                 $value['prefix'] = $old_value['prefix'];
             }
             peerboard_update_post_slug($value['prefix']);
-            peerboard_post_integration($value['auth_token'], $value['prefix'], peerboard_get_domain());
+            API::peerboard_post_integration($value['auth_token'], $value['prefix'], peerboard_get_domain());
         }
 
         if ($value['auth_token'] !== $old_value['auth_token']) {
-            $community = peerboard_get_community($value['auth_token']);
+            $community = API::peerboard_get_community($value['auth_token']);
             $value['community_id'] = $community['id'];
             peerboard_send_analytics('set_auth_token', $community['id']);
-            peerboard_post_integration($value['auth_token'], $value['prefix'], peerboard_get_domain());
+            API::peerboard_post_integration($value['auth_token'], $value['prefix'], peerboard_get_domain());
             if ($old_value['auth_token'] !== '' && $old_value['auth_token'] !== NULL) {
-                peerboard_drop_integration($old_value['auth_token']);
+                API::peerboard_drop_integration($old_value['auth_token']);
             }
         }
 
