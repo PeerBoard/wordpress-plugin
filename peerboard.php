@@ -29,9 +29,9 @@ class PeerBoard
 		DEFINE('PEERBOARD_PLUGIN_URL', plugins_url('', __FILE__));
 		DEFINE('PEERBOARD_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
-		require_once plugin_dir_path(__FILE__) . "/inc/settings.php";
+		require_once plugin_dir_path(__FILE__) . "/inc/Settings.php";
 		require_once plugin_dir_path(__FILE__) . "functions.php";
-		require_once plugin_dir_path(__FILE__) . "/inc/api.php";
+		require_once plugin_dir_path(__FILE__) . "/inc/API.php";
 		require_once plugin_dir_path(__FILE__) . "/inc/analytics.php";
 		require_once plugin_dir_path(__FILE__) . "/inc/installation.php";
 
