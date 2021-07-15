@@ -5,8 +5,45 @@ namespace PEBO;
 // Exit if accessed directly
 defined('ABSPATH') || exit;
 
+/**
+ * Class for API requests
+ */
 class API
 {
+
+  public static function init()
+  {
+    /**
+     * Create user on PeerBoard on user registration on WordPress
+     */
+    add_action('user_register', [__CLASS__, 'sync_user_if_enabled']);
+  }
+
+  /**
+   * Create user on PeerBoard on user registration on WordPress
+   */
+  public static function sync_user_if_enabled($user_id)
+  {
+    global $peerboard_options;
+    $sync_enabled = get_option('peerboard_users_sync_enabled');
+    if ($sync_enabled) {
+      $user = get_userdata($user_id);
+      $userdata = array(
+        'email' =>  $user->user_email,
+        'bio' => urlencode($user->description),
+        'profile_url' => get_avatar_url($user->user_email),
+        'name' => $user->display_name,
+        'last_name' => ''
+      );
+      if ($peerboard_options['expose_user_data'] == '1') {
+        $userdata['name'] = $user->first_name;
+        $userdata['last_name'] = $user->last_name;
+      }
+      self::peerboard_create_user($peerboard_options['auth_token'], $userdata);
+      $count = intval(get_option('peerboard_users_count'));
+      update_option('peerboard_users_count', $count + 1);
+    }
+  }
 
   /**
    * PeerBoard integrations request
@@ -178,3 +215,5 @@ class API
     echo $response;
   }
 }
+
+API::init();
