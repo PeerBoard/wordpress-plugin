@@ -70,9 +70,11 @@ export default () => {
                     // disable all actives 
                     modal.querySelectorAll('.reason.active').forEach((elem) => {
                         elem.classList.remove('active')
+                        elem.querySelector('input.main_reason').checked = false
                     })
 
                     elem.classList.add('active')
+                    elem.querySelector('input.main_reason').checked = true
                 }
             })
         }
