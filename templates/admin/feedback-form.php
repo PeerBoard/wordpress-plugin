@@ -11,7 +11,7 @@
                         <li class="reason reason_<?php echo $reason['id'] ?>">
                             <label>
                                 <span>
-                                    <input type="radio" class="main_reason" value="<?php esc_html_e($reason['text']) ?>" />
+                                    <input type="radio" name="reason_<?php echo $reason['id'] ?>" class="main_reason" value="<?php esc_html_e($reason['text']) ?>" />
                                 </span>
                                 <span><?php esc_html_e($reason['text']) ?></span>
                                 <?php if (!empty($reason['input_text'])) : ?>
