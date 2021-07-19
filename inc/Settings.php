@@ -15,15 +15,18 @@ class Settings
                 DEFINE('PEERBOARD_EMBED_URL', 'http://static.local.is/embed/embed.js');
                 DEFINE('PEERBOARD_URL', 'http://local.is/');
                 DEFINE('PEERBOARD_API_BASE', 'http://api.local.is/v1/');
+                DEFINE('PEERBOARD_API_URL', 'http://api.local.is/');
             } else if (PEERBOARD_ENV === "dev") {
                 DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.dev/embed/embed.js');
                 DEFINE('PEERBOARD_URL', 'https://peerboard.dev/');
                 DEFINE('PEERBOARD_API_BASE', 'https://api.peerboard.dev/v1/');
+                DEFINE('PEERBOARD_API_URL', 'https://api.peerboard.dev/');
             }
         } else {
             DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.com/embed/embed.js');
             DEFINE('PEERBOARD_URL', 'https://peerboard.com/');
             DEFINE('PEERBOARD_API_BASE', 'https://api.peerboard.com/v1/');
+            DEFINE('PEERBOARD_API_URL', 'https://api.peerboard.dev/');
         }
 
         add_action('admin_init', [__CLASS__, 'peerboard_settings_init']);
@@ -33,6 +36,8 @@ class Settings
          * After forum_page_template option updated
          */
         add_action('updated_option', [__CLASS__, 'forum_page_template_updated'], 10, 3);
+
+        add_action('pre_update_option_peerboard_options', [__CLASS__, 'pre_update_option_peerboard_options'], 10, 3);
     }
 
     /**
@@ -233,6 +238,44 @@ class Settings
     }
 
     /**
+     * On peerboard options update
+     *
+     * @param [type] $value
+     * @param [type] $old_value
+     * @param [type] $option
+     * @return void
+     */
+    public static function pre_update_option_peerboard_options($value, $old_value, $option)
+    {
+        if ($old_value === NULL || $old_value === false) {
+            return $value;
+        }
+        if ($value['prefix'] !== $old_value['prefix']) {
+            // Case where we are connecting blank community by auth token, that we need to reuse old prefix | 'community'
+            if ($value['prefix'] === '' || $value['prefix'] === NULL) {
+                if ($old_value['prefix'] === '' || $old_value['prefix'] === NULL) {
+                    $old_value['prefix'] = 'community';
+                }
+                $value['prefix'] = $old_value['prefix'];
+            }
+            peerboard_update_post_slug($value['prefix']);
+            API::peerboard_post_integration($value['auth_token'], $value['prefix'], peerboard_get_domain());
+        }
+
+        if ($value['auth_token'] !== $old_value['auth_token']) {
+            $community = API::peerboard_get_community($value['auth_token']);
+            $value['community_id'] = $community['id'];
+            peerboard_send_analytics('set_auth_token', $community['id']);
+            API::peerboard_post_integration($value['auth_token'], $value['prefix'], peerboard_get_domain());
+            if ($old_value['auth_token'] !== '' && $old_value['auth_token'] !== NULL) {
+                API::peerboard_drop_integration($old_value['auth_token']);
+            }
+        }
+
+        return $value;
+    }
+
+    /**
      * After forum_page_template option updated
      */
     public static function forum_page_template_updated($option_name, $old_value, $option_value)
@@ -241,7 +284,7 @@ class Settings
             return;
         }
 
-        if (empty($old_value['forum_page_template']) || empty($option_value['forum_page_template'])) {
+        if (empty($option_value['forum_page_template'])) {
             return;
         }
 

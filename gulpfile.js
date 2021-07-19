@@ -8,6 +8,10 @@ const config = {
     frontend: {
       src: "src/js/frontend.js",
       dest: "assets/frontend/"
+    },
+    admin: {
+      src: "src/js/admin.js",
+      dest: "assets/admin/"
     }
   },
   styles: {
@@ -15,6 +19,12 @@ const config = {
       src: "src/scss/editor.scss",
       dest: "assets/editor",
       file: "main.css",
+      watchSrc: "src/scss/**/*.scss"
+    },
+    admin: {
+      src: "src/scss/admin.scss",
+      dest: "assets/admin",
+      file: "admin.css",
       watchSrc: "src/scss/**/*.scss"
     },
     frontend: {
