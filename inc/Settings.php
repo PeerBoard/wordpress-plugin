@@ -26,7 +26,7 @@ class Settings
             DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.com/embed/embed.js');
             DEFINE('PEERBOARD_URL', 'https://peerboard.com/');
             DEFINE('PEERBOARD_API_BASE', 'https://api.peerboard.com/v1/');
-            DEFINE('PEERBOARD_API_URL', 'https://api.peerboard.dev/');
+            DEFINE('PEERBOARD_API_URL', 'https://api.peerboard.com/');
         }
 
         add_action('admin_init', [__CLASS__, 'peerboard_settings_init']);
