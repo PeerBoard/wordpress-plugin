@@ -17,6 +17,9 @@ class API
      * Create user on PeerBoard on user registration on WordPress
      */
     add_action('user_register', [__CLASS__, 'sync_user_if_enabled']);
+
+    // admin ajax
+    add_action('wp_ajax_peerboard_feedback_request', [__CLASS__, 'feedback_request']);
   }
 
   /**
@@ -186,33 +189,36 @@ class API
    */
   public static  function feedback_request()
   {
-    $curl = curl_init();
-    curl_setopt_array($curl, array(
-      CURLOPT_URL => 'https://api.peerboard.dev/events-ingest', // https://api.(peerboard.com|peerboard.dev|local.is)/events-ingest
-      CURLOPT_RETURNTRANSFER => true,
-      CURLOPT_ENCODING => '',
-      CURLOPT_MAXREDIRS => 10,
-      CURLOPT_TIMEOUT => 0,
-      CURLOPT_FOLLOWLOCATION => true,
-      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_CUSTOMREQUEST => 'POST',
-      CURLOPT_POSTFIELDS => '{
-    "type": "plugin_uninstalled",
-    "platform": "wordpress",
-    "email": "vlad@peerboard.com",
-    "feedback": "Nothing works as expected", 
-    "reason": "other",
-    "community_id": 123123123,
-    "website": "test.com",
-    "main_url": "https://test.com/community"
-}',
-      CURLOPT_HTTPHEADER => array(
-        'Content-Type: application/json'
+    $options = get_option('peerboard_options');
+    // https://api.(peerboard.com|peerboard.dev|local.is)/events
+    $api_link = PEERBOARD_API_URL . 'events';
+    $body = [
+      'type' => 'plugin_uninstalled',
+      "platform" => "wordpress",
+      "email" => get_option('admin_email'),
+      "feedback" => !empty($_POST['additional_info']) ? sanitize_text_field($_POST['additional_info']) : '',
+      "reason" => $_POST['main_reason'] ?? '',
+      "community_id" => $options['community_id'],
+      "website" => get_site_url(),
+      "main_url" => get_site_url() . "/" . $options['prefix']
+    ];
+
+    $response = wp_remote_post($api_link, [
+      'timeout'     => 45,
+      'redirection' => 10,
+      'headers' => array(
+        "Content-type" => "application/json",
+        "Partner" => "wordpress_default_partner_token"
       ),
-    ));
-    $response = curl_exec($curl);
-    curl_close($curl);
-    echo $response;
+      'body' => json_encode($body),
+      'sslverify' => false,
+    ]);
+
+    if (is_wp_error($response)) {
+      wp_send_json_error($response);
+    }
+
+    wp_send_json_success(wp_remote_retrieve_body($response));
   }
 }
 

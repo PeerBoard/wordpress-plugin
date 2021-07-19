@@ -11,7 +11,7 @@
                         <li class="reason reason_<?php echo $reason['id'] ?>">
                             <label>
                                 <span>
-                                    <input type="radio" name="selected-reason" value="<?php esc_html_e($reason['text']) ?>" />
+                                    <input type="radio" class="main_reason" value="<?php esc_html_e($reason['text']) ?>" />
                                 </span>
                                 <span><?php esc_html_e($reason['text']) ?></span>
                                 <?php if (!empty($reason['input_text'])) : ?>
@@ -24,8 +24,8 @@
             </div>
         </div>
         <div class="peerboard-modal-footer">
-            <a href="#" class="button button-secondary button-deactivate"><?php _e('Deactivate', 'peerboard') ?></a>
-            <a href="#" class="button button-secondary button-close"><?php _e('Cancel', 'peerboard') ?></a>
+            <button class="button button-secondary button-deactivate"><?php _e('Deactivate', 'peerboard') ?></button>
+            <button class="button button-secondary button-close"><?php _e('Cancel', 'peerboard') ?></button>
         </div>
     </div>
 </div>

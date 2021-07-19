@@ -38,10 +38,10 @@ class PeerBoard
 
 		add_action('plugins_loaded', [__CLASS__, 'true_load_plugin_textdomain']);
 
-		/**
-		 * Admin script
-		 */
-		add_action( 'admin_enqueue_scripts', [__CLASS__, 'load_admin_scripts']);
+		// Admin scripts
+		add_action('admin_enqueue_scripts', [__CLASS__, 'load_admin_scripts']);
+		// Get feedback dialog box by ajax
+		add_action('wp_ajax_peerboard_add_deactivation_feedback_dialog_box',[__CLASS__,'add_deactivation_feedback_dialog_box']);
 	}
 
 	/**
@@ -49,12 +49,14 @@ class PeerBoard
 	 *
 	 * @return void
 	 */
-	public static function load_admin_scripts(){
+	public static function load_admin_scripts()
+	{
 		$assets = require PEERBOARD_PLUGIN_DIR_PATH . '/assets/admin/admin.asset.php';
 
 		wp_enqueue_style('peerboard_integration_styles', plugin_dir_url(__FILE__) . "/assets/admin/admin.css", array(), $assets['version']);
-		wp_enqueue_script('peerboard-admin-js', plugin_dir_url(__FILE__) . "/assets/admin/admin.js", array(), $assets['version'],true);
+		wp_enqueue_script('peerboard-admin-js', plugin_dir_url(__FILE__) . "/assets/admin/admin.js", array(), $assets['version'], true);
 
+		wp_localize_script('peerboard-admin-js', 'peerboard_admin', ['ajax_url' => admin_url('admin-ajax.php')]);
 	}
 
 	/**
@@ -104,32 +106,31 @@ class PeerBoard
 		$reasons = [
 			[
 				'id' => '1',
-				'text' => __('I found a better plugin','peerboard'),
-				'input_text' => __("What's the plugin's name?",'peerboard')
+				'text' => __('I found a better plugin', 'peerboard'),
+				'input_text' => __("What's the plugin's name?", 'peerboard')
 			],
 			[
 				'id' => '2',
-				'text' => __("The plugin didn't work",'peerboard'),
-			], 
+				'text' => __("The plugin didn't work", 'peerboard'),
+			],
 			[
 				'id' => '3',
-				'text' => __("I don't like to share my information with you",'peerboard'),
-			], 
+				'text' => __("I don't like to share my information with you", 'peerboard'),
+			],
 			[
 				'id' => '4',
-				'text' => __("It's a temporary deactivation. I'm just debugging an issue.",'peerboard'),
+				'text' => __("It's a temporary deactivation. I'm just debugging an issue.", 'peerboard'),
 			],
 			[
 				'id' => '5',
-				'text' => __("Other",'peerboard'),
-				'input_text' => __("Kindly tell us the reason so we can improve.",'peerboard')
-			], 
+				'text' => __("Other", 'peerboard'),
+				'input_text' => __("Kindly tell us the reason so we can improve.", 'peerboard')
+			],
 		];
 
 		ob_start();
-		
-		require PEERBOARD_PLUGIN_DIR_PATH.'/templates/admin/feedback-form.php';
-		echo  ob_get_clean();
+		require PEERBOARD_PLUGIN_DIR_PATH . '/templates/admin/feedback-form.php';
+		wp_send_json_success(ob_get_clean());
 	}
 }
 

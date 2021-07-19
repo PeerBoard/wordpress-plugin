@@ -1,51 +1,140 @@
 export default () => {
-    let deactivate_button = document.getElementById('deactivate-peerboard'),
-        modal = document.getElementById('peerboard-modal-deactivation-feedback'),
-        close = modal.querySelector('.button-close'),
-        modal_deactivation_button = modal.querySelector('.button-deactivate'),
-        deactivation_url = deactivate_button.href,
-        reasons = modal.querySelectorAll('.reason')
+    function modal_init() {
+        let deactivate_button = document.getElementById('deactivate-peerboard');
 
-    /**
-     * Open modal
-     * @param {*} ev 
-     */
-    deactivate_button.onclick = (ev) => {
-        ev.preventDefault()
-        modal.classList.add('active')
-        modal_deactivation_button.href = deactivation_url
+        if(!deactivate_button){
+            return;
+        }
 
-        reasons_logic()
-    }
+        let modal,
+            close,
+            modal_deactivation_button,
+            deactivation_url = deactivate_button.href,
+            reasons;
 
-    /**
-     * Close modal
-     */
-    close.onclick = () => {
-        modal.classList.remove('active')
-    }
-
-    function reasons_logic() {
         /**
-             * If reasons list have additional field show
-             */
-        reasons.forEach((elem, key) => {
-            elem.onclick = (ev) => {
-                // disable all actives 
-                modal.querySelectorAll('.additional_field.active').forEach((elem)=>{
-                    elem.classList.remove('active')
-                })
+         * Open modal
+         * @param {*} ev 
+         */
+        deactivate_button.onclick = (ev) => {
+            ev.preventDefault()
 
-                let additional_field = elem.querySelector('.additional_field')
+            let formData = new FormData();
 
-                if (additional_field) {
-                    additional_field.classList.add('active')
+            formData.append('action', 'peerboard_add_deactivation_feedback_dialog_box');
+
+            fetch(window.peerboard_admin.ajax_url, {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        let response = data.data
+
+                        document.querySelector('body').append(stringToHTML(response))
+
+                        modal = document.getElementById('peerboard-modal-deactivation-feedback')
+                        close = modal.querySelector('.button-close')
+                        modal_deactivation_button = modal.querySelector('.button-deactivate')
+                        reasons = modal.querySelectorAll('.reason')
+
+                        modal.classList.add('active')
+                        modal_deactivation_button.href = deactivation_url
+
+                        // Close modal
+                        close.onclick = (ev) => {
+                            ev.preventDefault()
+                            modal.classList.remove('active')
+                        }
+
+                        reasons_logic()
+
+                        modal_deactivation_button.onclick = (ev) => {
+                            ev.preventDefault()
+                            modal_deactivation_button.disabled = true
+                            send_feedback()
+                        }
+                    } else {
+                        console.log(data);
+                    }
+                }).catch()
+        }
+
+        function reasons_logic() {
+            /**
+            * If reasons list have additional field show
+            */
+            reasons.forEach((elem, key) => {
+                elem.onclick = (ev) => {
+                    // disable all actives 
+                    modal.querySelectorAll('.reason.active').forEach((elem) => {
+                        elem.classList.remove('active')
+                    })
+
+                    elem.classList.add('active')
                 }
+            })
+        }
 
+        /**
+         * Send feedback
+         */
+        function send_feedback() {
+            let formData = new FormData(),
+                main_reason_wrap = modal.querySelector('.reason.active');
+            if (main_reason_wrap) {
+                let main_reason = main_reason_wrap.querySelector('input.main_reason').value,
+                    additional_info = main_reason_wrap.querySelector('.additional_field input').value
+                formData.append('main_reason', main_reason);
+                formData.append('additional_info', additional_info);
             }
-        })
+
+            formData.append('action', 'peerboard_feedback_request');
+
+            fetch(window.peerboard_admin.ajax_url, {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        let response = data.data
+
+                        window.location.href = deactivation_url
+                    } else {
+                        console.log(data);
+                    }
+                }).catch()
+        }
+    }
+
+    /**
+    * Load after full page ready + some seconds 
+    */
+    custom_on_load(modal_init);
+
+    /**
+    * On load custom function
+    * @param {*} callback 
+    */
+    function custom_on_load(callback) {
+        if (window.addEventListener)
+            window.addEventListener("load", callback, false);
+        else if (window.attachEvent)
+            window.attachEvent("onload", callback);
+        else window.onload = callback;
     }
 
 
-
+    /**
+    * Convert a template string into HTML DOM nodes
+    * @param  {String} str The template string
+    * @return {Node}       The template HTML
+    */
+    function stringToHTML(str) {
+        var dom = document.createElement('div');
+        dom.innerHTML = str;
+        return dom;
+    };
 }

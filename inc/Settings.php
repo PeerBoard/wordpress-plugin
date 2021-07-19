@@ -15,15 +15,18 @@ class Settings
                 DEFINE('PEERBOARD_EMBED_URL', 'http://static.local.is/embed/embed.js');
                 DEFINE('PEERBOARD_URL', 'http://local.is/');
                 DEFINE('PEERBOARD_API_BASE', 'http://api.local.is/v1/');
+                DEFINE('PEERBOARD_API_URL', 'http://api.local.is/');
             } else if (PEERBOARD_ENV === "dev") {
                 DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.dev/embed/embed.js');
                 DEFINE('PEERBOARD_URL', 'https://peerboard.dev/');
                 DEFINE('PEERBOARD_API_BASE', 'https://api.peerboard.dev/v1/');
+                DEFINE('PEERBOARD_API_URL', 'https://api.peerboard.dev/');
             }
         } else {
             DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.com/embed/embed.js');
             DEFINE('PEERBOARD_URL', 'https://peerboard.com/');
             DEFINE('PEERBOARD_API_BASE', 'https://api.peerboard.com/v1/');
+            DEFINE('PEERBOARD_API_URL', 'https://api.peerboard.dev/');
         }
 
         add_action('admin_init', [__CLASS__, 'peerboard_settings_init']);

@@ -13,21 +13,25 @@
         display: block;
         position: fixed;
         background: white;
-        padding: 20px 10px;
+        padding: 0px 20px 20px;
         width: 596px;
         max-width: 100%;
     }
     &.active {
         display: flex;
     }
-    .additional_field {
-        display: none;
-        input {
-            width: 250px;
-            margin: 10px 20px;
+    .reason {
+        .additional_field {
+            display: none;
+            input {
+                width: 250px;
+                margin: 10px 20px;
+            }
         }
-        &.active{
-            display: block;
+        &.active {
+            .additional_field {
+                display: block;
+            }
         }
     }
 }
