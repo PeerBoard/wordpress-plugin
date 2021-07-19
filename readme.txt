@@ -4,7 +4,7 @@ Tags: forum, forums, community, discussion, knowledge base, membership, member, 
 Requires at least: 5.1
 Tested up to: 5.7
 Requires PHP: 5.5
-Stable tag: 0.8.1
+Stable tag: 0.8.2
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -73,6 +73,8 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 9. Private or public. Control your community’s visibility, access rights and registration options.
 
 == Changelog ==
+= 0.8.2 =
+* Fixed some small bugs
 = 0.8.1 =
 * Fixed bug for some user that do not have footer and header
 = 0.8.0 =
@@ -118,6 +120,8 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 * Fix: plugin reactivation now uses old community instead of creating new one
 
 == Upgrade Notice ==
+= 0.8.2 =
+* Fixed some small bugs
 = 0.8.1 =
 * Fixed bug for some user that do not have footer and header
 = 0.8.0 =
