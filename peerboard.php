@@ -124,7 +124,7 @@ class PeerBoard
 			[
 				'id' => '5',
 				'text' => __("Other", 'peerboard'),
-				'input_text' => __("Kindly tell us the reason so we can improve.", 'peerboard')
+				'input_text' => __("Help us improve!", 'peerboard')
 			],
 		];
 
