@@ -121,10 +121,14 @@ class Settings
         );
     }
 
+    /**
+     * Before auth token input text
+     *
+     * @return void
+     */
     public static function peerboard_integration_readme()
     {
-        _e("You can find those values in your board settings in Integrations tab. If you don't have a board created yet, please visit ", 'peerboard');
-        printf(__("<a href='%s' target='_blank'>%s</a>", 'peeerboard'), "https://peerboard.com/getstarted", "peerboard.com/getstarted");
+        printf(__("Do you know where to find your Auth Token? If not, watch this short tutorial: <a href='%s' target='_blank'>How to Find My Auth Token.</a>", 'peerboard'), 'https://youtu.be/HRZNT90Q-DA');
     }
 
     public static function peerboard_options_readme()
