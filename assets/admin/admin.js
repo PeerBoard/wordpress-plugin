@@ -140,7 +140,9 @@ __webpack_require__.r(__webpack_exports__);
         body: formData
       }).then(response => {
         if (response.ok) {
-          response.json();
+          return response.json();
+        } else {
+          console.log('Looks like there was a problem. Status Code: ' + response.status);
         }
       }).then(data => {
         if (data.success) {

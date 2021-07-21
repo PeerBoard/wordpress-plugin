@@ -2,7 +2,7 @@ export default () => {
     function modal_init() {
         let deactivate_button = document.getElementById('deactivate-peerboard');
 
-        if(!deactivate_button){
+        if (!deactivate_button) {
             return;
         }
 
@@ -27,7 +27,13 @@ export default () => {
                 method: 'POST',
                 body: formData
             })
-                .then(response => {if(response.ok){response.json()}})
+                .then(response => {
+                    if (response.ok) {
+                        return response.json()
+                    } else {
+                        console.log('Looks like there was a problem. Status Code: ' + response.status);
+                    }
+                })
                 .then(data => {
                     if (data.success) {
                         let response = data.data
