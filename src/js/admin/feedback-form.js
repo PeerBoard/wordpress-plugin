@@ -27,7 +27,7 @@ export default () => {
                 method: 'POST',
                 body: formData
             })
-                .then(response => response.json())
+                .then(response => {if(response.ok){response.json()}})
                 .then(data => {
                     if (data.success) {
                         let response = data.data
@@ -56,9 +56,9 @@ export default () => {
                             send_feedback()
                         }
                     } else {
-                        console.log(data);
+                        console.log(console.error(data));
                     }
-                }).catch()
+                }).catch(console.error)
         }
 
         function reasons_logic() {
@@ -102,12 +102,11 @@ export default () => {
                 .then(data => {
                     if (data.success) {
                         let response = data.data
-
                         window.location.href = deactivation_url
                     } else {
-                        console.log(data);
+                        console.error(data);
                     }
-                }).catch()
+                }).catch(console.error)
         }
     }
 
