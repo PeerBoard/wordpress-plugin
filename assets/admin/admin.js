@@ -138,7 +138,13 @@ __webpack_require__.r(__webpack_exports__);
       fetch(window.peerboard_admin.ajax_url, {
         method: 'POST',
         body: formData
-      }).then(response => response.json()).then(data => {
+      }).then(response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          console.log('Looks like there was a problem. Status Code: ' + response.status);
+        }
+      }).then(data => {
         if (data.success) {
           let response = data.data;
           document.querySelector('body').append(stringToHTML(response));
@@ -147,11 +153,12 @@ __webpack_require__.r(__webpack_exports__);
           modal_deactivation_button = modal.querySelector('.button-deactivate');
           reasons = modal.querySelectorAll('.reason');
           modal.classList.add('active');
-          modal_deactivation_button.href = deactivation_url; // Close modal
+          modal_deactivation_button.href = deactivation_url; // Close modal and remove it
 
           close.onclick = ev => {
             ev.preventDefault();
             modal.classList.remove('active');
+            modal.remove();
           };
 
           reasons_logic();
@@ -162,9 +169,9 @@ __webpack_require__.r(__webpack_exports__);
             send_feedback();
           };
         } else {
-          console.log(data);
+          console.log(console.error(data));
         }
-      }).catch();
+      }).catch(console.error);
     };
 
     function reasons_logic() {
@@ -208,9 +215,9 @@ __webpack_require__.r(__webpack_exports__);
           let response = data.data;
           window.location.href = deactivation_url;
         } else {
-          console.log(data);
+          console.error(data);
         }
-      }).catch();
+      }).catch(console.error);
     }
   }
   /**

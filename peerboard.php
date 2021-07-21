@@ -4,7 +4,7 @@
  * Plugin Name: WordPress Forum Plugin – PeerBoard
  * Plugin URI: https://peerboard.com/integrations/wordpress-forum-plugin
  * Description: Forum, Community & User Profile Plugin
- * Version: 0.8.1
+ * Version: 0.8.2
  * Text Domain: peerboard
  * Domain Path: /languages
  * Author: <a href='https://peerboard.com' target='_blank'>Peerboard</a>, forumplugin
@@ -25,7 +25,7 @@ class PeerBoard
 	{
 
 		DEFINE('PEERBOARD_PROXY_PATH', 'peerboard_internal');
-		DEFINE('PEERBOARD_PLUGIN_VERSION', '0.8.1');
+		DEFINE('PEERBOARD_PLUGIN_VERSION', '0.8.2');
 		DEFINE('PEERBOARD_PLUGIN_URL', plugins_url('', __FILE__));
 		DEFINE('PEERBOARD_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
@@ -124,7 +124,7 @@ class PeerBoard
 			[
 				'id' => '5',
 				'text' => __("Other", 'peerboard'),
-				'input_text' => __("Kindly tell us the reason so we can improve.", 'peerboard')
+				'input_text' => __("Help us improve!", 'peerboard')
 			],
 		];
 
