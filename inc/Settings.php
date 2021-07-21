@@ -128,7 +128,7 @@ class Settings
      */
     public static function peerboard_integration_readme()
     {
-        printf(__("Do you know where to find your Auth Token? If not, watch this short tutorial: <a href='%s' target='_blank'>How to Find My Auth Token.</a>", 'peerboard'), 'https://youtu.be/HRZNT90Q-DA');
+        printf(__("Do you know where to find your Auth Token? If not, watch this short tutorial: <a href='%s' target='_blank'>How to Find My Auth Token.</a>", 'peerboard'), 'https://youtu.be/JMCtHRpZEx0');
     }
 
     public static function peerboard_options_readme()
