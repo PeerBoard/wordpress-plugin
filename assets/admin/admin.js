@@ -153,11 +153,12 @@ __webpack_require__.r(__webpack_exports__);
           modal_deactivation_button = modal.querySelector('.button-deactivate');
           reasons = modal.querySelectorAll('.reason');
           modal.classList.add('active');
-          modal_deactivation_button.href = deactivation_url; // Close modal
+          modal_deactivation_button.href = deactivation_url; // Close modal and remove it
 
           close.onclick = ev => {
             ev.preventDefault();
             modal.classList.remove('active');
+            modal.remove();
           };
 
           reasons_logic();

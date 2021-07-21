@@ -48,10 +48,11 @@ export default () => {
                         modal.classList.add('active')
                         modal_deactivation_button.href = deactivation_url
 
-                        // Close modal
+                        // Close modal and remove it
                         close.onclick = (ev) => {
                             ev.preventDefault()
                             modal.classList.remove('active')
+                            modal.remove()
                         }
 
                         reasons_logic()
