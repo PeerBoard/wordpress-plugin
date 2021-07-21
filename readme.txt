@@ -4,41 +4,69 @@ Tags: forum, forums, community, discussion, knowledge base, membership, member, 
 Requires at least: 5.1
 Tested up to: 5.7
 Requires PHP: 5.5
-Stable tag: 0.8.0
+Stable tag: 0.8.2
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 This WordPress forum plugin brings everything you need to build an online community, connect with your customers, and grow without a headache.
 
 == Description ==
-PeerBoard gives your community a home they'll love. This WordPress forum plugin brings everything you need to build a truly branded online community, connect with your customers, and grow without a single tech headache.
+PeerBoard is a powerful modern community platform that enables embedded and fully white-labeled communities. With PeerBoard, both individuals and companies can build the community that their audience deserves.
+PeerBoard’s WordPress plugin was designed to help creators, companies, or organizations build a successful branded community. Our WordPress plugin allows any WordPress user to embed a fully functional online community platform with just a few clicks. 
+Our plugin was designed to make community forum features accessible to any WordPress user, regardless of their level of previous website design experience. The entire plugin installation process and integration with your website takes just a few minutes, and requires no coding or technical knowledge.
+If you do need any help, feel free to reach out to our team of support specialists. We are proud to support our users with free customer support!
 
-Get full access to all of your member info, contacts and stats without any restrictions.
 
-Instead of a traditional forum, PeerBoard makes it easy to stay up to date with a single Facebook-like feed. Run PeerBoard on your own custom domain/subdomain or use an alias on our peerboard.com domain. Quickly transfer or add existing members through a simple email invite.
+**Benefits of Having a Forum on WordPress Website:**
 
-PeerBoard’s modern look and feel makes it a sight to behold and delight to use for every single user.
+- **Connect With Your Customers**: Stand out from the competition by talking, helping, and building personal and lasting relationships with your customers.
+- **Retain Your Members Long-Term**: Foster the kind of valuable networks and strong connections between your members that keep them coming back.
+- **Generate Leads and Improve SEO with User Generated Content**: Create a place where your users can share their own posts and read other people's content. Search engines love question and answer search phrases. PeerBoard’s online community solution will draw prospects to your community from search engines. This will lead to increased dwell time, one of the factors that influences your website ranking on Google.
+- **Get Feedback**: A customer community provides constant feedback on what makes customers happy and where their biggest pain points lie allowing you to improve product and processes.
+- **Create Advocates**: Your community can help you identify, develop and reward advocates. PeerBoard’s native reputation lets you reward positive participation and provide advocates with the recognition they deserve.
+- **Increase Loyalty**: A social bond and sharing of best practices will increase the value of your products and services. A branded community forum can drive repeat sales and lower churn. PeerBoard’s notification system and deep integration to your website keep customers coming back.
+- **Simplify Community Management**: Consolidate your forums, ideation tools, Google Groups and other discussion platforms. PeerBoard makes it easy to create and manage multiple online communities across departments or product lines. Make your life easier by deploying one solution across the organization. 
 
-**FEATURES OF THE PLUGIN INCLUDE:**
+**Main Plugin Features:**
 
-- **Rich user profiles**: Let your members get recognized with taglines, rich bios, avatars and more
-- **No code integration**: Embed into your WordPress website
-- **Private or public**: Control your community’s visibility, access rights and registration options
-- **Real-time threads**: Facilitate valuable in-depth conversations with multi-level discussions
-- **Intelligent feed**: Our algorithm shoots the highest value posts to the top, based on engagement and recency
-- **And much more**: Real-time updates, a versatile admin panel and a full suite of powerful features
+- **Member Groups**: Build subgroups, manage access, reward members with badges, and more. Automate any of your group management with our API or Zapier.
+- **User Profiles**: Now every customer can showcase their expertise and the best content they created. Reward their contributions with badges and special privileges.
+- **Public or Private Spaces**: Keep the community public or private and make it easy for members to use existing accounts. Accessibility settings make the community public or private. Use registration rules to enable members with an invitation to join.
+- **Powerful Built-In Tools**: From **rich user profiles** to an **intelligent newsfeed**, PeerBoard provides users with powerful tools allowing them to create and scale their online community.
+- **Customization**:  PeerBoard is a premium, white-label community experience. Your community, your branding. Choose your own brand colors, add a custom domain, and own 100% of your member data.
+- **Language Support**: Break the language barrier between you and your audience and host your community in one of the **15** languages supported by PeerBoard: English, Danish, German, Greek, Spanish, French, Hungarian, Italian, Japanese, Dutch, Polish, Brazilian Portuguese, Russian, traditional or simplified Chinese.
+- **No code integration**: Embed the PeerBoard Plugin in your WordPress website, without coding or complex integrations.
+- **Real-time threads**: Facilitate valuable in-depth conversations with multi-level discussions.
+- **Moderation Tools**: Keep your members safe, and secure your brand reputation. PeerBoard helps you ensure that the community is free from spam, abuse, and harmful language.
+- **Intelligent feed**: Our algorithm keeps members hooked with personalized, rich, and contextual content driven by members’ participation in groups, categories, and selected preferences.
+- **And much more**: Real-time updates, a versatile admin panel and a full suite of powerful features.
 
-**WHAT CAN I USE THIS FOR?**
+### PeerBoard Use Cases:
 
-- **Product communities:** Open the doors for your customers to share, discuss, and provide valuable feedback for your product. You’ll have a direct ear to what’s most important to them.
-- **Professional communities:** Ready to unlock a super-power of community generated content? PeerBoard takes Crowdsourcing and UGC from mere buzzwords to your secret weapon for growing your engagement.
-- **Other scenarios:** An ideal fit for gaming, hobbies, and any niche that has a dedicated user base. If there’s knowledge to be shared, PeerBoard is the perfect place to share it on.
+**1. Professional Communities**
+A community is a great way to encourage social collaboration among employees or members of an organization. PeerBoard lets your employees have coherent and meaningful conversations within a private community.
 
-**WHY HAVE A FORUM ON MY WORDPRESS SITE?**
+- **Collaborate**: Let employees across departments, locations or time zones have meaningful discussions without creating constant distractions.
+- **Share Knowledge**: Foster the kind of valuable networks and strong connections between your members that keep them coming back.
+- **Privacy Controls**: Keep your community private and control access and permissions. Integrate to your access control system.
 
-- **Connect with your customers** – Stand out from the competition by talking, helping, and building personal and lasting relationships with your customers.
-- **Retain your members long-term –** Foster the kind of valuable networks and strong connections between your members that keep them coming back.
-- **Improve** **SEO with UGC content** –  Create a place where your users can share their own posts and read other people\'s content. This will lead to Increased dwell time, one of the factors that influences your website ranking on Google.
+**2. Private Social Networks**
+Tired of using traditional social media tools to connect with users and fans? Build your own social networking platform on your own website with PeerBoard.
+
+- **Break away from Facebook groups and Reddit forums**: Building your own private social network allows you to deliver user-friendly content in a way that makes sense for your organization. Create an ad-free experience where your content doesn’t compete with other brands in user feeds and emails and where you have the flexibility to integrate with external services. Spend less time formatting posts for social media sites and more time building up your own online community.
+- **Control your own data**: Big social networking sites require phone numbers, emails, and other personal information at signup. But marketers and advertisers working on the platform don’t get to see any of that. Users also may not want to share it in the first place. Whether you’re building a community forum or trying to control your brand, building a private social network allows you to determine what data you collect, why it matters, and who you share it with.
+- **Perfect for every niche**: Social media platforms are great at connecting users, but they’re a standardized solution meant to fill every niche. With PeerBoard, you can customize the look, style, and scale of your forum so that messaging is clear and precise — without off-brand advertisement and algorithms getting in the way of a great user experience.
+
+**3. Product Communities**
+Gather community insights that improve functionality and interest for your products and services.
+
+- **Get critical feedback during product development**: Customer feedback is a critical element of product development. Project stakeholders use it to gauge interest. Team members use it to add features, tweak designs, and determine how to talk about products with customers. Your product forum can serve as a communication platform to help you gain knowledge and improve your products.
+- **Crowdsource ideas and create customer advocates**: Customers are more likely to engage with your products when they help build them. Using PeerBoard, you can crowdsource ideas, solicit feedback, answer questions, and more. By adding customer feedback to your product development roadmaps and incorporating valuable ideas into your building a more complete solution that your general audience can use.
+- **Improve your knowledge base**: Whether your product is about to launch or has been on the shelf for years, you can always improve usability through support and knowledge. A community platform can serve as a support tool, allowing users to troubleshoot issues, consult support documentation, create user-generated guides and tutorials, and work together to solve their own problems.
+
+### PeerBoard vs. Legacy Forum or User Management Plugins
+
+Unlike legacy plugins like bbPress and BuddyPress, which can be difficult to set up and customize, PeerBoard offers a modern experience that helps you deliver maximum value to your members.
 
 == Installation ==
 1. Activate the plugin
@@ -47,8 +75,8 @@ PeerBoard’s modern look and feel makes it a sight to behold and delight to use
 == Frequently Asked Questions ==
 **Do I need to know any coding to use this plugin?**
 No, we have built PeerBoard to be super easy to use and does not require you to manually build shortcodes or have any coding knowledge.
-**Where can I see a sample community?**
-Check out our [product community](https://community.peerboard.com/).
+**Where can I see a demo?**
+There’s a live demo [here](https://bloggingguide.org/forum/).
 **Is PeerBoard mobile responsive?**
 Yes. PeerBoard is designed to adjust nicely to any screen, including phones, tablets and desktops.
 **How do I get support?**
@@ -73,6 +101,8 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 9. Private or public. Control your community’s visibility, access rights and registration options.
 
 == Changelog ==
+= 0.8.2 =
+* Fixed some small bugs
 = 0.8.1 =
 * Fixed bug for some user that do not have footer and header
 = 0.8.0 =
@@ -118,7 +148,13 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 * Fix: plugin reactivation now uses old community instead of creating new one
 
 == Upgrade Notice ==
-
+= 0.8.2 =
+* Fixed some small bugs
+= 0.8.1 =
+* Fixed bug for some user that do not have footer and header
+= 0.8.0 =
+* page selector bug fixed
+* page duplication issue solved
 = 0.7.9 =
 * Ability to select forum page template on plugin settings page
 * Added ability to translate settings page

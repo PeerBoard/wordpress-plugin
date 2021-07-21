@@ -15,15 +15,18 @@ class Settings
                 DEFINE('PEERBOARD_EMBED_URL', 'http://static.local.is/embed/embed.js');
                 DEFINE('PEERBOARD_URL', 'http://local.is/');
                 DEFINE('PEERBOARD_API_BASE', 'http://api.local.is/v1/');
+                DEFINE('PEERBOARD_API_URL', 'http://api.local.is/');
             } else if (PEERBOARD_ENV === "dev") {
                 DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.dev/embed/embed.js');
                 DEFINE('PEERBOARD_URL', 'https://peerboard.dev/');
                 DEFINE('PEERBOARD_API_BASE', 'https://api.peerboard.dev/v1/');
+                DEFINE('PEERBOARD_API_URL', 'https://api.peerboard.dev/');
             }
         } else {
             DEFINE('PEERBOARD_EMBED_URL', 'https://static.peerboard.com/embed/embed.js');
             DEFINE('PEERBOARD_URL', 'https://peerboard.com/');
             DEFINE('PEERBOARD_API_BASE', 'https://api.peerboard.com/v1/');
+            DEFINE('PEERBOARD_API_URL', 'https://api.peerboard.com/');
         }
 
         add_action('admin_init', [__CLASS__, 'peerboard_settings_init']);
@@ -256,16 +259,16 @@ class Settings
                 $value['prefix'] = $old_value['prefix'];
             }
             peerboard_update_post_slug($value['prefix']);
-            peerboard_post_integration($value['auth_token'], $value['prefix'], peerboard_get_domain());
+            API::peerboard_post_integration($value['auth_token'], $value['prefix'], peerboard_get_domain());
         }
 
         if ($value['auth_token'] !== $old_value['auth_token']) {
-            $community = peerboard_get_community($value['auth_token']);
+            $community = API::peerboard_get_community($value['auth_token']);
             $value['community_id'] = $community['id'];
             peerboard_send_analytics('set_auth_token', $community['id']);
-            peerboard_post_integration($value['auth_token'], $value['prefix'], peerboard_get_domain());
+            API::peerboard_post_integration($value['auth_token'], $value['prefix'], peerboard_get_domain());
             if ($old_value['auth_token'] !== '' && $old_value['auth_token'] !== NULL) {
-                peerboard_drop_integration($old_value['auth_token']);
+                API::peerboard_drop_integration($old_value['auth_token']);
             }
         }
 
