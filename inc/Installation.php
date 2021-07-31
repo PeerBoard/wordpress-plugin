@@ -107,7 +107,6 @@ class Installation
     $board_id = $peerboard_options['community_id'];
     peerboard_send_analytics('deactivate_plugin', $board_id);
     API::peerboard_drop_integration($peerboard_options['auth_token']);
-    echo "<script>alert(`Note, that your board is still available at peerboard.com/$board_id`)</script>";
 
     update_option("peerboard_recovery_token", $peerboard_options['auth_token']);
     delete_option('peerboard_post');

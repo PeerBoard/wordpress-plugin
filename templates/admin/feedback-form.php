@@ -2,6 +2,7 @@
     <div class="peerboard-modal-dialog">
         <div class="peerboard-modal-header">
             <h4><?php _e('Quick Feedback', 'peerboard') ?></h4>
+            <small><?php printf(__('Note, that your board is still available at peerboard.com/%s', 'peerboard'),$board_id) ?></small>
         </div>
         <div class="peerboard-modal-body">
             <div class="peerboard-modal-panel active" data-panel-id="reasons">
