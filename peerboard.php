@@ -40,8 +40,12 @@ class PeerBoard
 
 		// Admin scripts
 		add_action('admin_enqueue_scripts', [__CLASS__, 'load_admin_scripts']);
+
 		// Get feedback dialog box by ajax
-		add_action('wp_ajax_peerboard_add_deactivation_feedback_dialog_box',[__CLASS__,'add_deactivation_feedback_dialog_box']);
+		add_action('wp_ajax_peerboard_add_deactivation_feedback_dialog_box', [__CLASS__, 'add_deactivation_feedback_dialog_box']);
+
+		// Chow warning or error issues
+		add_action('init', [__CLASS__, 'peerboard_add_notice_action']);
 	}
 
 	/**
@@ -99,10 +103,41 @@ class PeerBoard
 	}
 
 	/**
+	 * Check where user are to show notice
+	 *
+	 * @return void
+	 */
+	public static function peerboard_add_notice_action()
+	{
+		if (is_admin()) {
+			add_action('admin_notices', [__CLASS__, 'peerboard_admin_notice']);
+		}
+	}
+
+	/**
+	 * Show notice on admin page
+	 *
+	 * @return void
+	 */
+	public static function peerboard_admin_notice()
+	{
+		// Show notice after update in admin
+		$saved_notices = get_transient('peerboard_notice');
+		if ($saved_notices && is_array($saved_notices)) {
+			foreach ($saved_notices as $notice) {
+				printf('<div class="notice notice-%s is-dismissible"><p>%s</p></div>',$notice['type'], $notice['notice']);
+			}
+			delete_transient('peerboard_notice');
+		};
+	}
+
+	/**
 	 * Feedback dialog on deactivation
 	 */
 	public static function add_deactivation_feedback_dialog_box()
 	{
+		global $peerboard_options;
+		$board_id = $peerboard_options['community_id'];
 		$reasons = [
 			[
 				'id' => '1',

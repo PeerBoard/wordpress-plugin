@@ -58,7 +58,7 @@ class API
    */
   public static function peerboard_post_integration($token, $prefix, $domain)
   {
-    wp_remote_post(PEERBOARD_API_BASE . 'hosting', array(
+    $request = wp_remote_post(PEERBOARD_API_BASE . 'hosting', array(
       'timeout'     => 5,
       'headers' => array(
         'authorization' => "Bearer $token",
@@ -72,6 +72,10 @@ class API
         "version" => PEERBOARD_PLUGIN_VERSION
       ))
     ));
+
+    if (is_wp_error($request) || $request['response']['code'] !== 200) {
+      peerboard_add_notice($request['response']['message'], $request['response']['code']);
+    }
   }
 
   /**
@@ -82,7 +86,7 @@ class API
    */
   public static function peerboard_drop_integration($token)
   {
-    wp_remote_post(PEERBOARD_API_BASE . 'hosting', array(
+    $request = wp_remote_post(PEERBOARD_API_BASE . 'hosting', array(
       'timeout'     => 5,
       'headers' => array(
         'authorization' => "Bearer $token",
@@ -92,6 +96,10 @@ class API
         "type" => 'none'
       ))
     ));
+
+    if (is_wp_error($request) || $request['response']['code'] !== 200) {
+      peerboard_add_notice($request['response']['message'], $request['response']['code']);
+    }
   }
 
   /**
