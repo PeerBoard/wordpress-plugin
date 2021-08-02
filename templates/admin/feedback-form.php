@@ -1,8 +1,8 @@
 <div id="peerboard-modal-deactivation-feedback" class="peerboard-modal peerboard-modal-deactivation-feedback">
     <div class="peerboard-modal-dialog">
         <div class="peerboard-modal-header">
+            <?php printf('<div class="notice notice-warring is-dismissible"><p>%s/%s</p></div>', __('Note, that your board is still available at peerboard.com', 'peerboard'), $board_id); ?>
             <h4><?php _e('Quick Feedback', 'peerboard') ?></h4>
-            <small><?php printf(__('Note, that your board is still available at peerboard.com/%s', 'peerboard'),$board_id) ?></small>
         </div>
         <div class="peerboard-modal-body">
             <div class="peerboard-modal-panel active" data-panel-id="reasons">
