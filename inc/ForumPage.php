@@ -81,10 +81,14 @@ class ForumPage
 
         wp_localize_script('peerboard-integration', '_peerboardSettings', peerboard_get_script_settings($peerboard_options));
 
+        do_action('peerboard_before_forum');
+
         ob_start();
 
         // include over required_once potentially fixes missing main header menu on the page
         include PEERBOARD_PLUGIN_DIR_PATH . '/templates/front-template.php';
+
+        do_action('peerboard_after_forum');
 
         return ob_get_clean();
     }

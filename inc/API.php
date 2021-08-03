@@ -17,6 +17,7 @@ class API
      * Create user on PeerBoard on user registration on WordPress
      */
     add_action('user_register', [__CLASS__, 'sync_user_if_enabled']);
+    //add_action('profile_update', [__CLASS__, 'sync_user_if_enabled']);
 
     // admin ajax
     add_action('wp_ajax_peerboard_feedback_request', [__CLASS__, 'feedback_request']);

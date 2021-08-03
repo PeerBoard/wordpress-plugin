@@ -109,11 +109,16 @@ class PeerBoard
 	 */
 	public static function peerboard_add_notice_action()
 	{
-		if (is_admin()) {
-			add_action('admin_notices', [__CLASS__, 'peerboard_admin_notice']);
+		$user = wp_get_current_user();
+		$allowed_roles = array('editor', 'administrator', 'author');
+		// Show notice only for some specific user roles
+		if (array_intersect($allowed_roles, $user->roles)) {
+			if (is_admin()) {
+				add_action('admin_notices', [__CLASS__, 'peerboard_notice']);
+			} else {
+				add_action('peerboard_before_forum',  [__CLASS__, 'peerboard_notice']);
+			}
 		}
-
-
 	}
 
 	/**
@@ -121,19 +126,19 @@ class PeerBoard
 	 *
 	 * @return void
 	 */
-	public static function peerboard_admin_notice()
+	public static function peerboard_notice()
 	{
 		// Show notice after update in admin
-		$saved_notices = get_transient('peerboard_notice');
+		$saved_notices = get_transient('peerboard_notices');
 		if ($saved_notices && is_array($saved_notices)) {
 			foreach ($saved_notices as $notice) {
-				printf('<div class="notice notice-%s is-dismissible"><p>%s</p></div>',$notice['type'], $notice['notice']);
+				printf('<div class="peerboard-notice notice notice-%s is-dismissible"><p>%s</p></div>', $notice['type'], $notice['notice']);
 			}
-			delete_transient('peerboard_notice');
+			delete_transient('peerboard_notices');
 		};
 	}
 
-	
+
 
 	/**
 	 * Feedback dialog on deactivation

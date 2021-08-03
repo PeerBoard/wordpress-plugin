@@ -9,13 +9,25 @@
  */
 function peerboard_add_notice(string $notice, $type = "success")
 {
-  $notices = is_array(get_transient('peerboard_notice')) ? get_transient('peerboard_notice') : [];
-  $notices[] = [
-    'notice' => sprintf('PeerBoard: %s - %s', $notice, __('please contact us at integrations@peerboard.com', 'peerboard')),
-    'type' => $type
-  ];
+  $notices = is_array(get_transient('peerboard_notices')) ? get_transient('peerboard_notices') : [];
+  $new_notice = sprintf('PeerBoard: %s - %s', $notice, __('please contact us at integrations@peerboard.com', 'peerboard'));
+  $notice_exist = false;
 
-  set_transient('peerboard_notice', $notices, 60 * 5);
+  // Check if notice already exist
+  foreach ($notices as $notice) {
+    if ($notice['notice'] === $new_notice) {
+      $notice_exist = true;
+    }
+  }
+
+  if (!$notice_exist) {
+    $notices[] = [
+      'notice' => $new_notice,
+      'type' => $type
+    ];
+  }
+
+  set_transient('peerboard_notices', $notices, 60);
 }
 
 function peerboard_get_script_settings($peerboard_options)
