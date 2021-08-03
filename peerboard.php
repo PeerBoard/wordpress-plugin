@@ -112,6 +112,8 @@ class PeerBoard
 		if (is_admin()) {
 			add_action('admin_notices', [__CLASS__, 'peerboard_admin_notice']);
 		}
+
+
 	}
 
 	/**
@@ -130,6 +132,8 @@ class PeerBoard
 			delete_transient('peerboard_notice');
 		};
 	}
+
+	
 
 	/**
 	 * Feedback dialog on deactivation

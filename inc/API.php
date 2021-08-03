@@ -74,7 +74,7 @@ class API
     ));
 
     if (is_wp_error($request) || $request['response']['code'] !== 200) {
-      peerboard_add_notice($request['response']['message'], $request['response']['code']);
+      peerboard_add_notice($request['response']['message'].' (post_integration)', 'error');
     }
   }
 
@@ -98,7 +98,7 @@ class API
     ));
 
     if (is_wp_error($request) || $request['response']['code'] !== 200) {
-      peerboard_add_notice($request['response']['message'], $request['response']['code']);
+      peerboard_add_notice($request['response']['message'].' (drop_integration)', 'error');
     }
   }
 
@@ -111,7 +111,7 @@ class API
    */
   public static function peerboard_sync_users($token, $users)
   {
-    $response = wp_remote_post(PEERBOARD_API_BASE . 'users/batch', array(
+    $request = wp_remote_post(PEERBOARD_API_BASE . 'users/batch', array(
       'timeout'     => 5,
       'headers' => array(
         'authorization' => "Bearer $token",
@@ -119,10 +119,13 @@ class API
       ),
       'body' => json_encode($users)
     ));
-    if (is_wp_error($response)) {
-      return $response;
+
+    if (is_wp_error($request) || $request['response']['code'] !== 200) {
+      peerboard_add_notice($request['response']['message'].' (sync_users)', 'error');
+      return $request;
     }
-    return json_decode(wp_remote_retrieve_body($response), true);
+
+    return json_decode(wp_remote_retrieve_body($request), true);
   }
 
   /**
@@ -134,7 +137,7 @@ class API
    */
   public static function peerboard_create_user($token, $user)
   {
-    $response = wp_remote_post(PEERBOARD_API_BASE . 'users', array(
+    $request = wp_remote_post(PEERBOARD_API_BASE . 'users', array(
       'timeout'     => 5,
       'headers' => array(
         'authorization' => "Bearer $token",
@@ -142,10 +145,13 @@ class API
       ),
       'body' => json_encode($user)
     ));
-    if (is_wp_error($response)) {
-      return $response;
+
+    if (is_wp_error($request) || $request['response']['code'] !== 200) {
+      peerboard_add_notice($request['response']['message'].' (create_user)', 'error');
+      return $request;
     }
-    return json_decode(wp_remote_retrieve_body($response), true);
+
+    return json_decode(wp_remote_retrieve_body($request), true);
   }
 
   /**
@@ -155,7 +161,7 @@ class API
    */
   public static function peerboard_create_community()
   {
-    $response = wp_remote_post(PEERBOARD_API_BASE . 'communities', array(
+    $request = wp_remote_post(PEERBOARD_API_BASE . 'communities', array(
       'timeout'     => 45,
       'headers' => array(
         "Content-type" => "application/json",
@@ -164,10 +170,13 @@ class API
       'body' => json_encode(peerboard_bloginfo_array()),
       'sslverify' => false,
     ));
-    if (is_wp_error($response)) {
-      return $response;
+
+    if (is_wp_error($request) || $request['response']['code'] !== 200) {
+      peerboard_add_notice($request['response']['message'], 'error');
+      return $request;
     }
-    return json_decode(wp_remote_retrieve_body($response), true);
+
+    return json_decode(wp_remote_retrieve_body($request), true);
   }
 
   /**
@@ -178,16 +187,19 @@ class API
    */
   public static function peerboard_get_community($auth_token)
   {
-    $response = wp_remote_get(PEERBOARD_API_BASE . 'communities', array(
+    $request = wp_remote_get(PEERBOARD_API_BASE . 'communities', array(
       'headers' => array(
         'authorization' => "Bearer $auth_token",
         "Partner" => "wordpress_default_partner_token"
       ),
     ));
-    if (is_wp_error($response)) {
-      return $response;
+
+    if (is_wp_error($request) || $request['response']['code'] !== 200) {
+      peerboard_add_notice($request['response']['message'], 'error');
+      return $request;
     }
-    return json_decode(wp_remote_retrieve_body($response), true);
+
+    return json_decode(wp_remote_retrieve_body($request), true);
   }
 
   /**
@@ -211,7 +223,7 @@ class API
       "main_url" => get_site_url() . "/" . $options['prefix']
     ];
 
-    $response = wp_remote_post($api_link, [
+    $request = wp_remote_post($api_link, [
       'timeout'     => 45,
       'redirection' => 10,
       'headers' => array(
@@ -222,11 +234,11 @@ class API
       'sslverify' => false,
     ]);
 
-    if (is_wp_error($response)) {
-      wp_send_json_error($response);
+    if (is_wp_error($request) || $request['response']['code'] !== 200) {
+      wp_send_json_error($request);
     }
 
-    wp_send_json_success(wp_remote_retrieve_body($response));
+    wp_send_json_success(wp_remote_retrieve_body($request));
   }
 }
 
