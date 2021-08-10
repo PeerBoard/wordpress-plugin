@@ -7,10 +7,10 @@
  * @param integer $type
  * @return void
  */
-function peerboard_add_notice(string $notice, $type = "success")
+function peerboard_add_notice(string $notice, $function_name, $type = "success")
 {
   $notices = is_array(get_transient('peerboard_notices')) ? get_transient('peerboard_notices') : [];
-  $new_notice = sprintf('PeerBoard: %s - %s', $notice, __('please contact us at integrations@peerboard.com', 'peerboard'));
+  $new_notice = sprintf('PeerBoard: %s (%s) - %s', $notice, $function_name, __('please contact us at integrations@peerboard.com', 'peerboard'));
   $notice_exist = false;
 
   // Check if notice already exist
@@ -25,9 +25,25 @@ function peerboard_add_notice(string $notice, $type = "success")
       'notice' => $new_notice,
       'type' => $type
     ];
+
+    PEBO\API::add_sentry_error($notice, $function_name);
   }
 
   set_transient('peerboard_notices', $notices, 60);
+}
+
+/**
+ * Get environment
+ *
+ * @return void
+ */
+function peerboard_get_environment(){
+  $environment = 'live';
+  if (defined('PEERBOARD_ENV')) {
+    $environment = PEERBOARD_ENV;
+  }
+
+  return $environment;
 }
 
 function peerboard_get_script_settings($peerboard_options)

@@ -17,7 +17,6 @@ class API
      * Create user on PeerBoard on user registration on WordPress
      */
     add_action('user_register', [__CLASS__, 'sync_user_if_enabled']);
-    //add_action('profile_update', [__CLASS__, 'sync_user_if_enabled']);
 
     // admin ajax
     add_action('wp_ajax_peerboard_feedback_request', [__CLASS__, 'feedback_request']);
@@ -74,8 +73,16 @@ class API
       ))
     ));
 
-    if (is_wp_error($request) || $request['response']['code'] !== 200) {
-      peerboard_add_notice($request['response']['message'].' (post_integration)', 'error');
+    if (is_wp_error($request)) {
+      foreach ($request->errors as $notice => $message[0]) {
+        peerboard_add_notice(sprintf('%s : %s', $notice, $message), __FUNCTION__, 'error');
+      }
+    }
+
+    if (is_array($request)) {
+      if ($request['response']['code'] >= 400) {
+        peerboard_add_notice($request['response']['message'], __FUNCTION__, 'error');
+      }
     }
   }
 
@@ -98,8 +105,8 @@ class API
       ))
     ));
 
-    if (is_wp_error($request) || $request['response']['code'] !== 200) {
-      peerboard_add_notice($request['response']['message'].' (drop_integration)', 'error');
+    if (is_wp_error($request) || $request['response']['code'] >= 400) {
+      peerboard_add_notice($request['response']['message'] . ' (drop_integration)', 'error');
     }
   }
 
@@ -121,8 +128,8 @@ class API
       'body' => json_encode($users)
     ));
 
-    if (is_wp_error($request) || $request['response']['code'] !== 200) {
-      peerboard_add_notice($request['response']['message'].' (sync_users)', 'error');
+    if (is_wp_error($request) || $request['response']['code'] >= 400) {
+      peerboard_add_notice($request['response']['message'] . ' (sync_users)', 'error');
       return $request;
     }
 
@@ -147,8 +154,8 @@ class API
       'body' => json_encode($user)
     ));
 
-    if (is_wp_error($request) || $request['response']['code'] !== 200) {
-      peerboard_add_notice($request['response']['message'].' (create_user)', 'error');
+    if (is_wp_error($request) || $request['response']['code'] >= 400) {
+      peerboard_add_notice($request['response']['message'] . ' (create_user)', 'error');
       return $request;
     }
 
@@ -172,7 +179,8 @@ class API
       'sslverify' => false,
     ));
 
-    if (is_wp_error($request) || $request['response']['code'] !== 200) {
+    if (is_wp_error($request) || $request['response']['code'] >= 400) {
+
       peerboard_add_notice($request['response']['message'], 'error');
       return $request;
     }
@@ -195,7 +203,7 @@ class API
       ),
     ));
 
-    if (is_wp_error($request) || $request['response']['code'] !== 200) {
+    if (is_wp_error($request) || $request['response']['code'] >= 400) {
       peerboard_add_notice($request['response']['message'], 'error');
       return $request;
     }
@@ -235,11 +243,41 @@ class API
       'sslverify' => false,
     ]);
 
-    if (is_wp_error($request) || $request['response']['code'] !== 200) {
+    if (is_wp_error($request) || $request['response']['code'] >= 400) {
       wp_send_json_error($request);
     }
 
     wp_send_json_success(wp_remote_retrieve_body($request));
+  }
+
+  /**
+   * Store errors to Sentry
+   *
+   * @return void
+   */
+  public static function add_sentry_error($message, $function_name)
+  {
+    $timestamp = time();
+    $body = [
+      //"event_id" => wp_generate_password(32, false),
+      "culprit" => $function_name,
+      "timestamp" => $timestamp,
+      "message" => $message,
+      "environment" => peerboard_get_environment()
+    ];
+
+    $request = wp_remote_post('https://150cbac0a6e941bd89c935104211614e@o468053.ingest.sentry.io/api/5900112/store/', [
+      'timeout'     => 45,
+      'redirection' => 10,
+      'headers' => [
+        "Content-type" => "application/json",
+        "X-Sentry-Auth" => "Sentry sentry_version=7,sentry_key=150cbac0a6e941bd89c935104211614e,sentry_timestamp=" . $timestamp,
+      ],
+      'body' => json_encode($body),
+      'sslverify' => false,
+    ]);
+
+    return $request;
   }
 }
 
