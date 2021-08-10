@@ -26,7 +26,11 @@ function peerboard_add_notice(string $notice, $function_name, $type = "success")
       'type' => $type
     ];
 
-    PEBO\API::add_sentry_error($notice, $function_name);
+    $extra = [
+      'backtrace' => debug_backtrace()
+    ];
+
+    PEBO\API::add_sentry_error($notice, $function_name, $extra);
   }
 
   set_transient('peerboard_notices', $notices, 60);
@@ -37,7 +41,8 @@ function peerboard_add_notice(string $notice, $function_name, $type = "success")
  *
  * @return void
  */
-function peerboard_get_environment(){
+function peerboard_get_environment()
+{
   $environment = 'live';
   if (defined('PEERBOARD_ENV')) {
     $environment = PEERBOARD_ENV;

@@ -314,14 +314,15 @@ class API
    *
    * @return void
    */
-  public static function add_sentry_error($message, $function_name)
+  public static function add_sentry_error($message, $function_name, $extra = [])
   {
     $timestamp = time();
     $body = [
       "culprit" => $function_name,
       "timestamp" => $timestamp,
       "message" => $message,
-      "environment" => peerboard_get_environment()
+      "environment" => peerboard_get_environment(),
+      "extra" => $extra
     ];
 
     $request = wp_remote_post('https://150cbac0a6e941bd89c935104211614e@o468053.ingest.sentry.io/api/5900112/store/', [
