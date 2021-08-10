@@ -305,7 +305,7 @@ __webpack_require__.r(__webpack_exports__);
   };
 
   _peerboardSettings['onFail'] = () => {
-    console.log('Failed to load forum - please contact us at integrations@peerboard.com');
+    console.log('Failed to load forum - please contact us at support_wp@peerboard.com');
   };
 
   docReady(function () {
@@ -324,7 +324,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
     setWaitingForReady(30000).then().catch(() => {
-      alert("Something really unexpected happened - please contact us at integrations@peerboard.com");
+      alert("Something really unexpected happened - please contact us at support_wp@peerboard.com");
     });
     createForum(_peerboardSettings['board-id'], target, _peerboardSettings);
   });

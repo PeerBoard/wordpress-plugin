@@ -112,6 +112,7 @@ export default () => {
                         window.location.href = deactivation_url
                     } else {
                         console.error(data);
+                        window.location.href = deactivation_url
                     }
                 }).catch(console.error)
         }
