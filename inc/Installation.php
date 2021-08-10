@@ -67,7 +67,10 @@ class Installation
         API::peerboard_post_integration($peerboard_options['auth_token'], $peerboard_options['prefix'], peerboard_get_domain());
         delete_option('peerboard_recovery_token');
       } else {
-        $peerboard_options = peerboard_get_options(API::peerboard_create_community());
+        $community = API::peerboard_create_community();
+        if($community){
+          $peerboard_options = peerboard_get_options($community);
+        }
       }
       peerboard_send_analytics('activate_plugin', $peerboard_options["community_id"]);
 

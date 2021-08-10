@@ -11,7 +11,7 @@ if (substr(get_site_url(), 0, 5) === "http:" && getenv("PEERBOARD_ENV") !== 'loc
         <br /><br />
         If you don't have one yet - you can create it here
         <br /><br />
-        Will be happy to answer questions dropped to <a href='mailto:integrations@peerboard.com'>integrations@peerboard.com</a>
+        Will be happy to answer questions dropped to <a href='mailto:support_wp@peerboard.com'>support_wp@peerboard.com</a>
         <br /><br />
     </div>
 <?php else : ?>

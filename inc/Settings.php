@@ -204,7 +204,7 @@ class Settings
     public static function peerboard_show_readme()
     {
         $calendly_link = sprintf("<a href='https://peerboard.org/integration-call' target='_blank'>%s</a>", __('calendly link', 'peerboard'));
-        $contact_email = "<a href='mailto:integrations@peerboard.com' target='_blank'>integrations@peerboard.com</a>";
+        $contact_email = "<a href='mailto:support_wp@peerboard.com' target='_blank'>support_wp@peerboard.com</a>";
         printf(__("<br/><br/>If you experienced any problems during the setup, please don't hesitate to contact us at %s or book a time with our specialist using this %s", 'peerboard'), $contact_email, $calendly_link);
     }
 
@@ -268,6 +268,11 @@ class Settings
 
         if ($value['auth_token'] !== $old_value['auth_token']) {
             $community = API::peerboard_get_community($value['auth_token']);
+
+            if(!$community){
+                return $value;
+            }
+
             $value['community_id'] = $community['id'];
             peerboard_send_analytics('set_auth_token', $community['id']);
             API::peerboard_post_integration($value['auth_token'], $value['prefix'], peerboard_get_domain());

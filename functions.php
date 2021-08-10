@@ -10,7 +10,7 @@
 function peerboard_add_notice(string $notice, $function_name, $type = "success")
 {
   $notices = is_array(get_transient('peerboard_notices')) ? get_transient('peerboard_notices') : [];
-  $new_notice = sprintf('PeerBoard: %s (%s) - %s', $notice, $function_name, __('please contact us at integrations@peerboard.com', 'peerboard'));
+  $new_notice = sprintf('PeerBoard: %s (%s) - %s', $notice, $function_name, __('please contact us at support_wp@peerboard.com', 'peerboard'));
   $notice_exist = false;
 
   // Check if notice already exist

@@ -42,7 +42,12 @@ class API
         $userdata['name'] = $user->first_name;
         $userdata['last_name'] = $user->last_name;
       }
-      self::peerboard_create_user($peerboard_options['auth_token'], $userdata);
+      $user = self::peerboard_create_user($peerboard_options['auth_token'], $userdata);
+
+      if (!$user) {
+        return;
+      }
+
       $count = intval(get_option('peerboard_users_count'));
       update_option('peerboard_users_count', $count + 1);
     }
@@ -74,8 +79,8 @@ class API
     ));
 
     if (is_wp_error($request)) {
-      foreach ($request->errors as $notice => $message[0]) {
-        peerboard_add_notice(sprintf('%s : %s', $notice, $message), __FUNCTION__, 'error');
+      foreach ($request->errors as $notice => $message) {
+        peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error');
       }
     }
 
@@ -105,8 +110,16 @@ class API
       ))
     ));
 
-    if (is_wp_error($request) || $request['response']['code'] >= 400) {
-      peerboard_add_notice($request['response']['message'] . ' (drop_integration)', 'error');
+    if (is_wp_error($request)) {
+      foreach ($request->errors as $notice => $message) {
+        peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error');
+      }
+    }
+
+    if (is_array($request)) {
+      if ($request['response']['code'] >= 400) {
+        peerboard_add_notice($request['response']['message'], __FUNCTION__, 'error');
+      }
     }
   }
 
@@ -128,9 +141,18 @@ class API
       'body' => json_encode($users)
     ));
 
-    if (is_wp_error($request) || $request['response']['code'] >= 400) {
-      peerboard_add_notice($request['response']['message'] . ' (sync_users)', 'error');
-      return $request;
+    if (is_wp_error($request)) {
+      foreach ($request->errors as $notice => $message) {
+        peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error');
+      }
+      return false;
+    }
+
+    if (is_array($request)) {
+      if ($request['response']['code'] >= 400) {
+        peerboard_add_notice($request['response']['message'], __FUNCTION__, 'error');
+        return false;
+      }
     }
 
     return json_decode(wp_remote_retrieve_body($request), true);
@@ -154,9 +176,18 @@ class API
       'body' => json_encode($user)
     ));
 
-    if (is_wp_error($request) || $request['response']['code'] >= 400) {
-      peerboard_add_notice($request['response']['message'] . ' (create_user)', 'error');
-      return $request;
+    if (is_wp_error($request)) {
+      foreach ($request->errors as $notice => $message) {
+        peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error');
+      }
+      return false;
+    }
+
+    if (is_array($request)) {
+      if ($request['response']['code'] >= 400) {
+        peerboard_add_notice($request['response']['message'], __FUNCTION__, 'error');
+        return false;
+      }
     }
 
     return json_decode(wp_remote_retrieve_body($request), true);
@@ -179,10 +210,18 @@ class API
       'sslverify' => false,
     ));
 
-    if (is_wp_error($request) || $request['response']['code'] >= 400) {
+    if (is_wp_error($request)) {
+      foreach ($request->errors as $notice => $message) {
+        peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error');
+      }
+      return false;
+    }
 
-      peerboard_add_notice($request['response']['message'], 'error');
-      return $request;
+    if (is_array($request)) {
+      if ($request['response']['code'] >= 400) {
+        peerboard_add_notice($request['response']['message'], __FUNCTION__, 'error');
+        return false;
+      }
     }
 
     return json_decode(wp_remote_retrieve_body($request), true);
@@ -203,9 +242,18 @@ class API
       ),
     ));
 
-    if (is_wp_error($request) || $request['response']['code'] >= 400) {
-      peerboard_add_notice($request['response']['message'], 'error');
-      return $request;
+    if (is_wp_error($request)) {
+      foreach ($request->errors as $notice => $message) {
+        peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error');
+      }
+      return false;
+    }
+
+    if (is_array($request)) {
+      if ($request['response']['code'] >= 400) {
+        peerboard_add_notice($request['response']['message'], __FUNCTION__, 'error');
+        return false;
+      }
     }
 
     return json_decode(wp_remote_retrieve_body($request), true);
@@ -243,8 +291,19 @@ class API
       'sslverify' => false,
     ]);
 
-    if (is_wp_error($request) || $request['response']['code'] >= 400) {
-      wp_send_json_error($request);
+    if (is_wp_error($request)) {
+      foreach ($request->errors as $notice => $message) {
+        peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error');
+        wp_send_json_error(sprintf('%s %s',$notice, $message[0]));
+      }
+      
+    }
+
+    if (is_array($request)) {
+      if ($request['response']['code'] >= 400) {
+        peerboard_add_notice($request['response']['message'], __FUNCTION__, 'error');
+        wp_send_json_error(sprintf('%s %s',$request['response']['message'], __FUNCTION__));
+      }
     }
 
     wp_send_json_success(wp_remote_retrieve_body($request));
@@ -259,7 +318,6 @@ class API
   {
     $timestamp = time();
     $body = [
-      //"event_id" => wp_generate_password(32, false),
       "culprit" => $function_name,
       "timestamp" => $timestamp,
       "message" => $message,
