@@ -80,13 +80,13 @@ class API
 
     if (is_wp_error($request)) {
       foreach ($request->errors as $notice => $message) {
-        peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error');
+        peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error', func_get_args());
       }
     }
 
     if (is_array($request)) {
       if ($request['response']['code'] >= 400) {
-        peerboard_add_notice($request['response']['message'], __FUNCTION__, 'error');
+        peerboard_add_notice($request['response']['message'], __FUNCTION__, 'error', func_get_args());
       }
     }
   }
@@ -112,13 +112,13 @@ class API
 
     if (is_wp_error($request)) {
       foreach ($request->errors as $notice => $message) {
-        peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error');
+        peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error', func_get_args());
       }
     }
 
     if (is_array($request)) {
       if ($request['response']['code'] >= 400) {
-        peerboard_add_notice($request['response']['message'], __FUNCTION__, 'error');
+        peerboard_add_notice($request['response']['message'], __FUNCTION__, 'error', func_get_args());
       }
     }
   }
@@ -143,14 +143,14 @@ class API
 
     if (is_wp_error($request)) {
       foreach ($request->errors as $notice => $message) {
-        peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error');
+        peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error', func_get_args());
       }
       return false;
     }
 
     if (is_array($request)) {
       if ($request['response']['code'] >= 400) {
-        peerboard_add_notice($request['response']['message'], __FUNCTION__, 'error');
+        peerboard_add_notice($request['response']['message'], __FUNCTION__, 'error', func_get_args());
         return false;
       }
     }
@@ -178,14 +178,14 @@ class API
 
     if (is_wp_error($request)) {
       foreach ($request->errors as $notice => $message) {
-        peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error');
+        peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error', func_get_args());
       }
       return false;
     }
 
     if (is_array($request)) {
       if ($request['response']['code'] >= 400) {
-        peerboard_add_notice($request['response']['message'], __FUNCTION__, 'error');
+        peerboard_add_notice($request['response']['message'], __FUNCTION__, 'error', func_get_args());
         return false;
       }
     }
@@ -212,14 +212,14 @@ class API
 
     if (is_wp_error($request)) {
       foreach ($request->errors as $notice => $message) {
-        peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error');
+        peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error', func_get_args());
       }
       return false;
     }
 
     if (is_array($request)) {
       if ($request['response']['code'] >= 400) {
-        peerboard_add_notice($request['response']['message'], __FUNCTION__, 'error');
+        peerboard_add_notice($request['response']['message'], __FUNCTION__, 'error', func_get_args());
         return false;
       }
     }
@@ -244,14 +244,14 @@ class API
 
     if (is_wp_error($request)) {
       foreach ($request->errors as $notice => $message) {
-        peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error');
+        peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error', func_get_args());
       }
       return false;
     }
 
     if (is_array($request)) {
       if ($request['response']['code'] >= 400) {
-        peerboard_add_notice($request['response']['message'], __FUNCTION__, 'error');
+        peerboard_add_notice($request['response']['message'], __FUNCTION__, 'error', func_get_args());
         return false;
       }
     }
@@ -293,16 +293,15 @@ class API
 
     if (is_wp_error($request)) {
       foreach ($request->errors as $notice => $message) {
-        peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error');
-        wp_send_json_error(sprintf('%s %s',$notice, $message[0]));
+        peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error', func_get_args());
+        wp_send_json_error(sprintf('%s %s', $notice, $message[0]));
       }
-      
     }
 
     if (is_array($request)) {
       if ($request['response']['code'] >= 400) {
-        peerboard_add_notice($request['response']['message'], __FUNCTION__, 'error');
-        wp_send_json_error(sprintf('%s %s',$request['response']['message'], __FUNCTION__));
+        peerboard_add_notice($request['response']['message'], __FUNCTION__, 'error', func_get_args());
+        wp_send_json_error(sprintf('%s %s', $request['response']['message'], __FUNCTION__));
       }
     }
 

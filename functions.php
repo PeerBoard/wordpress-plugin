@@ -7,7 +7,7 @@
  * @param integer $type
  * @return void
  */
-function peerboard_add_notice(string $notice, $function_name, $type = "success")
+function peerboard_add_notice(string $notice, $function_name, $type = "success", $args = [])
 {
   $notices = is_array(get_transient('peerboard_notices')) ? get_transient('peerboard_notices') : [];
   $new_notice = sprintf('PeerBoard: %s (%s) - %s', $notice, $function_name, __('please contact us at support_wp@peerboard.com', 'peerboard'));
@@ -27,7 +27,7 @@ function peerboard_add_notice(string $notice, $function_name, $type = "success")
     ];
 
     $extra = [
-      'backtrace' => debug_backtrace()
+      'args' => $args
     ];
 
     PEBO\API::add_sentry_error($notice, $function_name, $extra);
