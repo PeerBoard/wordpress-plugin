@@ -43,7 +43,7 @@ function peerboard_add_notice(string $notice, $function_name, $type = "success",
  */
 function peerboard_get_environment()
 {
-  $environment = 'live';
+  $environment = 'prod';
   if (defined('PEERBOARD_ENV')) {
     $environment = PEERBOARD_ENV;
   }
