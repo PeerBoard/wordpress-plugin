@@ -53,6 +53,27 @@ class API
     }
   }
 
+  public static function check_request_error($request)
+  {
+    $error = true;
+
+    if (is_wp_error($request)) {
+      foreach ($request->errors as $notice => $message) {
+        peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error', func_get_args());
+      }
+      $error = false;
+    }
+
+    if (is_array($request)) {
+      if ($request['response']['code'] >= 400) {
+        peerboard_add_notice($request['response']['message'], __FUNCTION__, 'error', func_get_args());
+        $error = false;
+      }
+    }
+
+    return $error;
+  }
+
   /**
    * PeerBoard integrations request
    *
@@ -78,17 +99,7 @@ class API
       ))
     ));
 
-    if (is_wp_error($request)) {
-      foreach ($request->errors as $notice => $message) {
-        peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error', func_get_args());
-      }
-    }
-
-    if (is_array($request)) {
-      if ($request['response']['code'] >= 400) {
-        peerboard_add_notice($request['response']['message'], __FUNCTION__, 'error', func_get_args());
-      }
-    }
+    self::check_request_error($request);
   }
 
   /**
@@ -110,17 +121,7 @@ class API
       ))
     ));
 
-    if (is_wp_error($request)) {
-      foreach ($request->errors as $notice => $message) {
-        peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error', func_get_args());
-      }
-    }
-
-    if (is_array($request)) {
-      if ($request['response']['code'] >= 400) {
-        peerboard_add_notice($request['response']['message'], __FUNCTION__, 'error', func_get_args());
-      }
-    }
+    self::check_request_error($request);
   }
 
   /**
@@ -141,18 +142,10 @@ class API
       'body' => json_encode($users)
     ));
 
-    if (is_wp_error($request)) {
-      foreach ($request->errors as $notice => $message) {
-        peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error', func_get_args());
-      }
-      return false;
-    }
+    $error = self::check_request_error($request);
 
-    if (is_array($request)) {
-      if ($request['response']['code'] >= 400) {
-        peerboard_add_notice($request['response']['message'], __FUNCTION__, 'error', func_get_args());
-        return false;
-      }
+    if($error){
+      return false;
     }
 
     return json_decode(wp_remote_retrieve_body($request), true);
@@ -176,18 +169,10 @@ class API
       'body' => json_encode($user)
     ));
 
-    if (is_wp_error($request)) {
-      foreach ($request->errors as $notice => $message) {
-        peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error', func_get_args());
-      }
-      return false;
-    }
+    $error = self::check_request_error($request);
 
-    if (is_array($request)) {
-      if ($request['response']['code'] >= 400) {
-        peerboard_add_notice($request['response']['message'], __FUNCTION__, 'error', func_get_args());
-        return false;
-      }
+    if($error){
+      return false;
     }
 
     return json_decode(wp_remote_retrieve_body($request), true);
@@ -210,18 +195,10 @@ class API
       'sslverify' => false,
     ));
 
-    if (is_wp_error($request)) {
-      foreach ($request->errors as $notice => $message) {
-        peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error', func_get_args());
-      }
-      return false;
-    }
+    $error = self::check_request_error($request);
 
-    if (is_array($request)) {
-      if ($request['response']['code'] >= 400) {
-        peerboard_add_notice($request['response']['message'], __FUNCTION__, 'error', func_get_args());
-        return false;
-      }
+    if($error){
+      return false;
     }
 
     return json_decode(wp_remote_retrieve_body($request), true);
@@ -242,18 +219,10 @@ class API
       ),
     ));
 
-    if (is_wp_error($request)) {
-      foreach ($request->errors as $notice => $message) {
-        peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error', func_get_args());
-      }
-      return false;
-    }
+    $error = self::check_request_error($request);
 
-    if (is_array($request)) {
-      if ($request['response']['code'] >= 400) {
-        peerboard_add_notice($request['response']['message'], __FUNCTION__, 'error', func_get_args());
-        return false;
-      }
+    if($error){
+      return false;
     }
 
     return json_decode(wp_remote_retrieve_body($request), true);
@@ -291,18 +260,10 @@ class API
       'sslverify' => false,
     ]);
 
-    if (is_wp_error($request)) {
-      foreach ($request->errors as $notice => $message) {
-        peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error', func_get_args());
-        wp_send_json_error(sprintf('%s %s', $notice, $message[0]));
-      }
-    }
+    $error = self::check_request_error($request);
 
-    if (is_array($request)) {
-      if ($request['response']['code'] >= 400) {
-        peerboard_add_notice($request['response']['message'], __FUNCTION__, 'error', func_get_args());
-        wp_send_json_error(sprintf('%s %s', $request['response']['message'], __FUNCTION__));
-      }
+    if($error){
+      wp_send_json_error(sprintf('%s %s', $request['response']['message'], __FUNCTION__));
     }
 
     wp_send_json_success(wp_remote_retrieve_body($request));
