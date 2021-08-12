@@ -53,20 +53,26 @@ class API
     }
   }
 
-  public static function check_request_error($request)
+  /**
+   * Check if API has error or not
+   *
+   * @param array or object $request
+   * @return void
+   */
+  public static function check_request_error($request, $function_args = [])
   {
     $error = true;
 
     if (is_wp_error($request)) {
       foreach ($request->errors as $notice => $message) {
-        peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error', func_get_args());
+        peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error', $function_args);
       }
       $error = false;
     }
 
     if (is_array($request)) {
       if ($request['response']['code'] >= 400) {
-        peerboard_add_notice($request['response']['message'], __FUNCTION__, 'error', func_get_args());
+        peerboard_add_notice($request['response']['message'], __FUNCTION__, 'error', $function_args);
         $error = false;
       }
     }
@@ -99,7 +105,7 @@ class API
       ))
     ));
 
-    self::check_request_error($request);
+    self::check_request_error($request, func_get_args());
   }
 
   /**
@@ -121,7 +127,7 @@ class API
       ))
     ));
 
-    self::check_request_error($request);
+    self::check_request_error($request, func_get_args());
   }
 
   /**
@@ -142,9 +148,9 @@ class API
       'body' => json_encode($users)
     ));
 
-    $error = self::check_request_error($request);
+    $error = self::check_request_error($request, func_get_args());
 
-    if($error){
+    if ($error) {
       return false;
     }
 
@@ -169,9 +175,9 @@ class API
       'body' => json_encode($user)
     ));
 
-    $error = self::check_request_error($request);
+    $error = self::check_request_error($request, func_get_args());
 
-    if($error){
+    if ($error) {
       return false;
     }
 
@@ -195,9 +201,9 @@ class API
       'sslverify' => false,
     ));
 
-    $error = self::check_request_error($request);
+    $error = self::check_request_error($request, func_get_args());
 
-    if($error){
+    if ($error) {
       return false;
     }
 
@@ -219,9 +225,9 @@ class API
       ),
     ));
 
-    $error = self::check_request_error($request);
+    $error = self::check_request_error($request, func_get_args());
 
-    if($error){
+    if ($error) {
       return false;
     }
 
@@ -260,9 +266,9 @@ class API
       'sslverify' => false,
     ]);
 
-    $error = self::check_request_error($request);
+    $error = self::check_request_error($request, func_get_args());
 
-    if($error){
+    if ($error) {
       wp_send_json_error(sprintf('%s %s', $request['response']['message'], __FUNCTION__));
     }
 
