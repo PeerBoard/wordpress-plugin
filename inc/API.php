@@ -42,6 +42,7 @@ class API
         $userdata['name'] = $user->first_name;
         $userdata['last_name'] = $user->last_name;
       }
+
       $user = self::peerboard_create_user($peerboard_options['auth_token'], $userdata);
 
       if (!$user) {
@@ -59,25 +60,70 @@ class API
    * @param array or object $request
    * @return void
    */
-  public static function check_request_error($request, $function_args = [])
+  public static function check_request_success($request, $function_args = [])
   {
-    $error = true;
+    $success = true;
 
     if (is_wp_error($request)) {
       foreach ($request->errors as $notice => $message) {
         peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error', $function_args);
       }
-      $error = false;
+      $success = false;
     }
 
     if (is_array($request)) {
       if ($request['response']['code'] >= 400) {
         peerboard_add_notice($request['response']['message'], __FUNCTION__, 'error', $function_args);
-        $error = false;
+        $success = false;
       }
     }
 
-    return $error;
+    return $success;
+  }
+
+  /**
+   * API Call
+   *
+   * @param [type] $slug
+   * @param [type] $token
+   * @param [type] $body
+   * @param string $type
+   * @return void
+   */
+  public static function peerboard_api_call($slug, $token = 0, $body, $type = 'GET')
+  {
+    $url = PEERBOARD_API_BASE . $slug;
+
+    $headers = [
+      "Partner" => "wordpress_default_partner_token",
+      "Content-type" => "application/json",
+    ];
+
+    if(!$token){
+      $headers['authorization'] = "Bearer " . $token;
+    }
+
+    $args = [
+      'timeout'     => 20,
+      'headers' => $headers,
+      'body' => json_encode($body)
+    ];
+
+    if ($type === 'GET') {
+      $request = wp_remote_get($url, $args);
+    }
+
+    if ($type === 'POST') {
+      $request = wp_remote_post($url, $args);
+    }
+
+    $success = self::check_request_success($request, func_get_args());
+
+    if (!$success) {
+      return false;
+    }
+
+    return $request;
   }
 
   /**
@@ -90,22 +136,13 @@ class API
    */
   public static function peerboard_post_integration($token, $prefix, $domain)
   {
-    $request = wp_remote_post(PEERBOARD_API_BASE . 'hosting', array(
-      'timeout'     => 5,
-      'headers' => array(
-        'authorization' => "Bearer $token",
-        "Partner" => "wordpress_default_partner_token"
-      ),
-      'body' => json_encode(array(
-        "domain" => $domain,
-        "path" => $prefix,
-        "type" => 'sdk',
-        "js_storage_auth" => true,
-        "version" => PEERBOARD_PLUGIN_VERSION
-      ))
-    ));
-
-    self::check_request_error($request, func_get_args());
+    return self::peerboard_api_call('hosting', $token, [
+      "domain" => $domain,
+      "path" => $prefix,
+      "type" => 'sdk',
+      "js_storage_auth" => true,
+      "version" => PEERBOARD_PLUGIN_VERSION
+    ], 'POST');
   }
 
   /**
@@ -116,18 +153,7 @@ class API
    */
   public static function peerboard_drop_integration($token)
   {
-    $request = wp_remote_post(PEERBOARD_API_BASE . 'hosting', array(
-      'timeout'     => 5,
-      'headers' => array(
-        'authorization' => "Bearer $token",
-        "Partner" => "wordpress_default_partner_token"
-      ),
-      'body' => json_encode(array(
-        "type" => 'none'
-      ))
-    ));
-
-    self::check_request_error($request, func_get_args());
+    return self::peerboard_api_call('hosting', $token, ["type" => 'none'], 'POST');
   }
 
   /**
@@ -139,18 +165,9 @@ class API
    */
   public static function peerboard_sync_users($token, $users)
   {
-    $request = wp_remote_post(PEERBOARD_API_BASE . 'users/batch', array(
-      'timeout'     => 5,
-      'headers' => array(
-        'authorization' => "Bearer $token",
-        "Partner" => "wordpress_default_partner_token"
-      ),
-      'body' => json_encode($users)
-    ));
+    $request = self::peerboard_api_call('users/batch', $token, $users, 'POST');
 
-    $error = self::check_request_error($request, func_get_args());
-
-    if ($error) {
+    if (!$request) {
       return false;
     }
 
@@ -166,18 +183,10 @@ class API
    */
   public static function peerboard_create_user($token, $user)
   {
-    $request = wp_remote_post(PEERBOARD_API_BASE . 'users', array(
-      'timeout'     => 5,
-      'headers' => array(
-        'authorization' => "Bearer $token",
-        "Partner" => "wordpress_default_partner_token"
-      ),
-      'body' => json_encode($user)
-    ));
 
-    $error = self::check_request_error($request, func_get_args());
+    $request = self::peerboard_api_call('users', $token, $user, 'POST');
 
-    if ($error) {
+    if (!$request) {
       return false;
     }
 
@@ -191,19 +200,9 @@ class API
    */
   public static function peerboard_create_community()
   {
-    $request = wp_remote_post(PEERBOARD_API_BASE . 'communities', array(
-      'timeout'     => 45,
-      'headers' => array(
-        "Content-type" => "application/json",
-        "Partner" => "wordpress_default_partner_token"
-      ),
-      'body' => json_encode(peerboard_bloginfo_array()),
-      'sslverify' => false,
-    ));
+    $request = self::peerboard_api_call('communities', 0, peerboard_bloginfo_array(), 'POST');
 
-    $error = self::check_request_error($request, func_get_args());
-
-    if ($error) {
+    if (!$request) {
       return false;
     }
 
@@ -218,16 +217,9 @@ class API
    */
   public static function peerboard_get_community($auth_token)
   {
-    $request = wp_remote_get(PEERBOARD_API_BASE . 'communities', array(
-      'headers' => array(
-        'authorization' => "Bearer $auth_token",
-        "Partner" => "wordpress_default_partner_token"
-      ),
-    ));
+    $request = self::peerboard_api_call('communities', $auth_token, '');
 
-    $error = self::check_request_error($request, func_get_args());
-
-    if ($error) {
+    if (!$request) {
       return false;
     }
 
@@ -242,8 +234,7 @@ class API
   public static  function feedback_request()
   {
     $options = get_option('peerboard_options');
-    // https://api.(peerboard.com|peerboard.dev|local.is)/events
-    $api_link = PEERBOARD_API_URL . 'events';
+
     $body = [
       'type' => 'plugin_uninstalled',
       "platform" => "wordpress",
@@ -255,20 +246,9 @@ class API
       "main_url" => get_site_url() . "/" . $options['prefix']
     ];
 
-    $request = wp_remote_post($api_link, [
-      'timeout'     => 45,
-      'redirection' => 10,
-      'headers' => array(
-        "Content-type" => "application/json",
-        "Partner" => "wordpress_default_partner_token"
-      ),
-      'body' => json_encode($body),
-      'sslverify' => false,
-    ]);
+    $request = self::peerboard_api_call('events', 0, $body, 'POST');
 
-    $error = self::check_request_error($request, func_get_args());
-
-    if ($error) {
+    if (!$request) {
       wp_send_json_error(sprintf('%s %s', $request['response']['message'], __FUNCTION__));
     }
 

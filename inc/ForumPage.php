@@ -133,11 +133,21 @@ class ForumPage
         global $peerboard_options;
         $peerboard_options = get_option('peerboard_options', array());
         if (!array_key_exists('peerboard_version_synced', $peerboard_options)) {
-            API::peerboard_post_integration($peerboard_options['auth_token'], $peerboard_options['prefix'], peerboard_get_domain());
+            $success = API::peerboard_post_integration($peerboard_options['auth_token'], $peerboard_options['prefix'], peerboard_get_domain());
+
+            if(!$success){
+                return false;
+            }
+
             $peerboard_options['peerboard_version_synced'] = PEERBOARD_PLUGIN_VERSION;
             update_option('peerboard_options', $peerboard_options);
         } else if ($peerboard_options['peerboard_version_synced'] != PEERBOARD_PLUGIN_VERSION) {
-            API::peerboard_post_integration($peerboard_options['auth_token'], $peerboard_options['prefix'], peerboard_get_domain());
+            $success = API::peerboard_post_integration($peerboard_options['auth_token'], $peerboard_options['prefix'], peerboard_get_domain());
+
+            if(!$success){
+                return false;
+            }
+
             $peerboard_options['peerboard_version_synced'] = PEERBOARD_PLUGIN_VERSION;
             update_option('peerboard_options', $peerboard_options);
         }

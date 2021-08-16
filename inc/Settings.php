@@ -38,6 +38,8 @@ class Settings
         add_action('updated_option', [__CLASS__, 'forum_page_template_updated'], 10, 3);
 
         add_action('pre_update_option_peerboard_options', [__CLASS__, 'pre_update_option_peerboard_options'], 10, 3);
+
+        add_action('pre_update_option_peerboard_users_count', [__CLASS__, 'import_all_users'], 10, 3);
     }
 
     /**
@@ -263,25 +265,89 @@ class Settings
                 $value['prefix'] = $old_value['prefix'];
             }
             peerboard_update_post_slug($value['prefix']);
-            API::peerboard_post_integration($value['auth_token'], $value['prefix'], peerboard_get_domain());
+            $success = API::peerboard_post_integration($value['auth_token'], $value['prefix'], peerboard_get_domain());
+
+            if(!$success){
+                return $value;
+            }
         }
 
         if ($value['auth_token'] !== $old_value['auth_token']) {
             $community = API::peerboard_get_community($value['auth_token']);
 
-            if(!$community){
+            if (!$community) {
                 return $value;
             }
 
             $value['community_id'] = $community['id'];
             peerboard_send_analytics('set_auth_token', $community['id']);
-            API::peerboard_post_integration($value['auth_token'], $value['prefix'], peerboard_get_domain());
+            $success = API::peerboard_post_integration($value['auth_token'], $value['prefix'], peerboard_get_domain());
+
+            if(!$success){
+                return $value;
+            }
+
             if ($old_value['auth_token'] !== '' && $old_value['auth_token'] !== NULL) {
-                API::peerboard_drop_integration($old_value['auth_token']);
+                $success = API::peerboard_drop_integration($old_value['auth_token']);
+
+                if(!$success){
+                    return $value;
+                }
             }
         }
 
         return $value;
+    }
+
+    /**
+     * Import all users
+     *
+     * @param [type] $value
+     * @param [type] $old_value
+     * @param [type] $option
+     * @return void
+     */
+    public static function import_all_users($value, $old_value, $option)
+    {
+        global $peerboard_options;
+        $users = get_users();
+
+        $sync_enabled = get_option('peerboard_users_sync_enabled');
+        if ($sync_enabled === '1') {
+            if ($value === 0) {
+                update_option('peerboard_users_sync_enabled', '0');
+                return $old_value;
+            }
+            return $value;
+        }
+
+        $result = [];
+        foreach ($users as $user) {
+            $userdata = array(
+                'email' =>  $user->user_email,
+                'bio' => urlencode($user->description),
+                'profile_url' => get_avatar_url($user->user_email),
+                'name' => $user->nickname,
+                'last_name' => ''
+            );
+            if ($peerboard_options['expose_user_data'] == '1') {
+                $userdata['name'] = $user->first_name;
+                $userdata['last_name'] = $user->last_name;
+            }
+            $result[] = $userdata;
+        }
+
+        $response = API::peerboard_sync_users($peerboard_options['auth_token'], $result);
+
+        if(!$response){
+            return $value;
+        }
+        
+        update_option('peerboard_users_sync_enabled', '1');
+        if ($value === 0) {
+            $value = $old_value;
+        }
+        return $response['result'] + intval($value);
     }
 
     /**

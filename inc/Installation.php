@@ -63,14 +63,28 @@ class Installation
       $recovery = get_option('peerboard_recovery_token');
       if ($recovery !== false && $recovery !== NULL && $recovery !== '') {
         $peerboard_options = peerboard_get_options(API::peerboard_get_community($recovery));
+
+        if(!$peerboard_options){
+          return false;
+        }
+
         $peerboard_options['prefix'] = 'community';
-        API::peerboard_post_integration($peerboard_options['auth_token'], $peerboard_options['prefix'], peerboard_get_domain());
+
+        $integration = API::peerboard_post_integration($peerboard_options['auth_token'], $peerboard_options['prefix'], peerboard_get_domain());
+        
+        if(!$integration){
+          return false;
+        }
+
         delete_option('peerboard_recovery_token');
       } else {
+
         $community = API::peerboard_create_community();
+
         if($community){
           $peerboard_options = peerboard_get_options($community);
         }
+
       }
       peerboard_send_analytics('activate_plugin', $peerboard_options["community_id"]);
 
@@ -109,7 +123,11 @@ class Installation
     wp_delete_post($post_id, true);
     $board_id = $peerboard_options['community_id'];
     peerboard_send_analytics('deactivate_plugin', $board_id);
-    API::peerboard_drop_integration($peerboard_options['auth_token']);
+    $success = API::peerboard_drop_integration($peerboard_options['auth_token']);
+
+    if(!$success){
+      return;
+    }
 
     update_option("peerboard_recovery_token", $peerboard_options['auth_token']);
     delete_option('peerboard_post');
