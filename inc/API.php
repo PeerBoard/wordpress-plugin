@@ -99,7 +99,7 @@ class API
       "Content-type" => "application/json",
     ];
 
-    if(!$token){
+    if($token){
       $headers['authorization'] = "Bearer " . $token;
     }
 
