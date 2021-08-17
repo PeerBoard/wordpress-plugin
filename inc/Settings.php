@@ -188,12 +188,12 @@ class Settings
         $sync_enabled = get_option('peerboard_users_sync_enabled');
 
         if ($diff !== 0) {
-            printf(__("You have %s users that can be imported to PeerBoard.<br/><br/><i>Note that this will send them a welcome email and subscribe to digests.</i><br/>", 'peerboard'), $diff);
+            printf(__("You have %s users that can be imported to PeerBoard.<br/><br/><i>Note that this will send them a welcome email and subscribe them to digests.</i><br/>", 'peerboard'), $diff);
         } else {
             if ($sync_enabled) {
-                _e("Automatic user import is activated.<br/><br/><i>All WordPress registrations automatically receive welcome email and are subscribed to PeerBoard digest.</i><br/>", 'peerboard');
+                _e("Automatic user import is activated.<br/><br/><i>All WordPress registrations automatically receive a welcome email and are subscribed to PeerBoard digests.</i><br/>", 'peerboard');
             } else {
-                _e("Enable automatic import of your new WordPress users to PeerBoard.<br/><br/><i>Note that they will be receiving welcome emails and get subscribed to email digests.</i><br/>", 'peerboard');
+                _e("Enable automatic import of your new WordPress users to PeerBoard.<br/><br/><i>Note that they will start receiving welcome emails and get subscribed to email digests.</i><br/>", 'peerboard');
             }
         }
         printf("<input name='peerboard_users_count' style='display:none' value='%s' />", $option_count);
@@ -207,7 +207,7 @@ class Settings
     {
         $calendly_link = sprintf("<a href='https://peerboard.org/integration-call' target='_blank'>%s</a>", __('calendly link', 'peerboard'));
         $contact_email = "<a href='mailto:support_wp@peerboard.com' target='_blank'>support_wp@peerboard.com</a>";
-        printf(__("<br/><br/>If you experienced any problems during the setup, please don't hesitate to contact us at %s or book a time with our specialist using this %s", 'peerboard'), $contact_email, $calendly_link);
+        printf(__("<br/><br/>If you have experienced any problems during the setup, please don't hesitate to contact us at %s or book a time with our specialist using this %s", 'peerboard'), $contact_email, $calendly_link);
     }
 
     /**
