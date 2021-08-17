@@ -17,6 +17,9 @@ Our plugin was designed to make community forum features accessible to any WordP
 If you do need any help, feel free to reach out to our team of support specialists. We are proud to support our users with free customer support!
 
 
+https://www.youtube.com/watch?v=mQ0XnC1smCo
+
+
 **Benefits of Having a Forum on WordPress Website:**
 
 - **Connect With Your Customers**: Stand out from the competition by talking, helping, and building personal and lasting relationships with your customers.
@@ -73,12 +76,16 @@ Unlike legacy plugins like bbPress and BuddyPress, which can be difficult to set
 2. Go to PeerBoard > Settings and set required fields
 
 == Frequently Asked Questions ==
+**How do I install the plugin?**
+How to install: [here](https://www.youtube.com/watch?v=mW7AEN3KzeA)
 **Do I need to know any coding to use this plugin?**
-No, we have built PeerBoard to be super easy to use and does not require you to manually build shortcodes or have any coding knowledge.
+No, we have built PeerBoard to be super easy. You don't need to create shortcodes or have any coding knowledge whatsoever.
 **Where can I see a demo?**
 There’s a live demo [here](https://bloggingguide.org/forum/).
 **Is PeerBoard mobile responsive?**
 Yes. PeerBoard is designed to adjust nicely to any screen, including phones, tablets and desktops.
+**How to change the language:**
+How to change the language: [here](https://www.youtube.com/watch?v=ZOfzv9qiveQ)
 **How do I get support?**
 If you have trouble with PeerBoard plugin, you can get help on the support forums [here](https://community.peerboard.com/) or just drop us an email at support@peerboard.com.
 **I have a different question than listed here.**
