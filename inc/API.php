@@ -90,16 +90,20 @@ class API
    * @param string $type
    * @return void
    */
-  public static function peerboard_api_call($slug, $token = 0, $body, $type = 'GET')
+  public static function peerboard_api_call($slug, $token = 0, $body, $type = 'GET', $api_url = '')
   {
-    $url = PEERBOARD_API_BASE . $slug;
+    if (!empty($api_url)) {
+      $url = PEERBOARD_API_URL . $slug;
+    } else {
+      $url = PEERBOARD_API_BASE . $slug;
+    }
 
     $headers = [
       "Partner" => "wordpress_default_partner_token",
       "Content-type" => "application/json",
     ];
 
-    if($token){
+    if ($token) {
       $headers['authorization'] = "Bearer " . $token;
     }
 
@@ -246,7 +250,7 @@ class API
       "main_url" => get_site_url() . "/" . $options['prefix']
     ];
 
-    $request = self::peerboard_api_call('events', 0, $body, 'POST');
+    $request = self::peerboard_api_call('events', 0, $body, 'POST', PEERBOARD_API_URL);
 
     if (!$request) {
       wp_send_json_error(sprintf('%s %s', $request['response']['message'], __FUNCTION__));
