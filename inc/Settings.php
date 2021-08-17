@@ -207,7 +207,7 @@ class Settings
     {
         $calendly_link = sprintf("<a href='https://peerboard.org/integration-call' target='_blank'>%s</a>", __('calendly link', 'peerboard'));
         $contact_email = "<a href='mailto:support_wp@peerboard.com' target='_blank'>support_wp@peerboard.com</a>";
-        printf(__("<br/><br/>If you have experienced any problems during the setup, please don't hesitate to contact us at %s or book a time with our specialist using this %s", 'peerboard'), $contact_email, $calendly_link);
+        printf(__("If you have experienced any problems during the setup, please don't hesitate to contact us at %s or book a time with our specialist using this %s", 'peerboard'), $contact_email, $calendly_link);
     }
 
     /**
