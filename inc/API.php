@@ -110,7 +110,6 @@ class API
     $args = [
       'timeout'     => 20,
       'headers' => $headers,
-      'body' => json_encode($body)
     ];
 
     if ($type === 'GET') {
@@ -118,6 +117,7 @@ class API
     }
 
     if ($type === 'POST') {
+      $args['body'] = json_encode($body);
       $request = wp_remote_post($url, $args);
     }
 
