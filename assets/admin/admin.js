@@ -201,9 +201,14 @@ __webpack_require__.r(__webpack_exports__);
 
       if (main_reason_wrap) {
         let main_reason = main_reason_wrap.querySelector('input.main_reason').value,
-            additional_info = main_reason_wrap.querySelector('.additional_field input').value;
+            additional_info = main_reason_wrap.querySelector('.additional_field input');
+
+        if (additional_info) {
+          additional_info = additional_info.value;
+          formData.append('additional_info', additional_info);
+        }
+
         formData.append('main_reason', main_reason);
-        formData.append('additional_info', additional_info);
       }
 
       formData.append('action', 'peerboard_feedback_request');
