@@ -93,7 +93,7 @@ class API
   public static function peerboard_api_call($slug, $token = 0, $body, $type = 'GET', $api_url = '')
   {
     if (!empty($api_url)) {
-      $url = PEERBOARD_API_URL . $slug;
+      $url = $api_url . $slug;
     } else {
       $url = PEERBOARD_API_BASE . $slug;
     }

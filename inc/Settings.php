@@ -39,7 +39,7 @@ class Settings
 
         add_action('pre_update_option_peerboard_options', [__CLASS__, 'pre_update_option_peerboard_options'], 10, 3);
 
-        add_action('pre_update_option_peerboard_users_count', [__CLASS__, 'import_all_users'], 10, 3);
+        add_action('pre_update_option_peerboard_users_count', [__CLASS__, 'handle_users_sync_flag_changed'], 10, 3);
     }
 
     /**
@@ -307,7 +307,7 @@ class Settings
      * @param [type] $option
      * @return void
      */
-    public static function import_all_users($value, $old_value, $option)
+    public static function handle_users_sync_flag_changed($value, $old_value, $option)
     {
         global $peerboard_options;
         $users = get_users();
