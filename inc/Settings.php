@@ -37,7 +37,7 @@ class Settings
          */
         add_action('updated_option', [__CLASS__, 'forum_page_template_updated'], 10, 3);
 
-        add_action('pre_update_option_peerboard_options', [__CLASS__, 'pre_update_option_peerboard_options'], 10, 3);
+        add_filter('pre_update_option_peerboard_options', [__CLASS__, 'pre_update_option_peerboard_options'], 10, 3);
 
         add_action('pre_update_option_peerboard_users_count', [__CLASS__, 'handle_users_sync_flag_changed'], 10, 3);
     }
@@ -187,6 +187,10 @@ class Settings
         $diff =  $users_count - $synced;
         $sync_enabled = get_option('peerboard_users_sync_enabled');
 
+        if($users_count >= 100000){
+            _e('<h2>Note: this feature is manually activated for large customers, email us at <a href="mailto:support_wp@peerboard.com">support_wp@peerboard.com</a></h2>','peerboard');
+        }
+
         if ($diff !== 0) {
             printf(__("You have %s users that can be imported to PeerBoard.<br/><br/><i>Note that this will send them a welcome email and subscribe them to digests.</i><br/>", 'peerboard'), $diff);
         } else {
@@ -268,7 +272,7 @@ class Settings
             $success = API::peerboard_post_integration($value['auth_token'], $value['prefix'], peerboard_get_domain());
 
             if(!$success){
-                return $value;
+                return $old_value;
             }
         }
 
@@ -276,7 +280,7 @@ class Settings
             $community = API::peerboard_get_community($value['auth_token']);
 
             if (!$community) {
-                return $value;
+                return $old_value;
             }
 
             $value['community_id'] = $community['id'];
@@ -284,14 +288,14 @@ class Settings
             $success = API::peerboard_post_integration($value['auth_token'], $value['prefix'], peerboard_get_domain());
 
             if(!$success){
-                return $value;
+                return $old_value;
             }
 
             if ($old_value['auth_token'] !== '' && $old_value['auth_token'] !== NULL) {
                 $success = API::peerboard_drop_integration($old_value['auth_token']);
 
                 if(!$success){
-                    return $value;
+                    return $old_value;
                 }
             }
         }
