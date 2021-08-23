@@ -4,7 +4,7 @@ Tags: forum, forums, community, discussion, knowledge base, membership, member, 
 Requires at least: 5.1
 Tested up to: 5.7
 Requires PHP: 5.5
-Stable tag: 0.8.2
+Stable tag: 0.8.3
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -15,6 +15,9 @@ PeerBoard is a powerful modern community platform that enables embedded and full
 PeerBoard’s WordPress plugin was designed to help creators, companies, or organizations build a successful branded community. Our WordPress plugin allows any WordPress user to embed a fully functional online community platform with just a few clicks. 
 Our plugin was designed to make community forum features accessible to any WordPress user, regardless of their level of previous website design experience. The entire plugin installation process and integration with your website takes just a few minutes, and requires no coding or technical knowledge.
 If you do need any help, feel free to reach out to our team of support specialists. We are proud to support our users with free customer support!
+
+
+https://www.youtube.com/watch?v=mQ0XnC1smCo
 
 
 **Benefits of Having a Forum on WordPress Website:**
@@ -73,12 +76,16 @@ Unlike legacy plugins like bbPress and BuddyPress, which can be difficult to set
 2. Go to PeerBoard > Settings and set required fields
 
 == Frequently Asked Questions ==
+**How do I install the plugin?**
+How to install: [here](https://www.youtube.com/watch?v=mW7AEN3KzeA)
 **Do I need to know any coding to use this plugin?**
-No, we have built PeerBoard to be super easy to use and does not require you to manually build shortcodes or have any coding knowledge.
+No, we have built PeerBoard to be super easy. You don't need to create shortcodes or have any coding knowledge whatsoever.
 **Where can I see a demo?**
 There’s a live demo [here](https://bloggingguide.org/forum/).
 **Is PeerBoard mobile responsive?**
 Yes. PeerBoard is designed to adjust nicely to any screen, including phones, tablets and desktops.
+**How to change the language:**
+How to change the language: [here](https://www.youtube.com/watch?v=ZOfzv9qiveQ)
 **How do I get support?**
 If you have trouble with PeerBoard plugin, you can get help on the support forums [here](https://community.peerboard.com/) or just drop us an email at support@peerboard.com.
 **I have a different question than listed here.**
@@ -101,6 +108,8 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 9. Private or public. Control your community’s visibility, access rights and registration options.
 
 == Changelog ==
+= 0.8.3 =
+Improved error handling
 = 0.8.2 =
 * Fixed some small bugs
 = 0.8.1 =
@@ -148,6 +157,8 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 * Fix: plugin reactivation now uses old community instead of creating new one
 
 == Upgrade Notice ==
+= 0.8.3 =
+Improved error handling
 = 0.8.2 =
 * Fixed some small bugs
 = 0.8.1 =

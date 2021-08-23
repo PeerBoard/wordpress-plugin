@@ -1,0 +1,18 @@
+.peerboard-notice {
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-left-width: 4px;
+    box-shadow: 0 1px 1px #0000000a;
+    margin: 5px 15px 2px;
+    padding: 1px 12px;
+    &.notice-error {
+        border-left-color: #d63638;
+    }
+    p {
+        margin: 0.5em 0;
+        padding: 2px;
+        font-size: 13px;
+        line-height: 1.5;
+        color: #3c434a;
+    }
+}

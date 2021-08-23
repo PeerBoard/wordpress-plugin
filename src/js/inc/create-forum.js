@@ -21,12 +21,13 @@ export default (createForum) => {
 
   _peerboardSettings['onTitleChanged'] = (title) => window.document.title = "Forum: " + title;
   _peerboardSettings['onPathChanged'] = location => history.replaceState(null, '', location);
-  _peerboardSettings['minHeight'] = window.innerHeight * 0.5 + "px";
+  _peerboardSettings['minHeight'] = window.innerHeight + "px";
   _peerboardSettings['onLogout'] = () => {
     document.cookie = 'wp-peerboard-auth=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;';
   }
   _peerboardSettings['onFail'] = () =>{
-    console.log('Failed to load forum - please contact us at integrations@peerboard.com')
+    console.error('Failed to load forum - please contact us at support_wp@peerboard.com')
+    alert("Something really unexpected happened - please contact us at support_wp@peerboard.com")
   }
 
 
@@ -42,10 +43,6 @@ export default (createForum) => {
         return;
       }
     }
-    // Detect that all works within 10 sec
-    setWaitingForReady(30000).then().catch(() => {
-      alert("Something really unexpected happened - please contact us at integrations@peerboard.com");
-    });
 
     createForum(_peerboardSettings['board-id'], target, _peerboardSettings);
   });
