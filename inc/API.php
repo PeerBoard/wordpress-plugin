@@ -73,7 +73,9 @@ class API
 
     if (is_array($request)) {
       if ($request['response']['code'] >= 400) {
-        peerboard_add_notice($request['response']['message'], __FUNCTION__, 'error', $function_args);
+        $message = json_decode(wp_remote_retrieve_body($request),true);
+        $message = $message['message'];
+        peerboard_add_notice($message, __FUNCTION__, 'error', $function_args);
         $success = false;
       }
     }
