@@ -106,7 +106,7 @@ class ForumPage
     public static function add_custom_templates()
     {
         $templates = [
-            'page-full-width-template.php' => __('PeerBoard Full Width', 'peerboard')
+            PEERBOARD_PLUGIN_MAIN_TEMPLATE_NAME => __('PeerBoard Full Width', 'peerboard')
         ];
 
         // Here advanced users can add their templates outside of the plugin
