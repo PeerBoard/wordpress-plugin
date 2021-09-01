@@ -41,7 +41,7 @@ class PageTemplate
 
         // Add a filter to the template include to determine if the page has our
         // template assigned and return it's path
-        add_filter('template_include', [$this, 'view_project_template']);
+        add_filter('template_include', [$this, 'show_custom_template']);
 
 
         // Templates array.
@@ -95,7 +95,7 @@ class PageTemplate
     /**
      * Checks if the template is assigned to the page
      */
-    public function view_project_template($template)
+    public function show_custom_template($template)
     {
         // Return the search template if we're searching (instead of the template for the first result)
         if (is_search()) {
@@ -128,7 +128,8 @@ class PageTemplate
         if (file_exists($file)) {
             return $file;
         } else {
-            echo $file;
+            $notice = sprintf('%s : %s', __('Template file not found', 'peerboard'), $file);
+            peerboard_add_notice($notice, __FUNCTION__, 'error', func_get_args());
         }
 
         // Return template
