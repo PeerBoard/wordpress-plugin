@@ -25,7 +25,7 @@ class PeerBoard
 	{
 
 		DEFINE('PEERBOARD_PROXY_PATH', 'peerboard_internal');
-		DEFINE('PEERBOARD_PLUGIN_VERSION', '0.8.3');
+		DEFINE('PEERBOARD_PLUGIN_VERSION', '0.8.6');
 		DEFINE('PEERBOARD_PLUGIN_URL', plugins_url('', __FILE__));
 		DEFINE('PEERBOARD_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 		DEFINE('PEERBOARD_PLUGIN_MAIN_TEMPLATE_NAME', 'page-full-width-template.php');
