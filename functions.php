@@ -7,7 +7,7 @@
  * @param integer $type
  * @return void
  */
-function peerboard_add_notice(string $notice, $function_name, $type = "success", $args = [])
+function peerboard_add_notice($notice, $function_name, $type = "success", $args = [])
 {
   $notices = is_array(get_transient('peerboard_notices')) ? get_transient('peerboard_notices') : [];
   $new_notice = sprintf('PeerBoard: %s (%s) - %s', $notice, $function_name, __('please contact us at support_wp@peerboard.com', 'peerboard'));
