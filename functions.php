@@ -51,6 +51,41 @@ function peerboard_get_environment()
   return $environment;
 }
 
+/**
+ * Is wp installed in sub directory
+ *
+ * @return string
+ */
+function peerboard_is_wp_installed_sub_dir(){
+  $parsed_url = parse_url(home_url('/'));
+
+  if(!empty($parsed_url['path'])){
+    return $parsed_url['path'];
+  }
+
+  return false;
+}
+
+/**
+ * Returning community full slug (with parent page slug, and sub directory slug)
+ *
+ * @return void
+ */
+function peerboard_get_comm_full_slug(){
+
+  $post_id = intval(get_option('peerboard_post'));
+  $post = get_post($post_id); 
+  $slug = $post->post_name;
+
+  $comm_slug = substr(get_permalink($post_id), strlen(home_url('/')));
+
+  if(peerboard_is_wp_installed_sub_dir()){
+    $comm_slug = peerboard_is_wp_installed_sub_dir().$comm_slug;
+  }
+
+  return $comm_slug;
+}
+
 function peerboard_get_script_settings($peerboard_options)
 {
   $peerboard_prefix = $peerboard_options['prefix'];

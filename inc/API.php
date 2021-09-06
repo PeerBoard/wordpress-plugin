@@ -142,13 +142,17 @@ class API
    */
   public static function peerboard_post_integration($token, $prefix, $domain)
   {
-    return self::peerboard_api_call('hosting', $token, [
+    $prefix = apply_filters('peerboard_check_comm_slug_before_req',$prefix);
+
+    $req = self::peerboard_api_call('hosting', $token, [
       "domain" => $domain,
       "path" => $prefix,
       "type" => 'sdk',
       "js_storage_auth" => true,
       "version" => PEERBOARD_PLUGIN_VERSION
     ], 'POST');
+
+    return $req;
   }
 
   /**

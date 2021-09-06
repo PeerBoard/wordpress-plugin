@@ -137,8 +137,9 @@ class Settings
     {
         global $peerboard_options;
         $prefix = $peerboard_options['prefix'];
-        $integration_url = get_home_url() . '/' . $prefix;
-        printf("PeerBoard will be live at <a target='_blank' href='%s'>%s</a>", $integration_url, $integration_url);
+        $post_id = intval(get_option('peerboard_post'));
+        $post = get_post($post_id);
+        printf("PeerBoard will be live at <a target='_blank' href='%s'>%s</a>", get_permalink($post_id), get_permalink($post_id));
     }
 
     public static function peerboard_field_prefix_cb($args)
@@ -265,7 +266,8 @@ class Settings
                 $value['prefix'] = $old_value['prefix'];
             }
             peerboard_update_post_slug($value['prefix']);
-            $success = API::peerboard_post_integration($value['auth_token'], $value['prefix'], peerboard_get_domain());
+
+            $success = API::peerboard_post_integration($value['auth_token'], $community_full_slug, peerboard_get_domain());
 
             if (!$success) {
                 return $old_value;

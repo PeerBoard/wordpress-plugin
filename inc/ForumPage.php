@@ -30,6 +30,8 @@ class ForumPage
 
         add_action('init', [__CLASS__, 'init_plugin_logic_on_page']);
 
+        add_filter('peerboard_check_comm_slug_before_req', [__CLASS__, 'fix_community_slug_before_req']);
+
         /**
          * Request function //TODO check this function do we need this
          */
@@ -135,7 +137,7 @@ class ForumPage
         if (!array_key_exists('peerboard_version_synced', $peerboard_options)) {
             $success = API::peerboard_post_integration($peerboard_options['auth_token'], $peerboard_options['prefix'], peerboard_get_domain());
 
-            if(!$success){
+            if (!$success) {
                 return false;
             }
 
@@ -144,13 +146,23 @@ class ForumPage
         } else if ($peerboard_options['peerboard_version_synced'] != PEERBOARD_PLUGIN_VERSION) {
             $success = API::peerboard_post_integration($peerboard_options['auth_token'], $peerboard_options['prefix'], peerboard_get_domain());
 
-            if(!$success){
+            if (!$success) {
                 return false;
             }
 
             $peerboard_options['peerboard_version_synced'] = PEERBOARD_PLUGIN_VERSION;
             update_option('peerboard_options', $peerboard_options);
         }
+    }
+
+    /**
+     * Check and fix comm url before req
+     *
+     * @return string
+     */
+    public static function fix_community_slug_before_req($prefix)
+    {
+        return peerboard_get_comm_full_slug();
     }
 }
 
