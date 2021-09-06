@@ -8,6 +8,8 @@ defined('ABSPATH') || exit;
 class Settings
 {
 
+    public static $peerboard_options;
+
     public static function init()
     {
         if (defined('PEERBOARD_ENV')) {
@@ -28,6 +30,8 @@ class Settings
             DEFINE('PEERBOARD_API_BASE', 'https://api.peerboard.com/v1/');
             DEFINE('PEERBOARD_API_URL', 'https://api.peerboard.com/');
         }
+
+        self::$peerboard_options = get_option('peerboard_options');
 
         add_action('admin_init', [__CLASS__, 'peerboard_settings_init']);
         add_action('admin_menu', [__CLASS__, 'peerboard_options_page']);
@@ -135,23 +139,19 @@ class Settings
 
     public static function peerboard_options_readme()
     {
-        global $peerboard_options;
-        $prefix = $peerboard_options['prefix'];
         $post_id = intval(get_option('peerboard_post'));
-        $post = get_post($post_id);
         printf("PeerBoard will be live at <a target='_blank' href='%s'>%s</a>", get_permalink($post_id), get_permalink($post_id));
     }
 
     public static function peerboard_field_prefix_cb($args)
     {
-        global $peerboard_options;
-        $prefix = $peerboard_options['prefix'];
+        $prefix = self::$peerboard_options['prefix'];
         echo "<input name='peerboard_options[prefix]' value='$prefix' />";
     }
 
     public static function peerboard_field_token_cb($args)
     {
-        global $peerboard_options;
+        $peerboard_options = self::$peerboard_options;
         $token = $peerboard_options['auth_token'];
         echo "<input style='width: 300px;' name='peerboard_options[auth_token]' value='$token' />";
 
@@ -218,7 +218,6 @@ class Settings
      */
     public static function field_select_forum_page_template()
     {
-        global $peerboard_options;
         $id = 'forum_page_template';
         $forum_page = intval(get_option('peerboard_post'));
         $templates = get_page_templates($forum_page);
@@ -311,7 +310,7 @@ class Settings
      */
     public static function handle_users_sync_flag_changed($value, $old_value, $option)
     {
-        global $peerboard_options;
+        $peerboard_options = self::$peerboard_options;
         $wp_users_count = count_users();
         $users_count = $wp_users_count['total_users'];
 
