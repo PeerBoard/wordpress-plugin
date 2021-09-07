@@ -57,6 +57,7 @@ class ForumPage
     public static function implement_comm_page(array $query_vars)
     {
         $peerboard_options = get_option('peerboard_options');
+        $peerboard_options['prefix'] = peerboard_get_comm_full_slug();
         if (peerboard_is_embed_page($peerboard_options['prefix'])) {
             $query_vars = array("page_id" => get_option("peerboard_post"));
             unset($query_vars['pagename']);
@@ -72,6 +73,7 @@ class ForumPage
     public static function shortcode($atts)
     {
         $peerboard_options = get_option('peerboard_options');
+        $peerboard_options['prefix'] = peerboard_get_comm_full_slug();
 
         $post_id = intval(get_option('peerboard_post'));
         $current_page_id = get_the_ID();

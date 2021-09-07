@@ -83,9 +83,15 @@ function peerboard_get_comm_full_slug(){
     $comm_slug = peerboard_is_wp_installed_sub_dir().$comm_slug;
   }
 
-  return $comm_slug;
+  return untrailingslashit($comm_slug);
 }
 
+/**
+ * Get peerboard js settings for script
+ *
+ * @param array $result
+ * @return void
+ */
 function peerboard_get_script_settings($peerboard_options)
 {
   $peerboard_prefix = $peerboard_options['prefix'];
