@@ -300,6 +300,9 @@ class Settings
         if ($old_value === NULL || $old_value === false) {
             return $value;
         }
+
+        $value['prefix'] = sanitize_title($value['prefix']);
+        
         if ($value['prefix'] !== $old_value['prefix']) {
             // Case where we are connecting blank community by auth token, that we need to reuse old prefix | 'community'
             if ($value['prefix'] === '' || $value['prefix'] === NULL) {

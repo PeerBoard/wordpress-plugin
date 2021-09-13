@@ -56,10 +56,11 @@ function peerboard_get_environment()
  *
  * @return string
  */
-function peerboard_is_wp_installed_sub_dir(){
+function peerboard_is_wp_installed_sub_dir()
+{
   $parsed_url = parse_url(home_url('/'));
 
-  if(!empty($parsed_url['path'])){
+  if (!empty($parsed_url['path'])) {
     return $parsed_url['path'];
   }
 
@@ -71,16 +72,17 @@ function peerboard_is_wp_installed_sub_dir(){
  *
  * @return void
  */
-function peerboard_get_comm_full_slug(){
+function peerboard_get_comm_full_slug()
+{
 
   $post_id = intval(get_option('peerboard_post'));
-  $post = get_post($post_id); 
+  $post = get_post($post_id);
   $slug = $post->post_name;
 
   $comm_slug = substr(get_permalink($post_id), strlen(home_url('/')));
 
-  if(peerboard_is_wp_installed_sub_dir()){
-    $comm_slug = peerboard_is_wp_installed_sub_dir().$comm_slug;
+  if (peerboard_is_wp_installed_sub_dir()) {
+    $comm_slug = peerboard_is_wp_installed_sub_dir() . $comm_slug;
   }
 
   return untrailingslashit($comm_slug);
@@ -254,10 +256,19 @@ function peerboard_get_options($data)
   );
 }
 
+/**
+ * Update post slug
+ *
+ * @param [type] $slug
+ * @return void
+ */
 function peerboard_update_post_slug($slug)
 {
+  $sanitized_slug = sanitize_title($slug);
+
   wp_update_post(array(
-    "ID" => get_option('peerboard_post'),
-    "post_name" => $slug,
+    "ID" => intval(get_option('peerboard_post')),
+    "post_name" => $sanitized_slug,
   ), false, false);
+
 }
