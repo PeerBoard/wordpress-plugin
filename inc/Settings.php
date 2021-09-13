@@ -41,6 +41,11 @@ class Settings
          */
         add_action('updated_option', [__CLASS__, 'forum_page_template_updated'], 10, 3);
 
+        /**
+         * After update_comm_parent_page option updated
+         */
+        add_action('updated_option', [__CLASS__, 'update_comm_parent_page'], 10, 3);
+
         add_filter('pre_update_option_peerboard_options', [__CLASS__, 'pre_update_option_peerboard_options'], 10, 3);
 
         add_filter('pre_update_option_peerboard_users_count', [__CLASS__, 'handle_users_sync_flag_changed'], 10, 3);
@@ -103,17 +108,25 @@ class Settings
         );
 
         add_settings_field(
-            'prefix',
-            __('Board path', 'peerboard'),
-            [__CLASS__, 'peerboard_field_prefix_cb'],
+            'forum_page_template',
+            __('Select forum page template', 'peerboard'),
+            [__CLASS__, 'field_select_forum_page_template'],
             'circles',
             'peerboard_section_integration'
         );
 
         add_settings_field(
-            'forum_page_template',
-            __('Select forum page template', 'peerboard'),
-            [__CLASS__, 'field_select_forum_page_template'],
+            'parent_page',
+            __('Parent page', 'peerboard'),
+            [__CLASS__, 'field_select_peerboard_page_parent'],
+            'circles',
+            'peerboard_section_integration'
+        );
+
+        add_settings_field(
+            'prefix',
+            __('Board path', 'peerboard'),
+            [__CLASS__, 'peerboard_field_prefix_cb'],
             'circles',
             'peerboard_section_integration'
         );
@@ -209,6 +222,37 @@ class Settings
         $calendly_link = sprintf("<a href='https://peerboard.org/integration-call' target='_blank'>%s</a>", __('calendly link', 'peerboard'));
         $contact_email = "<a href='mailto:support_wp@peerboard.com' target='_blank'>support_wp@peerboard.com</a>";
         printf(__("If you have experienced any problems during the setup, please don't hesitate to contact us at %s or book a time with our specialist using this %s", 'peerboard'), $contact_email, $calendly_link);
+    }
+
+    /**
+     * Select page parent
+     *
+     * @return void
+     */
+    public static function field_select_peerboard_page_parent(){
+        $id = 'peerboard_comm_parent';
+        $forum_page = get_post(intval(get_option('peerboard_post')));
+        $pages = get_pages(['exclude'=>[$forum_page->ID]]);
+        $sel_parent = wp_get_post_parent_id($forum_page);
+
+        if (empty($sel_parent)) {
+            $sel_parent = 'default';
+        }
+
+        $options = [
+            'none' => __('None', 'peerboard'),
+        ];
+
+        foreach ($pages as $page) {
+            $options[$page->ID] = $page->post_title;
+        }
+
+        echo sprintf('<select name="peerboard_options[%s]">', $id);
+        foreach ($options as $val => $option) {
+            $selected = selected($val, $sel_parent, false);
+            echo sprintf('<option value="%s" %s >%s</option>', $val, $selected, $option);
+        }
+        echo '</select>';
     }
 
     /**
@@ -384,6 +428,32 @@ class Settings
              * Updating page template
              */
             update_post_meta($forum_page, '_wp_page_template', $sel_template);
+        }
+    }
+
+    /**
+     * After update_comm_parent_page option updated
+     */
+    public static function update_comm_parent_page($option_name, $old_value, $option_value)
+    {
+        if ($option_name !== 'peerboard_options') {
+            return;
+        }
+
+        if (empty($option_value['peerboard_comm_parent'])) {
+            return;
+        }
+
+        if ($old_value['peerboard_comm_parent'] !== $option_value['peerboard_comm_parent']) {
+            $sel_page = $option_value['peerboard_comm_parent'] ?? 0;
+            $forum_page = intval(get_option('peerboard_post'));
+
+            // in wordpress if 0 mean do not have parent 
+            if ($sel_page === 'none') {
+                $sel_page = 0;
+            }
+
+            wp_update_post(['ID' => $forum_page, 'post_parent' => intval($sel_page)]);
         }
     }
 
