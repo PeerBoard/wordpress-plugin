@@ -169,7 +169,7 @@ Improved error handling
 = 0.9.0 =
 * Now you can set the community page as the static home page
 * Community page slug sanitizing 
-* Fixed sub URL issues now plugin working on subdirectory wordpress and with parent pages
+* Fixed sub URL issues now plugin working on subdirectory WordPress and with parent pages
 * Now in settings available to select community page parent
 * Custom page template logic
 * Added custom full-width template
