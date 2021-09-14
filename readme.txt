@@ -2,9 +2,9 @@
 Contributors: peerboard
 Tags: forum, forums, community, discussion, knowledge base, membership, member, profile, profiles
 Requires at least: 5.1
-Tested up to: 5.7
-Requires PHP: 5.5
-Stable tag: 0.8.3
+Tested up to: 5.8.1
+Requires PHP: 7.0
+Stable tag: 0.9.0
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -108,6 +108,15 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 9. Private or public. Control your community’s visibility, access rights and registration options.
 
 == Changelog ==
+= 0.9.0 =
+* Now you can set the community page as the static home page
+* Community page slug sanitizing 
+* Fixed sub URL issues now plugin working on subdirectory wordpress and with parent pages
+* Now in settings available to select community page parent
+* Custom page template logic
+* Added custom full-width template
+* On plugin activation changing community page template to our full-width template
+* Fixed small issue with an error notice
 = 0.8.3 =
 Improved error handling
 = 0.8.2 =
@@ -157,6 +166,15 @@ Improved error handling
 * Fix: plugin reactivation now uses old community instead of creating new one
 
 == Upgrade Notice ==
+= 0.9.0 =
+* Now you can set the community page as the static home page
+* Community page slug sanitizing 
+* Fixed sub URL issues now plugin working on subdirectory wordpress and with parent pages
+* Now in settings available to select community page parent
+* Custom page template logic
+* Added custom full-width template
+* On plugin activation changing community page template to our full-width template
+* Fixed small issue with an error notice
 = 0.8.3 =
 Improved error handling
 = 0.8.2 =
