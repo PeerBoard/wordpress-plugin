@@ -28,12 +28,12 @@ class ForumPage
          */
         add_filter('the_content', [__CLASS__, 'check_page_shortcode']);
 
-        //add_action('init', [__CLASS__, 'init_plugin_logic_on_page']);
+        add_action('init', [__CLASS__, 'init_plugin_logic_on_page']);
 
         add_filter('peerboard_check_comm_slug_before_req', [__CLASS__, 'fix_community_slug_before_req']);
 
         /**
-         * Checking url and showing needed page (legacy)
+         * Checking url and showing needed page (legacy leave here to not break old users pages)
          */
         add_filter('request', [__CLASS__, 'implement_comm_page']);
     }
