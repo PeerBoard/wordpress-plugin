@@ -5,9 +5,6 @@ namespace PEBO;
 class PageTemplate
 {
 
-    /**
-     * A reference to an instance of this class.
-     */
     protected $path_to_plugin;
 
     /**
