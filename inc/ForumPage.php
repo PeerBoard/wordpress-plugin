@@ -31,6 +31,11 @@ class ForumPage
         add_action('init', [__CLASS__, 'init_plugin_logic_on_page']);
 
         /**
+         * Add our custom simple template
+         */
+        add_action('plugins_loaded', [__CLASS__, 'add_custom_templates']);
+
+        /**
          * Request function //TODO check this function do we need this
          */
         add_filter('request', function (array $query_vars) {
@@ -94,6 +99,26 @@ class ForumPage
     }
 
     /**
+     * Add custom templates
+     *
+     * @return void
+     */
+    public static function add_custom_templates()
+    {
+        $templates = [
+            PEERBOARD_PLUGIN_MAIN_TEMPLATE_NAME => __('PeerBoard Full Width', 'peerboard')
+        ];
+
+        // Here advanced users can add their templates outside of the plugin
+        $templates = apply_filters('peerboard_custom_templates', $templates);
+
+        // Here advanced users can add their plugin path or theme path /templates will be added in class
+        $plugin_path = apply_filters('peerboard_custom_templates_plugin_path', PEERBOARD_PLUGIN_DIR_PATH);
+
+        new PageTemplate($templates, $plugin_path);
+    }
+
+    /**
      * check if page have shortcode if not add
      *
      * @return void
@@ -135,7 +160,7 @@ class ForumPage
         if (!array_key_exists('peerboard_version_synced', $peerboard_options)) {
             $success = API::peerboard_post_integration($peerboard_options['auth_token'], $peerboard_options['prefix'], peerboard_get_domain());
 
-            if(!$success){
+            if (!$success) {
                 return false;
             }
 
@@ -144,7 +169,7 @@ class ForumPage
         } else if ($peerboard_options['peerboard_version_synced'] != PEERBOARD_PLUGIN_VERSION) {
             $success = API::peerboard_post_integration($peerboard_options['auth_token'], $peerboard_options['prefix'], peerboard_get_domain());
 
-            if(!$success){
+            if (!$success) {
                 return false;
             }
 
