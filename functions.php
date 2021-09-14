@@ -272,3 +272,23 @@ function peerboard_update_post_slug($slug)
   ), false, false);
 
 }
+
+/**
+ * Is community page set as home page
+ *
+ * @return boolean
+ */
+function peerboard_is_comm_set_static_home_page(){
+  $page_id = intval(get_option('peerboard_post'));
+  $home_id = intval(get_option( 'page_on_front' ));
+
+  if(!$home_id){
+    return false;
+  }
+
+  if($page_id === $home_id){
+    return true;
+  }
+
+  return false;
+}

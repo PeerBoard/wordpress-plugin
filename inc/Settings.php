@@ -150,16 +150,37 @@ class Settings
         printf(__("Do you know where to find your Auth Token? If not, watch this short tutorial: <a href='%s' target='_blank'>How to Find My Auth Token.</a>", 'peerboard'), 'https://youtu.be/JMCtHRpZEx0');
     }
 
+    /**
+     * Live community link
+     *
+     * @return void
+     */
     public static function peerboard_options_readme()
     {
         $post_id = intval(get_option('peerboard_post'));
-        printf("PeerBoard will be live at <a target='_blank' href='%s'>%s</a>", get_permalink($post_id), get_permalink($post_id));
+        if (peerboard_is_comm_set_static_home_page()) {
+            printf(__("The community page set as home page <a target='_blank' href='%s'>%s</a>", 'peerboard'), get_permalink($post_id), get_permalink($post_id));
+            $user_ID = get_current_user_id();
+            $reading_settings_url = get_dashboard_url($user_ID, 'options-reading.php');
+            echo '<br><br>';
+            printf(__('To be able to change community page slug or parent page do not use it as static home page. You can change it <a target="_blank" href="%s">here</a>', 'peerboard'), $reading_settings_url);
+        } else {
+            printf(__("PeerBoard will be live at <a target='_blank' href='%s'>%s</a>", 'peerboard'), get_permalink($post_id), get_permalink($post_id));
+        }
     }
 
+    /**
+     * Add page slug input
+     *
+     * @param [type] $args
+     * @return void
+     */
     public static function peerboard_field_prefix_cb($args)
     {
         $prefix = self::$peerboard_options['prefix'];
-        echo "<input name='peerboard_options[prefix]' value='$prefix' />";
+        $disabled = peerboard_is_comm_set_static_home_page() ? 'disabled' : '';
+
+        printf("<input name='peerboard_options[prefix]' value='%s' %s />", $prefix, $disabled);
     }
 
     public static function peerboard_field_token_cb($args)
@@ -229,10 +250,11 @@ class Settings
      *
      * @return void
      */
-    public static function field_select_peerboard_page_parent(){
+    public static function field_select_peerboard_page_parent()
+    {
         $id = 'peerboard_comm_parent';
         $forum_page = get_post(intval(get_option('peerboard_post')));
-        $pages = get_pages(['exclude'=>[$forum_page->ID]]);
+        $pages = get_pages(['exclude' => [$forum_page->ID]]);
         $sel_parent = wp_get_post_parent_id($forum_page);
 
         if (empty($sel_parent)) {
@@ -247,7 +269,8 @@ class Settings
             $options[$page->ID] = $page->post_title;
         }
 
-        echo sprintf('<select name="peerboard_options[%s]">', $id);
+        $disabled = peerboard_is_comm_set_static_home_page() ? 'disabled' : '';
+        echo sprintf('<select name="peerboard_options[%s]" %s>', $id, $disabled);
         foreach ($options as $val => $option) {
             $selected = selected($val, $sel_parent, false);
             echo sprintf('<option value="%s" %s >%s</option>', $val, $selected, $option);
@@ -302,7 +325,7 @@ class Settings
         }
 
         $value['prefix'] = sanitize_title($value['prefix']);
-        
+
         if ($value['prefix'] !== $old_value['prefix']) {
             // Case where we are connecting blank community by auth token, that we need to reuse old prefix | 'community'
             if ($value['prefix'] === '' || $value['prefix'] === NULL) {
