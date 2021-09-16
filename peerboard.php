@@ -28,6 +28,7 @@ class PeerBoard
 		DEFINE('PEERBOARD_PLUGIN_VERSION', '0.9.0');
 		DEFINE('PEERBOARD_PLUGIN_URL', plugins_url('', __FILE__));
 		DEFINE('PEERBOARD_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
+		DEFINE('PEERBOARD_PLUGIN_MAIN_TEMPLATE_NAME', 'page-full-width-template.php');
 
 		require_once plugin_dir_path(__FILE__) . "/inc/Settings.php";
 		require_once plugin_dir_path(__FILE__) . "functions.php";
@@ -35,6 +36,7 @@ class PeerBoard
 		require_once plugin_dir_path(__FILE__) . "/inc/analytics.php";
 		require_once plugin_dir_path(__FILE__) . "/inc/Installation.php";
 		require_once plugin_dir_path(__FILE__) . "/inc/ForumPage.php";
+		require_once plugin_dir_path(__FILE__) . "/inc/PageTemplate.php";
 
 		add_action('plugins_loaded', [__CLASS__, 'true_load_plugin_textdomain']);
 

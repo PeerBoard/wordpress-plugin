@@ -116,9 +116,13 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 * Custom page template logic
 * Added custom full-width template
 * On plugin activation changing community page template to our full-width template
+= 0.8.6 =
+* Custom page template logic
+* Added custom full-width template for page
+* On plugin activation changing theme default theme to our custom one
 * Fixed small issue with an error notice
 = 0.8.3 =
-Improved error handling
+* Improved error handling
 = 0.8.2 =
 * Fixed some small bugs
 = 0.8.1 =
@@ -174,9 +178,13 @@ Improved error handling
 * Custom page template logic
 * Added custom full-width template
 * On plugin activation changing community page template to our full-width template
+= 0.8.6 =
+* Custom page template logic
+* Added custom full-width template for page
+* On plugin activation changing theme default theme to our custom one
 * Fixed small issue with an error notice
 = 0.8.3 =
-Improved error handling
+* Improved error handling
 = 0.8.2 =
 * Fixed some small bugs
 = 0.8.1 =

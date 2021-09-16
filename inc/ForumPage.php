@@ -33,6 +33,11 @@ class ForumPage
         add_filter('peerboard_check_comm_slug_before_req', [__CLASS__, 'fix_community_slug_before_req']);
 
         /**
+         * Add our custom simple template
+         */
+        add_action('plugins_loaded', [__CLASS__, 'add_custom_templates']);
+
+        /**
          * Checking url and showing needed page (legacy leave here to not break old users pages)
          */
         add_filter('request', [__CLASS__, 'implement_comm_page']);
@@ -101,6 +106,26 @@ class ForumPage
         do_action('peerboard_after_forum');
 
         return ob_get_clean();
+    }
+
+    /**
+     * Add custom templates
+     *
+     * @return void
+     */
+    public static function add_custom_templates()
+    {
+        $templates = [
+            PEERBOARD_PLUGIN_MAIN_TEMPLATE_NAME => __('PeerBoard Full Width', 'peerboard')
+        ];
+
+        // Here advanced users can add their templates outside of the plugin
+        $templates = apply_filters('peerboard_custom_templates', $templates);
+
+        // Here advanced users can add their plugin path or theme path /templates will be added in class
+        $plugin_path = apply_filters('peerboard_custom_templates_plugin_path', PEERBOARD_PLUGIN_DIR_PATH);
+
+        new PageTemplate($templates, $plugin_path);
     }
 
     /**
