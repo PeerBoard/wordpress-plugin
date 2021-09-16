@@ -51,6 +51,49 @@ function peerboard_get_environment()
   return $environment;
 }
 
+/**
+ * Is wp installed in sub directory
+ *
+ * @return string
+ */
+function peerboard_get_wp_installed_sub_dir()
+{
+  $parsed_url = parse_url(home_url('/'));
+
+  if (!empty($parsed_url['path'])) {
+    return $parsed_url['path'];
+  }
+
+  return false;
+}
+
+/**
+ * Returning community full slug (with parent page slug, and sub directory slug)
+ *
+ * @return void
+ */
+function peerboard_get_comm_full_slug()
+{
+
+  $post_id = intval(get_option('peerboard_post'));
+  $post = get_post($post_id);
+  $slug = $post->post_name;
+
+  $comm_slug = substr(get_permalink($post_id), strlen(home_url('/')));
+
+  if (peerboard_get_wp_installed_sub_dir()) {
+    $comm_slug = peerboard_get_wp_installed_sub_dir() . $comm_slug;
+  }
+
+  return untrailingslashit($comm_slug);
+}
+
+/**
+ * Get peerboard js settings for script
+ *
+ * @param array $result
+ * @return void
+ */
 function peerboard_get_script_settings($peerboard_options)
 {
   $peerboard_prefix = $peerboard_options['prefix'];
@@ -213,10 +256,39 @@ function peerboard_get_options($data)
   );
 }
 
+/**
+ * Update post slug
+ *
+ * @param [type] $slug
+ * @return void
+ */
 function peerboard_update_post_slug($slug)
 {
+  $sanitized_slug = sanitize_title($slug);
+
   wp_update_post(array(
-    "ID" => get_option('peerboard_post'),
-    "post_name" => $slug,
+    "ID" => intval(get_option('peerboard_post')),
+    "post_name" => $sanitized_slug,
   ), false, false);
+
+}
+
+/**
+ * Is community page set as home page
+ *
+ * @return boolean
+ */
+function peerboard_is_comm_set_static_home_page(){
+  $page_id = intval(get_option('peerboard_post'));
+  $home_id = intval(get_option( 'page_on_front' ));
+
+  if(!$home_id){
+    return false;
+  }
+
+  if($page_id === $home_id){
+    return true;
+  }
+
+  return false;
 }
