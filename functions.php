@@ -56,7 +56,7 @@ function peerboard_get_environment()
  *
  * @return string
  */
-function peerboard_is_wp_installed_sub_dir()
+function peerboard_get_wp_installed_sub_dir()
 {
   $parsed_url = parse_url(home_url('/'));
 
@@ -81,8 +81,8 @@ function peerboard_get_comm_full_slug()
 
   $comm_slug = substr(get_permalink($post_id), strlen(home_url('/')));
 
-  if (peerboard_is_wp_installed_sub_dir()) {
-    $comm_slug = peerboard_is_wp_installed_sub_dir() . $comm_slug;
+  if (peerboard_get_wp_installed_sub_dir()) {
+    $comm_slug = peerboard_get_wp_installed_sub_dir() . $comm_slug;
   }
 
   return untrailingslashit($comm_slug);
