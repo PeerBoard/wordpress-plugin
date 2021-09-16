@@ -148,6 +148,24 @@ class Settings
     public static function peerboard_integration_readme()
     {
         printf(__("Do you know where to find your Auth Token? If not, watch this short tutorial: <a href='%s' target='_blank'>How to Find My Auth Token.</a>", 'peerboard'), 'https://youtu.be/JMCtHRpZEx0');
+
+        $structure = get_option('permalink_structure');
+
+        // if set default permalinks ?p=post_id
+        if (empty($structure)) {
+            $permaling_structure = get_dashboard_url(0, 'options-permalink.php');
+            var_dump($permaling_structure);
+            printf(
+                __(
+                    '<div class="notice notice-error settings-error is-dismissible">
+            <p>You do not have your postname in the URL of your posts and pages, it is highly recommended that you do otherwise our plugin will not work for you. Consider setting your permalink structure to %s.
+            You can fix this on the <a href="%s">Permalink settings page</a>.<br><a href="%s" target="_blank">Why do you need to do that? / how to do that?</a></p></div>'
+                ),
+                '/%postname%/',
+                $permaling_structure,
+                'https://yoast.com/help/how-do-i-change-the-permalink-structure/'
+            );
+        }
     }
 
     /**
