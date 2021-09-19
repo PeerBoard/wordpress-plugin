@@ -354,7 +354,7 @@ class Settings
             }
             peerboard_update_post_slug($value['prefix']);
 
-            $success = API::peerboard_post_integration($value['auth_token'], peerboard_get_comm_full_slug(), peerboard_get_domain());
+            $success = API::peerboard_post_integration($value['auth_token'], $value['prefix'], peerboard_get_domain());
 
             if (!$success) {
                 return $old_value;
