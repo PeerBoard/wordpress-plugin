@@ -37,6 +37,7 @@ class PeerBoard
 		require_once plugin_dir_path(__FILE__) . "/inc/Installation.php";
 		require_once plugin_dir_path(__FILE__) . "/inc/ForumPage.php";
 		require_once plugin_dir_path(__FILE__) . "/inc/PageTemplate.php";
+		require_once plugin_dir_path(__FILE__) . "/inc/UserSync.php";
 
 		add_action('plugins_loaded', [__CLASS__, 'true_load_plugin_textdomain']);
 

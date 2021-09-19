@@ -13,45 +13,9 @@ class API
 
   public static function init()
   {
-    /**
-     * Create user on PeerBoard on user registration on WordPress
-     */
-    add_action('user_register', [__CLASS__, 'sync_user_if_enabled']);
 
     // admin ajax
     add_action('wp_ajax_peerboard_feedback_request', [__CLASS__, 'feedback_request']);
-  }
-
-  /**
-   * Create user on PeerBoard on user registration on WordPress
-   */
-  public static function sync_user_if_enabled($user_id)
-  {
-    global $peerboard_options;
-    $sync_enabled = get_option('peerboard_users_sync_enabled');
-    if ($sync_enabled) {
-      $user = get_userdata($user_id);
-      $userdata = array(
-        'email' =>  $user->user_email,
-        'bio' => urlencode($user->description),
-        'profile_url' => get_avatar_url($user->user_email),
-        'name' => $user->display_name,
-        'last_name' => ''
-      );
-      if ($peerboard_options['expose_user_data'] == '1') {
-        $userdata['name'] = $user->first_name;
-        $userdata['last_name'] = $user->last_name;
-      }
-
-      $user = self::peerboard_create_user($peerboard_options['auth_token'], $userdata);
-
-      if (!$user) {
-        return;
-      }
-
-      $count = intval(get_option('peerboard_users_count'));
-      update_option('peerboard_users_count', $count + 1);
-    }
   }
 
   /**
@@ -164,43 +128,6 @@ class API
   public static function peerboard_drop_integration($token)
   {
     return self::peerboard_api_call('hosting', $token, ["type" => 'none'], 'POST');
-  }
-
-  /**
-   * User sync function
-   *
-   * @param [type] $token
-   * @param [type] $users
-   * @return void
-   */
-  public static function peerboard_sync_users($token, $users)
-  {
-    $request = self::peerboard_api_call('users/batch', $token, $users, 'POST');
-
-    if (!$request) {
-      return false;
-    }
-
-    return json_decode(wp_remote_retrieve_body($request), true);
-  }
-
-  /**
-   * Create user
-   *
-   * @param [type] $token
-   * @param [type] $user
-   * @return void
-   */
-  public static function peerboard_create_user($token, $user)
-  {
-
-    $request = self::peerboard_api_call('users', $token, $user, 'POST');
-
-    if (!$request) {
-      return false;
-    }
-
-    return json_decode(wp_remote_retrieve_body($request), true);
   }
 
   /**

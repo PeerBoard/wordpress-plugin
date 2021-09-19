@@ -47,8 +47,6 @@ class Settings
         add_action('updated_option', [__CLASS__, 'update_comm_parent_page'], 10, 3);
 
         add_filter('pre_update_option_peerboard_options', [__CLASS__, 'pre_update_option_peerboard_options'], 10, 3);
-
-        add_filter('pre_update_option_peerboard_users_count', [__CLASS__, 'handle_users_sync_flag_changed'], 10, 3);
     }
 
     /**
@@ -386,65 +384,6 @@ class Settings
         }
 
         return $value;
-    }
-
-    /**
-     * Import all users
-     *
-     * @param [type] $value
-     * @param [type] $old_value
-     * @param [type] $option
-     * @return void
-     */
-    public static function handle_users_sync_flag_changed($value, $old_value, $option)
-    {
-        $peerboard_options = self::$peerboard_options;
-        $wp_users_count = count_users();
-        $users_count = $wp_users_count['total_users'];
-
-        if ($users_count >= 100000) {
-            return $old_value;
-        }
-
-        $users = get_users();
-
-        $sync_enabled = get_option('peerboard_users_sync_enabled');
-        if ($sync_enabled === '1') {
-            if ($value === 0) {
-                update_option('peerboard_users_sync_enabled', '0');
-                return $old_value;
-            }
-            return $value;
-        }
-
-        $result = [];
-        foreach ($users as $user) {
-            $userdata = array(
-                'email' =>  $user->user_email,
-                'bio' => urlencode($user->description),
-                'profile_url' => get_avatar_url($user->user_email),
-                'name' => $user->nickname,
-                'last_name' => ''
-            );
-            if ($peerboard_options['expose_user_data'] == '1') {
-                $userdata['name'] = $user->first_name;
-                $userdata['last_name'] = $user->last_name;
-            }
-            $result[] = $userdata;
-        }
-
-        $response = API::peerboard_sync_users($peerboard_options['auth_token'], $result);
-
-        if (!$response) {
-            return $value;
-        }
-
-        update_option('peerboard_users_sync_enabled', '1');
-        if ($value === 0) {
-            $value = $old_value;
-        }
-
-        return $response['result'] + intval($value);
     }
 
     /**
