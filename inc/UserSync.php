@@ -28,6 +28,9 @@ class UserSync
 
         // Update user on user update 
         add_action('profile_update', [__CLASS__, 'on_user_profile_update'], 10, 3);
+
+        // on user deletion block user in peerboard
+        add_action('delete_user', [__CLASS__, 'block_user_in_peerboard']);
     }
     /**
      * Create user on PeerBoard on user registration on WordPress
@@ -167,16 +170,40 @@ class UserSync
         return json_decode(wp_remote_retrieve_body($request), true);
     }
 
+    /**
+     * On user profile update sync user
+     *
+     * @return void
+     */
     public static function on_user_profile_update($user_id, $old_user_data, $new_user_data)
     {
         $peerboard_options = self::$peerboard_options;
 
         $token = $peerboard_options['auth_token'];
 
-        $user_data = self::prepare_user_data(get_user_by( 'ID', $new_user_data['ID'] ));
+        $user_data = self::prepare_user_data(get_user_by('ID', $new_user_data['ID']));
 
-        $request = API::peerboard_api_call(sprintf('members/%s?key=email',urlencode($user_data['email'])), $token, $user_data, 'POST');
+        $request = API::peerboard_api_call(sprintf('members/%s?key=email', urlencode($user_data['email'])), $token, $user_data, 'POST');
+    }
 
+
+    /**
+     * Block user when user deleted from WP
+     *
+     * @param [type] $user_id
+     * @return void
+     */
+    public static function block_user_in_peerboard($user_id)
+    {
+        $peerboard_options = self::$peerboard_options;
+
+        $token = $peerboard_options['auth_token'];
+
+        $user_data = self::prepare_user_data(get_user_by('ID', $user_id));
+
+        $user_data['role'] = 'BLOCKED';
+
+        $request = API::peerboard_api_call(sprintf('members/%s?key=email', urlencode($user_data['email'])), $token, $user_data, 'POST');
     }
 }
 
