@@ -67,6 +67,7 @@ class ForumPage
             $query_vars = array("page_id" => get_option("peerboard_post"));
             unset($query_vars['pagename']);
         }
+        
         return $query_vars;
     }
 
