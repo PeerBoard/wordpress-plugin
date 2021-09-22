@@ -23,12 +23,12 @@ class UserSync
          */
         add_action('user_register', [__CLASS__, 'sync_user_if_enabled']);
 
-        /**
-         * Bulk add users
-         */
+        // Bulk add users
         add_filter('pre_update_option_peerboard_users_count', [__CLASS__, 'handle_users_sync_flag_changed'], 10, 3);
-    }
 
+        // Update user on user update 
+        add_action('profile_update', [__CLASS__, 'on_user_profile_update'], 10, 3);
+    }
     /**
      * Create user on PeerBoard on user registration on WordPress
      */
@@ -110,9 +110,11 @@ class UserSync
      * @param object $user
      * @return array
      */
-    public static function prepare_user_data($user){
+    public static function prepare_user_data($user)
+    {
 
         $user_data = [
+            //'external_id' => $user->ID,
             'email' =>  $user->user_email,
             'bio' => urlencode($user->description),
             'profile_url' => get_avatar_url($user->user_email),
@@ -163,6 +165,18 @@ class UserSync
         }
 
         return json_decode(wp_remote_retrieve_body($request), true);
+    }
+
+    public static function on_user_profile_update($user_id, $old_user_data, $new_user_data)
+    {
+        $peerboard_options = self::$peerboard_options;
+
+        $token = $peerboard_options['auth_token'];
+
+        $user_data = self::prepare_user_data(get_user_by( 'ID', $new_user_data['ID'] ));
+
+        $request = API::peerboard_api_call(sprintf('members/%s?key=email',urlencode($user_data['email'])), $token, $user_data, 'POST');
+
     }
 }
 
