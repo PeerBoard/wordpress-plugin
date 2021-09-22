@@ -158,8 +158,9 @@ class Settings
             printf(
                 __(
                     '<div class="notice notice-error settings-error is-dismissible">
-            <p>You do not have your postname in the URL of your posts and pages, it is highly recommended that you do otherwise our plugin will not work for you. Consider setting your permalink structure to %s.
-            You can fix this on the <a href="%s">Permalink settings page</a>.<br><a href="%s" target="_blank">Why do you need to do that? / how to do that?</a></p></div>'
+            <p>You do not have your postname in the URL of your posts and pages. It is highly
+            recommended that you do, otherwise, our plugin will not work for you. Consider setting your permalink structure to %s.
+            You can fix this on the <a href="%s">Permalink settings page</a>.<br>Why do I need to change the permalink structure? / How do I change the permalink structure? <a href="%s" target="_blank">Click here to learn more.</a></p></div>'
                 ),
                 '/%postname%/',
                 $permaling_structure,
@@ -177,11 +178,11 @@ class Settings
     {
         $post_id = intval(get_option('peerboard_post'));
         if (peerboard_is_comm_set_static_home_page()) {
-            printf(__("The community page set as home page <a target='_blank' href='%s'>%s</a>", 'peerboard'), get_permalink($post_id), get_permalink($post_id));
+            printf(__("The community page is set as the homepage <a target='_blank' href='%s'>%s</a>", 'peerboard'), get_permalink($post_id), get_permalink($post_id));
             $user_ID = get_current_user_id();
             $reading_settings_url = get_dashboard_url($user_ID, 'options-reading.php');
             echo '<br><br>';
-            printf(__('To be able to change community page slug or parent page do not use it as static home page. You can change it <a target="_blank" href="%s">here</a>', 'peerboard'), $reading_settings_url);
+            printf(__('To change the community page slug or the parent page, do not use it as a static homepage. You can change it <a target="_blank" href="%s">here</a>', 'peerboard'), $reading_settings_url);
         } else {
             printf(__("PeerBoard will be live at <a target='_blank' href='%s'>%s</a>", 'peerboard'), get_permalink($post_id), get_permalink($post_id));
         }
