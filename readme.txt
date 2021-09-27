@@ -116,6 +116,7 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 * Custom page template logic
 * Added custom full-width template
 * On plugin activation changing community page template to our full-width template
+* User sync fixed
 = 0.8.6 =
 * Custom page template logic
 * Added custom full-width template for page
@@ -178,6 +179,7 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 * Custom page template logic
 * Added custom full-width template
 * On plugin activation changing community page template to our full-width template
+* User sync fixed
 = 0.8.6 =
 * Custom page template logic
 * Added custom full-width template for page
