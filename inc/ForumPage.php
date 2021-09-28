@@ -30,17 +30,17 @@ class ForumPage
 
         add_action('init', [__CLASS__, 'init_plugin_logic_on_page']);
 
+        add_filter('peerboard_check_comm_slug_before_req', [__CLASS__, 'fix_community_slug_before_req']);
+
         /**
-         * Request function //TODO check this function do we need this
+         * Add our custom simple template
          */
-        add_filter('request', function (array $query_vars) {
-            global $peerboard_options;
-            if (peerboard_is_embed_page($peerboard_options['prefix'])) {
-                $query_vars = array("page_id" => get_option("peerboard_post"));
-                unset($query_vars['pagename']);
-            }
-            return $query_vars;
-        });
+        add_action('plugins_loaded', [__CLASS__, 'add_custom_templates']);
+
+        /**
+         * Checking url and showing needed page (legacy leave here to not break old users pages)
+         */
+        add_filter('request', [__CLASS__, 'implement_comm_page']);
     }
 
     /**
@@ -57,13 +57,29 @@ class ForumPage
     }
 
     /**
+     * Checking url and showing needed page (legacy)
+     */
+    public static function implement_comm_page(array $query_vars)
+    {
+        $peerboard_options = get_option('peerboard_options');
+        $peerboard_options['prefix'] = peerboard_get_comm_full_slug();
+        if (peerboard_is_embed_page($peerboard_options['prefix'])) {
+            $query_vars = array("page_id" => get_option("peerboard_post"));
+            unset($query_vars['pagename']);
+        }
+        
+        return $query_vars;
+    }
+
+    /**
      * Shortcode
      *
      * @return void
      */
     public static function shortcode($atts)
     {
-        global $peerboard_options;
+        $peerboard_options = get_option('peerboard_options');
+        $peerboard_options['prefix'] = peerboard_get_comm_full_slug();
 
         $post_id = intval(get_option('peerboard_post'));
         $current_page_id = get_the_ID();
@@ -81,12 +97,36 @@ class ForumPage
 
         wp_localize_script('peerboard-integration', '_peerboardSettings', peerboard_get_script_settings($peerboard_options));
 
+        do_action('peerboard_before_forum');
+
         ob_start();
 
         // include over required_once potentially fixes missing main header menu on the page
         include PEERBOARD_PLUGIN_DIR_PATH . '/templates/front-template.php';
 
+        do_action('peerboard_after_forum');
+
         return ob_get_clean();
+    }
+
+    /**
+     * Add custom templates
+     *
+     * @return void
+     */
+    public static function add_custom_templates()
+    {
+        $templates = [
+            PEERBOARD_PLUGIN_MAIN_TEMPLATE_NAME => __('PeerBoard Full Width', 'peerboard')
+        ];
+
+        // Here advanced users can add their templates outside of the plugin
+        $templates = apply_filters('peerboard_custom_templates', $templates);
+
+        // Here advanced users can add their plugin path or theme path /templates will be added in class
+        $plugin_path = apply_filters('peerboard_custom_templates_plugin_path', PEERBOARD_PLUGIN_DIR_PATH);
+
+        new PageTemplate($templates, $plugin_path);
     }
 
     /**
@@ -129,14 +169,34 @@ class ForumPage
         global $peerboard_options;
         $peerboard_options = get_option('peerboard_options', array());
         if (!array_key_exists('peerboard_version_synced', $peerboard_options)) {
-            API::peerboard_post_integration($peerboard_options['auth_token'], $peerboard_options['prefix'], peerboard_get_domain());
+            $success = API::peerboard_post_integration($peerboard_options['auth_token'], $peerboard_options['prefix'], peerboard_get_domain());
+
+            if (!$success) {
+                return false;
+            }
+
             $peerboard_options['peerboard_version_synced'] = PEERBOARD_PLUGIN_VERSION;
             update_option('peerboard_options', $peerboard_options);
         } else if ($peerboard_options['peerboard_version_synced'] != PEERBOARD_PLUGIN_VERSION) {
-            API::peerboard_post_integration($peerboard_options['auth_token'], $peerboard_options['prefix'], peerboard_get_domain());
+            $success = API::peerboard_post_integration($peerboard_options['auth_token'], $peerboard_options['prefix'], peerboard_get_domain());
+
+            if (!$success) {
+                return false;
+            }
+
             $peerboard_options['peerboard_version_synced'] = PEERBOARD_PLUGIN_VERSION;
             update_option('peerboard_options', $peerboard_options);
         }
+    }
+
+    /**
+     * Check and fix comm url before req
+     *
+     * @return string
+     */
+    public static function fix_community_slug_before_req($prefix)
+    {
+        return peerboard_get_comm_full_slug();
     }
 }
 

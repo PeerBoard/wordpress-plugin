@@ -13,6 +13,7 @@ import './functions.js';
 
 import { createForum } from "@peerboard/core";
 
+
 /**
  * Create forum
  */

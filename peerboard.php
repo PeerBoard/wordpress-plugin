@@ -4,7 +4,7 @@
  * Plugin Name: WordPress Forum Plugin – PeerBoard
  * Plugin URI: https://peerboard.com/integrations/wordpress-forum-plugin
  * Description: Forum, Community & User Profile Plugin
- * Version: 0.8.2
+ * Version: 0.9.0
  * Text Domain: peerboard
  * Domain Path: /languages
  * Author: <a href='https://peerboard.com' target='_blank'>Peerboard</a>, forumplugin
@@ -25,9 +25,10 @@ class PeerBoard
 	{
 
 		DEFINE('PEERBOARD_PROXY_PATH', 'peerboard_internal');
-		DEFINE('PEERBOARD_PLUGIN_VERSION', '0.8.2');
+		DEFINE('PEERBOARD_PLUGIN_VERSION', '0.9.0');
 		DEFINE('PEERBOARD_PLUGIN_URL', plugins_url('', __FILE__));
 		DEFINE('PEERBOARD_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
+		DEFINE('PEERBOARD_PLUGIN_MAIN_TEMPLATE_NAME', 'page-full-width-template.php');
 
 		require_once plugin_dir_path(__FILE__) . "/inc/Settings.php";
 		require_once plugin_dir_path(__FILE__) . "functions.php";
@@ -35,13 +36,19 @@ class PeerBoard
 		require_once plugin_dir_path(__FILE__) . "/inc/analytics.php";
 		require_once plugin_dir_path(__FILE__) . "/inc/Installation.php";
 		require_once plugin_dir_path(__FILE__) . "/inc/ForumPage.php";
+		require_once plugin_dir_path(__FILE__) . "/inc/PageTemplate.php";
+		require_once plugin_dir_path(__FILE__) . "/inc/UserSync.php";
 
 		add_action('plugins_loaded', [__CLASS__, 'true_load_plugin_textdomain']);
 
 		// Admin scripts
 		add_action('admin_enqueue_scripts', [__CLASS__, 'load_admin_scripts']);
+
 		// Get feedback dialog box by ajax
-		add_action('wp_ajax_peerboard_add_deactivation_feedback_dialog_box',[__CLASS__,'add_deactivation_feedback_dialog_box']);
+		add_action('wp_ajax_peerboard_add_deactivation_feedback_dialog_box', [__CLASS__, 'add_deactivation_feedback_dialog_box']);
+
+		// Chow warning or error issues
+		add_action('init', [__CLASS__, 'peerboard_add_notice_action']);
 	}
 
 	/**
@@ -99,10 +106,50 @@ class PeerBoard
 	}
 
 	/**
+	 * Check where user are to show notice
+	 *
+	 * @return void
+	 */
+	public static function peerboard_add_notice_action()
+	{
+		$user = wp_get_current_user();
+		$allowed_roles = array('editor', 'administrator', 'author');
+		// Show notice only for some specific user roles
+		if (array_intersect($allowed_roles, $user->roles)) {
+			if (is_admin()) {
+				add_action('admin_notices', [__CLASS__, 'peerboard_notice']);
+			} else {
+				add_action('peerboard_before_forum',  [__CLASS__, 'peerboard_notice']);
+			}
+		}
+	}
+
+	/**
+	 * Show notice on admin page
+	 *
+	 * @return void
+	 */
+	public static function peerboard_notice()
+	{
+		// Show notice after update in admin
+		$saved_notices = get_transient('peerboard_notices');
+		if ($saved_notices && is_array($saved_notices)) {
+			foreach ($saved_notices as $notice) {
+				printf('<div class="peerboard-notice notice notice-%s is-dismissible"><p>%s</p></div>', $notice['type'], $notice['notice']);
+			}
+			delete_transient('peerboard_notices');
+		};
+	}
+
+
+
+	/**
 	 * Feedback dialog on deactivation
 	 */
 	public static function add_deactivation_feedback_dialog_box()
 	{
+		global $peerboard_options;
+		$board_id = $peerboard_options['community_id'];
 		$reasons = [
 			[
 				'id' => '1',

@@ -9,13 +9,13 @@ class Installation
 {
   public static function init()
   {
-    add_action('peerboard_activate', [__CLASS__,'peerboard_install'], 10);
+    add_action('peerboard_activate', [__CLASS__, 'peerboard_install'], 10);
 
-    add_action('peerboard_activate', [__CLASS__,'peerboard_activate'], 11);
+    add_action('peerboard_activate', [__CLASS__, 'peerboard_activate'], 11);
 
-    add_action('admin_init', [__CLASS__,'peerboard_plugin_redirect']);
+    add_action('admin_init', [__CLASS__, 'peerboard_plugin_redirect']);
 
-    add_action('peerboard_deactivate', [__CLASS__,'peerboard_deactivation']);
+    add_action('peerboard_deactivate', [__CLASS__, 'peerboard_deactivation']);
   }
 
   /**
@@ -43,8 +43,13 @@ class Installation
       'post_type'     => 'page',
       'post_author'   => 1
     );
+
     $post_id = wp_insert_post($post_data);
+
     update_option("peerboard_post", $post_id);
+
+    // Change default page template to our one
+    update_post_meta($post_id, '_wp_page_template', PEERBOARD_PLUGIN_MAIN_TEMPLATE_NAME, true);
   }
 
   /**
@@ -63,11 +68,27 @@ class Installation
       $recovery = get_option('peerboard_recovery_token');
       if ($recovery !== false && $recovery !== NULL && $recovery !== '') {
         $peerboard_options = peerboard_get_options(API::peerboard_get_community($recovery));
+
+        if (!$peerboard_options) {
+          return false;
+        }
+
         $peerboard_options['prefix'] = 'community';
-        API::peerboard_post_integration($peerboard_options['auth_token'], $peerboard_options['prefix'], peerboard_get_domain());
+
+        $integration = API::peerboard_post_integration($peerboard_options['auth_token'], $peerboard_options['prefix'], peerboard_get_domain());
+
+        if (!$integration) {
+          return false;
+        }
+
         delete_option('peerboard_recovery_token');
       } else {
-        $peerboard_options = peerboard_get_options(API::peerboard_create_community());
+
+        $community = API::peerboard_create_community();
+
+        if ($community) {
+          $peerboard_options = peerboard_get_options($community);
+        }
       }
       peerboard_send_analytics('activate_plugin', $peerboard_options["community_id"]);
 
@@ -106,8 +127,11 @@ class Installation
     wp_delete_post($post_id, true);
     $board_id = $peerboard_options['community_id'];
     peerboard_send_analytics('deactivate_plugin', $board_id);
-    API::peerboard_drop_integration($peerboard_options['auth_token']);
-    echo "<script>alert(`Note, that your board is still available at peerboard.com/$board_id`)</script>";
+    $success = API::peerboard_drop_integration($peerboard_options['auth_token']);
+
+    if (!$success) {
+      return;
+    }
 
     update_option("peerboard_recovery_token", $peerboard_options['auth_token']);
     delete_option('peerboard_post');
