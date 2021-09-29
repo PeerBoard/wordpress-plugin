@@ -132,7 +132,7 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 * page selector bug fixed
 * page duplication issue solved
 = 0.7.9 =
-* Ability to select forum page template on plugin settings page
+* Ability to community page template on plugin settings page
 * Added ability to translate settings page
 * Fixed some minor issues
 * Updated user sync logic
@@ -195,7 +195,7 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 * page selector bug fixed
 * page duplication issue solved
 = 0.7.9 =
-* Ability to select forum page template on plugin settings page
+* Ability to community page template on plugin settings page
 * Added ability to translate settings page
 * Fixed some minor issues
 * Updated user sync logic

@@ -107,7 +107,7 @@ class Settings
 
         add_settings_field(
             'forum_page_template',
-            __('Select forum page template', 'peerboard'),
+            __('Community page template', 'peerboard'),
             [__CLASS__, 'field_select_forum_page_template'],
             'circles',
             'peerboard_section_integration'
@@ -296,7 +296,7 @@ class Settings
     }
 
     /**
-     * Select forum page template
+     * community page template
      *
      * @return void
      */
