@@ -13,33 +13,38 @@ class Sitemap
 
     public static $peerboard_options;
 
+    public static $sitemap_path;
+
     public static function init()
     {
 
         self::$peerboard_options = get_option('peerboard_options');
 
-        /**
-         * Add link to sitemap home page
-         */
-        add_filter('init', [__CLASS__, 'register_sitemap_provider']);
+        self::$sitemap_path = 'sitemap_peerboard.xml';
 
         /**
          * Checking url and showing our sitemap
          */
         add_filter('request', [__CLASS__, 'implement_external_sitemap']);
+
+        /**
+         * Add xml link to robots
+         */
+        add_filter('robots_txt', [__CLASS__, 'add_xml_link_to_robots'], 10, 2);
     }
 
     /**
-     * Register sitemap provider
-     *
-     * @return void
+     * Add xml link to robots
      */
-    public static function register_sitemap_provider()
+    public static function add_xml_link_to_robots($output, $public)
     {
+        if (!$public) {
+            return $output;
+        }
 
-        $provider = new peerboard_sitemap_provider();
+        $output .= home_url('/') . self::$sitemap_path;
 
-        wp_register_sitemap_provider($provider->name, $provider);
+        return $output;
     }
 
     /**
@@ -50,21 +55,8 @@ class Sitemap
      */
     public static function implement_external_sitemap($query_vars)
     {
-        $is_sitemaps_enabled = wp_sitemaps_get_server()->sitemaps_enabled();
 
-        if (!$is_sitemaps_enabled) {
-            return $query_vars;
-        }
-
-        if (!is_array($query_vars)) {
-            return $query_vars;
-        }
-
-        if (!isset($query_vars['sitemap'])) {
-            return $query_vars;
-        }
-
-        if ($query_vars['sitemap'] === 'peerboard') {
+        if (self::is_sitemap_page(self::$sitemap_path)) {
             $comm_id = self::$peerboard_options["community_id"];
 
             $request = wp_remote_get(sprintf('https://peerboard.com/sitemap-%s.xml', $comm_id));
@@ -84,36 +76,21 @@ class Sitemap
 
         return $query_vars;
     }
+
+    /**
+     * Check if this is sitemap page
+     *
+     * @param [type] $sitemap_link
+     * @return boolean
+     */
+    public static function is_sitemap_page(string $sitemap_path)
+    {
+        $parse_url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        $slug = basename($parse_url);
+        $sitemap_path = untrailingslashit($sitemap_path);
+
+        return $slug === $sitemap_path;
+    }
 }
 
 Sitemap::init();
-
-/**
- * Adding link in wp sitemap home page
- */
-class peerboard_sitemap_provider extends \WP_Sitemaps_Provider
-{
-
-    // make visibility not protected
-    public $name;
-
-    public function __construct()
-    {
-
-        $this->name        = 'peerboard';
-        $this->object_type = 'peerboard';
-    }
-
-    public function get_url_list($page_num, $subtype = '')
-    {
-
-        $url_list = [];
-
-        return $url_list;
-    }
-
-    public function get_max_num_pages($subtype = '')
-    {
-        return 1;
-    }
-}
