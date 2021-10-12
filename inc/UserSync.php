@@ -117,7 +117,7 @@ class UserSync
     {
 
         $user_data = [
-            'external_id' => $user->ID,
+            //'external_id' => $user->ID,
             'email' =>  $user->user_email,
             'bio' => urlencode($user->description),
             'profile_url' => get_avatar_url($user->user_email),
