@@ -496,6 +496,13 @@ class Settings
             submit_button(__('Deactivate Automatic Import', 'peerboard'));
         }
         echo '</form>';
+        // Some info on the bottom 
+        $sitemap_url = home_url('/') . Sitemap::$sitemap_path;
+        printf('<p><strong>Sitemap:</strong> <a href="%s" target="_blank">%s</a></p>', $sitemap_url, $sitemap_url);
+
+        $comm_id = self::$peerboard_options["community_id"];
+        printf('<p><strong>Community ID:</strong> %s</p>', $comm_id);
+
         echo '</div>';
     }
 }
