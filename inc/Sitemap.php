@@ -42,7 +42,7 @@ class Sitemap
             return $output;
         }
 
-        $output .= home_url('/') . self::$sitemap_path;
+        $output .= PHP_EOL . home_url('/') . self::$sitemap_path;
 
         return $output;
     }
