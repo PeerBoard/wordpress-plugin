@@ -316,7 +316,6 @@ __webpack_require__.r(__webpack_exports__);
 
   _peerboardSettings['onTitleChanged'] = title => {
     window.document.title = "Forum: " + title;
-    fix_page_meta();
   };
 
   _peerboardSettings['onPathChanged'] = location => history.replaceState(null, '', location);
