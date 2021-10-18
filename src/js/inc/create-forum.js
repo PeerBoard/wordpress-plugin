@@ -34,7 +34,7 @@ export default (createForum) => {
   }
 
   _peerboardSettings['onTitleChanged'] = (title) => {
-    window.document.title = "Forum: " + title
+    window.document.title = title
   };
 
   _peerboardSettings['onPathChanged'] = location => history.replaceState(null, '', location);
