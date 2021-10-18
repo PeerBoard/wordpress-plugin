@@ -293,8 +293,30 @@ __webpack_require__.r(__webpack_exports__);
       document.addEventListener("DOMContentLoaded", fn);
     }
   }
+  /**
+   * Temporary solution for changing page meta
+   */
 
-  _peerboardSettings['onTitleChanged'] = title => window.document.title = "Forum: " + title;
+
+  function fix_page_meta() {
+    let target = document.getElementById('peerboard-forum');
+
+    if (target === null) {
+      return;
+    }
+
+    document.querySelector("link[rel=canonical]").setAttribute("href", document.location.origin + document.location.pathname);
+
+    try {
+      document.querySelector("meta[name=description]").remove();
+    } catch (_) {}
+
+    ;
+  }
+
+  _peerboardSettings['onTitleChanged'] = title => {
+    window.document.title = title;
+  };
 
   _peerboardSettings['onPathChanged'] = location => history.replaceState(null, '', location);
 

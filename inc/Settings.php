@@ -107,7 +107,7 @@ class Settings
 
         add_settings_field(
             'forum_page_template',
-            __('Select forum page template', 'peerboard'),
+            __('Community page template', 'peerboard'),
             [__CLASS__, 'field_select_forum_page_template'],
             'circles',
             'peerboard_section_integration'
@@ -296,7 +296,7 @@ class Settings
     }
 
     /**
-     * Select forum page template
+     * community page template
      *
      * @return void
      */
@@ -496,6 +496,13 @@ class Settings
             submit_button(__('Deactivate Automatic Import', 'peerboard'));
         }
         echo '</form>';
+        // Some info on the bottom 
+        $sitemap_url = home_url('/') . Sitemap::$sitemap_path;
+        printf('<p><strong>Sitemap:</strong> <a href="%s" target="_blank">%s</a></p>', $sitemap_url, $sitemap_url);
+
+        $comm_id = self::$peerboard_options["community_id"];
+        printf('<p><strong>Community ID:</strong> %s</p>', $comm_id);
+
         echo '</div>';
     }
 }
