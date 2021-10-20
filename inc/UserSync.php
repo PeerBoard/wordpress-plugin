@@ -142,7 +142,7 @@ class UserSync
      */
     public static function peerboard_create_user($token, $user)
     {
-
+ 
         $request = API::peerboard_api_call('users', $token, $user, 'POST');
 
         if (!$request) {
@@ -183,7 +183,18 @@ class UserSync
 
         $user_data = self::prepare_user_data(get_user_by('ID', $new_user_data['ID']));
 
-        $request = API::peerboard_api_call(sprintf('members/%s?key=email', urlencode($user_data['email'])), $token, $user_data, 'POST');
+        $request = API::peerboard_api_call(sprintf('members/%s?key=email', urlencode($user_data['email'])), $token, $user_data, 'POST', '', false);
+
+        /**
+         * If user is not found
+         */
+        if ($request['response']['code'] === 404) {
+            $request = self::peerboard_create_user($token, $user_data);
+        } elseif($request['response']['code'] > 400){
+            $message = json_decode(wp_remote_retrieve_body($request), true);
+            $message = $message['message'];
+            peerboard_add_notice($message, __FUNCTION__, 'error', func_get_args());
+        }
     }
 
 
