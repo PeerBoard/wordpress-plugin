@@ -117,7 +117,7 @@ class UserSync
     {
 
         $user_data = [
-            //'external_id' => $user->ID,
+            'external_id' => strval($user->ID),
             'email' =>  $user->user_email,
             'bio' => urlencode($user->description),
             'profile_url' => get_avatar_url($user->user_email),
@@ -190,7 +190,7 @@ class UserSync
          */
         if ($request['response']['code'] === 404) {
             $request = self::peerboard_create_user($token, $user_data);
-        } elseif($request['response']['code'] > 400){
+        } elseif($request['response']['code'] >= 400){
             $message = json_decode(wp_remote_retrieve_body($request), true);
             $message = $message['message'];
             peerboard_add_notice($message, __FUNCTION__, 'error', func_get_args());
