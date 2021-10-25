@@ -78,6 +78,10 @@ class API
       'headers' => $headers,
     ];
 
+    if (peerboard_get_environment() === 'dev') {
+      $args['sslverify'] = false;
+    }
+
     if ($type === 'GET') {
       $request = wp_remote_get($url, $args);
     }
