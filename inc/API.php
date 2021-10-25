@@ -37,7 +37,7 @@ class API
 
     if (is_array($request)) {
       if ($request['response']['code'] >= 400) {
-        $message = json_decode(wp_remote_retrieve_body($request),true);
+        $message = json_decode(wp_remote_retrieve_body($request), true);
         $message = $message['message'];
         peerboard_add_notice($message, __FUNCTION__, 'error', $function_args);
         $success = false;
@@ -56,7 +56,7 @@ class API
    * @param string $type
    * @return void
    */
-  public static function peerboard_api_call($slug, $token = 0, $body, $type = 'GET', $api_url = '')
+  public static function peerboard_api_call($slug, $token = 0, $body, $type = 'GET', $api_url = '', $check_success = true)
   {
     if (!empty($api_url)) {
       $url = $api_url . $slug;
@@ -78,6 +78,11 @@ class API
       'headers' => $headers,
     ];
 
+    // For mac os and other situation we do not know we are getting issue - cURL error 60: SSL certificate problem
+    if (peerboard_get_environment() === 'dev') {
+      $args['sslverify'] = false;
+    }
+
     if ($type === 'GET') {
       $request = wp_remote_get($url, $args);
     }
@@ -87,10 +92,12 @@ class API
       $request = wp_remote_post($url, $args);
     }
 
-    $success = self::check_request_success($request, func_get_args());
+    if ($check_success) {
+      $success = self::check_request_success($request, func_get_args());
 
-    if (!$success) {
-      return false;
+      if (!$success) {
+        return false;
+      }
     }
 
     return $request;
@@ -106,7 +113,7 @@ class API
    */
   public static function peerboard_post_integration($token, $prefix, $domain)
   {
-    $prefix = apply_filters('peerboard_check_comm_slug_before_req',$prefix);
+    $prefix = apply_filters('peerboard_check_comm_slug_before_req', $prefix);
 
     $req = self::peerboard_api_call('hosting', $token, [
       "domain" => $domain,
