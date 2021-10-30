@@ -120,7 +120,7 @@ class UserSync
             'external_id' => strval($user->ID),
             'email' =>  $user->user_email,
             'bio' => urlencode($user->description),
-            'profile_url' => get_avatar_url($user->user_email),
+            'avatar_url' => get_avatar_url($user->user_email),
             'name' => $user->display_name,
             'last_name' => ''
         ];
