@@ -6,7 +6,7 @@
 	"archive.org_bot",
 	"Baiduspider",
 	"bingbot",
-	"BingPreview\\/",
+	"BingPreview",
 	"bitlybot",
 	"Digg Deeper",
 	"Discordbot",
@@ -27,7 +27,7 @@
 	"Googlebot-Mobile",
 	"Googlebot-News",
 	"Googlebot-Video",
-	"Googlebot\/",
+	"Googlebot",
 	"ia_archiver", // Alexa"
 	"Iframely",
 	"LinkedInBot",
