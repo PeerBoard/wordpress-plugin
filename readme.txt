@@ -108,6 +108,8 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 9. Private or public. Control your community’s visibility, access rights and registration options.
 
 == Changelog ==
+= 0.9.4 =
+* User profile url fix
 = 0.9.3 =
 * If user not found create it
 = 0.9.2 =
@@ -176,6 +178,8 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 * Fix: plugin reactivation now uses old community instead of creating new one
 
 == Upgrade Notice ==
+= 0.9.4 =
+* User profile url fix
 = 0.9.2 =
 * Added xml map for community posts
 * Sitemap link added to robots.txt
