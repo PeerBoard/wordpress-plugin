@@ -51,5 +51,6 @@
 	"Yahoo Link Preview",
 	"YandexAccessibilityBot",
 	"YandexBot",
-	"YandexMobileBot"
+	"YandexMobileBot",
+	//"Mozilla" // for test
 ];
