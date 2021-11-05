@@ -1,0 +1,74 @@
+/**
+ * #.# Frontend Styles
+ *
+ * CSS for just Front usage 
+ * which makes it higher in priority.
+ */
+/**
+ * #.# Common SCSS
+ *
+ * Can include things like variables and mixins
+ * that are used across the project.
+*/
+.peerboard-notice {
+  background: #fff;
+  border: 1px solid #c3c4c7;
+  border-left-width: 4px;
+  box-shadow: 0 1px 1px #0000000a;
+  margin: 5px 15px 2px;
+  padding: 1px 12px;
+}
+.peerboard-notice.notice-error {
+  border-left-color: #d63638;
+}
+.peerboard-notice p {
+  margin: 0.5em 0;
+  padding: 2px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #3c434a;
+}
+
+.peerboard-main-container {
+  width: 100%;
+  display: block;
+}
+
+#circles-forum {
+  margin: 0 0;
+  padding: 0 0;
+  max-width: none;
+  max-height: none;
+  width: 100%;
+  height: auto;
+}
+
+#circles-forum iframe {
+  width: 100% !important;
+  margin: 0 !important;
+  max-width: none;
+  max-height: none;
+}
+
+.post-inner {
+  padding-top: 0px !important;
+}
+
+.footer-nav-widgets-wrapper {
+  margin-top: 0px !important;
+}
+
+.entry-content {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+article header {
+  display: none !important;
+}
+
+article h1.entry-title.main_title {
+  display: none;
+}
+
+/*# sourceMappingURL=front_style.css.map*/

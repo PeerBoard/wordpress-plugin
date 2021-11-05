@@ -2,3 +2,9 @@
 .idea
 
 node_modules/*
+
+front_style.js.map
+front_style.js
+
+admin_style.js
+admin_style.js.map
