@@ -153,7 +153,8 @@ __webpack_require__.r(__webpack_exports__);
           modal_deactivation_button = modal.querySelector('.button-deactivate');
           reasons = modal.querySelectorAll('.reason');
           modal.classList.add('active');
-          modal_deactivation_button.href = deactivation_url; // Close modal and remove it
+          modal_deactivation_button.href = deactivation_url;
+          modal_deactivation_button.disabled = true; // Close modal and remove it
 
           close.onclick = function (ev) {
             ev.preventDefault();
@@ -179,6 +180,7 @@ __webpack_require__.r(__webpack_exports__);
       * If reasons list have additional field show
       */
       reasons.forEach(function (elem, key) {
+        // on reason click
         elem.onclick = function (ev) {
           // disable all actives 
           modal.querySelectorAll('.reason.active').forEach(function (elem) {
@@ -187,8 +189,40 @@ __webpack_require__.r(__webpack_exports__);
           });
           elem.classList.add('active');
           elem.querySelector('input.main_reason').checked = true;
+
+          if (is_form_valid()) {
+            modal_deactivation_button.disabled = false;
+          } else {
+            modal_deactivation_button.disabled = true;
+          }
+        };
+      }); // additional field changes
+
+      modal.querySelectorAll('.additional_field input').forEach(function (elem, key) {
+        elem.oninput = function (ev) {
+          if (is_form_valid()) {
+            modal_deactivation_button.disabled = false;
+          } else {
+            modal_deactivation_button.disabled = true;
+            elem.style.borderColor = "red";
+          }
         };
       });
+    }
+
+    function is_form_valid() {
+      var reason = modal.querySelector('.reason.active .additional_field input');
+
+      if (reason) {
+        if (reason.value === null || reason.value === "") {
+          return false;
+        }
+
+        reason.style.borderColor = "black";
+        return true;
+      }
+
+      return true;
     }
     /**
      * Send feedback

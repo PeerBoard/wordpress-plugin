@@ -16,7 +16,7 @@
                                 </span>
                                 <span><?php esc_html_e($reason['text']) ?></span>
                                 <?php if (!empty($reason['input_text'])) : ?>
-                                    <div class="additional_field"><input type="text" placeholder="<?php esc_html_e($reason['input_text']) ?>"></div>
+                                    <div class="additional_field"><input type="text" placeholder="<?php esc_html_e($reason['input_text']) ?>" value=""><span style="color:red;">*</span></div>
                                 <?php endif; ?>
                             </label>
                         </li>
