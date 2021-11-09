@@ -30,7 +30,11 @@ class API
 
     if (is_wp_error($request)) {
       foreach ($request->errors as $notice => $message) {
-        peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error', $function_args);
+        if ($message[0] === 'cURL error 60: SSL certificate problem: certificate has expired') {
+          return 'ssl_fix';
+        } else {
+          peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error', $function_args);
+        }
       }
       $success = false;
     }
@@ -56,7 +60,7 @@ class API
    * @param string $type
    * @return void
    */
-  public static function peerboard_api_call($slug, $token = 0, $body, $type = 'GET', $api_url = '', $check_success = true)
+  public static function peerboard_api_call($slug, $token = 0, $body, $type = 'GET', $api_url = '', $check_success = true, $ssl_verify = true)
   {
     if (!empty($api_url)) {
       $url = $api_url . $slug;
@@ -76,9 +80,10 @@ class API
     $args = [
       'timeout'     => 20,
       'headers' => $headers,
+      'sslverify' => $ssl_verify // Last solution cURL error 60: SSL certificate problem
     ];
 
-    // For mac os and other situation we do not know we are getting issue - cURL error 60: SSL certificate problem
+
     if (peerboard_get_environment() === 'dev') {
       $args['sslverify'] = false;
     }
@@ -94,8 +99,22 @@ class API
 
     if ($check_success) {
       $success = self::check_request_success($request, func_get_args());
+      // If we have issue with ssl
+      if ($success === 'ssl_fix') {
+        // Try to update certificate and fix ssl issue 
+        $ssl_fix = self::update_wp_ca_bundle();
 
-      if (!$success) {
+        if (isset($ssl_fix['success'])) {
+          // Make the same request
+          $success = self::make_api_req_again($slug, $token, $body, $type, $api_url);
+          // the last solution disable ssl
+          if (!$success) {
+            self::make_api_req_again($slug, $token, $body, $type, $api_url, $check_success = true, $ssl_verify = false);
+          }
+        } else {
+          self::make_api_req_again($slug, $token, $body, $type, $api_url, $check_success = true, $ssl_verify = false);
+        }
+      } else if (!$success) {
         return false;
       }
     }
@@ -168,6 +187,49 @@ class API
     }
 
     return json_decode(wp_remote_retrieve_body($request), true);
+  }
+
+  /**
+   * Make call again
+   *
+   * @param [type] $slug
+   * @param integer $token
+   * @param [type] $body
+   * @param string $type
+   * @param string $api_url
+   * @param boolean $check_success
+   * @param boolean $ssl_verify
+   * @return void
+   */
+  public static function make_api_req_again($slug, $token = 0, $body, $type = 'GET', $api_url = '', $check_success = true, $ssl_verify = true)
+  {
+    return self::peerboard_api_call($slug, $token, $body, $type, $api_url, $check_success, $ssl_verify);
+  }
+
+  /**
+   * Solution: cURL error 60: SSL certificate has expired
+   * Issue information and solution
+   * https://wp-kama.com/note/error-making-request-wordpress
+   * @return void
+   */
+  public static function update_wp_ca_bundle()
+  {
+    $crt_file = ABSPATH . WPINC . '/certificates/ca-bundle.crt';
+    $new_crt_url = PEERBOARD_PLUGIN_DIR_PATH.'/src/cacert.pem';
+
+    if (is_writable($crt_file)) {
+      $new_str = file_get_contents($new_crt_url);
+
+      if ($new_str && strpos($new_str, 'Bundle of CA Root Certificates')) {
+        $up = file_put_contents($crt_file, $new_str);
+
+        return $up ? ['success' => 'ca-bundle.crt updated'] : ['error' => 'can`t put data to ca-bundle.crt'];
+      } else {
+        return ['error' => 'ERROR: can\'t download curl.haxx.se/ca/cacert.pem'];
+      }
+    } else {
+      return ['error' => 'ca-bundle.crt not writable'];
+    }
   }
 
   /**
