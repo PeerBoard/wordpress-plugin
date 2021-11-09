@@ -215,17 +215,25 @@ class API
   public static function update_wp_ca_bundle()
   {
     $crt_file = ABSPATH . WPINC . '/certificates/ca-bundle.crt';
-    $new_crt_url = PEERBOARD_PLUGIN_DIR_PATH.'/src/cacert.pem';
+
+    $arr_context_options = [
+      "ssl" => [
+        "verify_peer" => false,
+        "verify_peer_name" => false,
+      ],
+    ];
+
+    $new_crt_url = 'https://curl.se/ca/cacert.pem';
 
     if (is_writable($crt_file)) {
-      $new_str = file_get_contents($new_crt_url);
+      $new_str = file_get_contents($new_crt_url, false, stream_context_create($arr_context_options));
 
       if ($new_str && strpos($new_str, 'Bundle of CA Root Certificates')) {
         $up = file_put_contents($crt_file, $new_str);
 
         return $up ? ['success' => 'ca-bundle.crt updated'] : ['error' => 'can`t put data to ca-bundle.crt'];
       } else {
-        return ['error' => 'ERROR: can\'t download curl.haxx.se/ca/cacert.pem'];
+        return ['error' => 'ERROR: can\'t download ' . $new_crt_url];
       }
     } else {
       return ['error' => 'ca-bundle.crt not writable'];
