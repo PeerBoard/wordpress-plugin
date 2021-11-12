@@ -7,10 +7,8 @@
 
 @import "variables";
 
-@import "mixins/*";
+@import "partials/error-notice.scss";
 
-@import "partials/*";
+@import "partials/full-width-template";
 
-@import "blocks/*";
-
-@import "vendor/*";
+@import "partials/legacy";

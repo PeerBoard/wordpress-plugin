@@ -50,10 +50,10 @@ class ForumPage
      */
     public static function add_scripts()
     {
-        $assets = require PEERBOARD_PLUGIN_DIR_PATH . '/assets/frontend/frontend.asset.php';
+        $assets = require PEERBOARD_PLUGIN_DIR_PATH . '/build/frontend.asset.php';
 
-        wp_register_style('peerboard_integration_styles', PEERBOARD_PLUGIN_URL . "/assets/frontend/main.css", array(), $assets['version']);
-        wp_register_script('peerboard-integration', PEERBOARD_PLUGIN_URL . "/assets/frontend/frontend.js", array(), $assets['version']);
+        wp_register_style('peerboard_integration_styles', PEERBOARD_PLUGIN_URL . "/build/front_style.css", array(), $assets['version']);
+        wp_register_script('peerboard-integration', PEERBOARD_PLUGIN_URL . "/build/frontend.js", array(), $assets['version']);
     }
 
     /**
