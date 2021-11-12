@@ -30,6 +30,7 @@ class API
 
     if (is_wp_error($request)) {
       foreach ($request->errors as $notice => $message) {
+        // We are checking if we have this issue if yes we are trying to fix it
         if ($message[0] === 'cURL error 60: SSL certificate problem: certificate has expired') {
           return 'ssl_fix';
         } else {
@@ -82,7 +83,7 @@ class API
       'headers' => $headers,
       'sslverify' => $ssl_verify // Last solution cURL error 60: SSL certificate problem
     ];
-    
+
     if ($type === 'GET') {
       $request = wp_remote_get($url, $args);
     }
@@ -101,13 +102,13 @@ class API
 
         if (isset($ssl_fix['success'])) {
           // Make the same request
-          $success = self::make_api_req_again($slug, $token, $body, $type, $api_url);
+          $success = self::peerboard_api_call($slug, $token, $body, $type, $api_url);
           // the last solution disable ssl
           if (!$success) {
-            self::make_api_req_again($slug, $token, $body, $type, $api_url, $check_success = true, $ssl_verify = false);
+            self::peerboard_api_call($slug, $token, $body, $type, $api_url, $check_success = true, $ssl_verify = false);
           }
         } else {
-          self::make_api_req_again($slug, $token, $body, $type, $api_url, $check_success = true, $ssl_verify = false);
+          self::peerboard_api_call($slug, $token, $body, $type, $api_url, $check_success = true, $ssl_verify = false);
         }
       } else if (!$success) {
         return false;
@@ -182,23 +183,6 @@ class API
     }
 
     return json_decode(wp_remote_retrieve_body($request), true);
-  }
-
-  /**
-   * Make call again
-   *
-   * @param [type] $slug
-   * @param integer $token
-   * @param [type] $body
-   * @param string $type
-   * @param string $api_url
-   * @param boolean $check_success
-   * @param boolean $ssl_verify
-   * @return void
-   */
-  public static function make_api_req_again($slug, $token = 0, $body, $type = 'GET', $api_url = '', $check_success = true, $ssl_verify = true)
-  {
-    return self::peerboard_api_call($slug, $token, $body, $type, $api_url, $check_success, $ssl_verify);
   }
 
   /**

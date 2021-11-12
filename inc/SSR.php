@@ -54,9 +54,7 @@ class SSR
             $useragent = strtolower($useragent);
             if (strlen(strstr($req_useragent, $useragent)) > 0) {
 
-                // https://domain/post/1363374877, removing slug for some time because of bug
-                $post_url = str_replace(peerboard_get_comm_full_slug(), '', $_SERVER['REQUEST_URI']);
-                $post_url = home_url() . $post_url;
+                $post_url = home_url() . $_SERVER['REQUEST_URI'];
 
                 $wp_head = HtmlDomParser::str_get_html($wp_head);
 
@@ -65,7 +63,9 @@ class SSR
 
                 $page_info = self::get_post_data($post_url);
 
-                if (empty($page_info['body'])) {
+                if (!$page_info || empty($page_info['body'])) {
+                    echo $wp_head;
+
                     return;
                 }
 
@@ -108,12 +108,7 @@ class SSR
 
     public static function get_post_data($post_url)
     {
-
-        // https://peerboard.com/350900488/api/v2/forum/ssr?url=https://domain/post/1363374877    
-        $api_slug = self::$peerboard_options["community_id"] . '/api/v2/forum/ssr?url=' . $post_url;
-        $api_slug = untrailingslashit($api_slug);
-
-        $post_meta = API::peerboard_api_call($api_slug, self::$peerboard_options['auth_token'], [], 'GET', PEERBOARD_URL);
+        $post_meta = API::peerboard_api_call(untrailingslashit('ssr?url='.$post_url), self::$peerboard_options['auth_token'], [], 'GET');
 
         return $post_meta;
     }
