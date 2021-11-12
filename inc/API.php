@@ -105,10 +105,12 @@ class API
           $success = self::peerboard_api_call($slug, $token, $body, $type, $api_url);
           // the last solution disable ssl
           if (!$success) {
-            self::peerboard_api_call($slug, $token, $body, $type, $api_url, $check_success = true, $ssl_verify = false);
+            return self::peerboard_api_call($slug, $token, $body, $type, $api_url, $check_success = true, $ssl_verify = false);
+          } else {
+            return $success;
           }
         } else {
-          self::peerboard_api_call($slug, $token, $body, $type, $api_url, $check_success = true, $ssl_verify = false);
+          return self::peerboard_api_call($slug, $token, $body, $type, $api_url, $check_success = true, $ssl_verify = false);
         }
       } else if (!$success) {
         return false;
