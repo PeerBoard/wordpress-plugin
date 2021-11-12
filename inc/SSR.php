@@ -54,23 +54,64 @@ class SSR
             $useragent = strtolower($useragent);
             if (strlen(strstr($req_useragent, $useragent)) > 0) {
 
-                $post_url = home_url() . $_SERVER['REQUEST_URI'];
+                // https://domain/post/1363374877, removing slug for some time because of bug
+                $post_url = str_replace(peerboard_get_comm_full_slug(), '', $_SERVER['REQUEST_URI']);
+                $post_url = home_url() . $post_url;
 
                 $wp_head = HtmlDomParser::str_get_html($wp_head);
 
                 $wp_head->find('link[rel=canonical]', 0)->href = $post_url;
 
-                self::get_post_data($post_url);
 
+                $page_info = self::get_post_data($post_url);
+
+                if (empty($page_info['body'])) {
+                    return;
+                }
+
+                $page_info = json_decode($page_info['body']);
+
+                $wp_head->find('title', 0)->innertext = $page_info->title;
+
+                $wp_head = self::add_or_update_header_meta_tags($wp_head, $page_info->metaTags);
             }
         }
 
         echo $wp_head;
     }
 
-    public static function get_post_data($post_url){
-        // http://local.is/944256280/api/v2/forum/ssr?url=http://example.com/post/891565306
-        $api_slug = self::$peerboard_options["community_id"].'/api/v2/forum/ssr?url='.$post_url;
+    /**
+     * Add or update header meta tags
+     */
+    public static function add_or_update_header_meta_tags($wp_head, $meta_tags)
+    {
+        $meta_html = '';
+
+        foreach ($meta_tags as $meta) {
+            $meta_string = sprintf('meta[property=%s]', $meta->attrValue);
+            $cur_meta = $wp_head->find($meta_string, 0);
+
+            if (!empty($cur_meta)) {
+                $wp_head->find(sprintf('meta[property=%s]', $meta->attrValue), 0)->content = $meta->content;
+            }
+
+            if (empty($cur_meta)) {
+                $meta_html .= sprintf('<meta property="%s" content="%s" />', $meta->attrValue, $meta->content);
+            }
+        }
+
+        // add new meta fields after title
+        $wp_head->find('title', 0)->outertext = $wp_head->find('title', 0)->outertext . $meta_html;
+
+        return $wp_head;
+    }
+
+    public static function get_post_data($post_url)
+    {
+
+        // https://peerboard.com/350900488/api/v2/forum/ssr?url=https://domain/post/1363374877    
+        $api_slug = self::$peerboard_options["community_id"] . '/api/v2/forum/ssr?url=' . $post_url;
+        $api_slug = untrailingslashit($api_slug);
 
         $post_meta = API::peerboard_api_call($api_slug, self::$peerboard_options['auth_token'], [], 'GET', PEERBOARD_URL);
 
@@ -88,7 +129,6 @@ class SSR
 
         return true;
     }
-
 }
 
 SSR::init();
