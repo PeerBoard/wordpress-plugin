@@ -3,4 +3,15 @@
 
 node_modules/*
 
+<<<<<<< HEAD
 composer.lock
+=======
+# Not currect files generated
+front_style.js.map
+front_style.js
+
+admin_style.js
+admin_style.js.map
+
+package-lock.json
+>>>>>>> master

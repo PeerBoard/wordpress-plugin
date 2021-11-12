@@ -113,15 +113,15 @@ Object(_admin_feedback_form__WEBPACK_IMPORTED_MODULE_0__["default"])();
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = (() => {
+/* harmony default export */ __webpack_exports__["default"] = (function () {
   function modal_init() {
-    let deactivate_button = document.getElementById('deactivate-peerboard');
+    var deactivate_button = document.getElementById('deactivate-peerboard');
 
     if (!deactivate_button) {
       return;
     }
 
-    let modal,
+    var modal,
         close,
         modal_deactivation_button,
         deactivation_url = deactivate_button.href,
@@ -131,31 +131,32 @@ __webpack_require__.r(__webpack_exports__);
      * @param {*} ev 
      */
 
-    deactivate_button.onclick = ev => {
+    deactivate_button.onclick = function (ev) {
       ev.preventDefault();
-      let formData = new FormData();
+      var formData = new FormData();
       formData.append('action', 'peerboard_add_deactivation_feedback_dialog_box');
       fetch(window.peerboard_admin.ajax_url, {
         method: 'POST',
         body: formData
-      }).then(response => {
+      }).then(function (response) {
         if (response.ok) {
           return response.json();
         } else {
           console.log('Looks like there was a problem. Status Code: ' + response.status);
         }
-      }).then(data => {
+      }).then(function (data) {
         if (data.success) {
-          let response = data.data;
+          var response = data.data;
           document.querySelector('body').append(stringToHTML(response));
           modal = document.getElementById('peerboard-modal-deactivation-feedback');
           close = modal.querySelector('.button-close');
           modal_deactivation_button = modal.querySelector('.button-deactivate');
           reasons = modal.querySelectorAll('.reason');
           modal.classList.add('active');
-          modal_deactivation_button.href = deactivation_url; // Close modal and remove it
+          modal_deactivation_button.href = deactivation_url;
+          modal_deactivation_button.disabled = true; // Close modal and remove it
 
-          close.onclick = ev => {
+          close.onclick = function (ev) {
             ev.preventDefault();
             modal.classList.remove('active');
             modal.remove();
@@ -163,7 +164,7 @@ __webpack_require__.r(__webpack_exports__);
 
           reasons_logic();
 
-          modal_deactivation_button.onclick = ev => {
+          modal_deactivation_button.onclick = function (ev) {
             ev.preventDefault();
             modal_deactivation_button.disabled = true;
             send_feedback();
@@ -178,17 +179,50 @@ __webpack_require__.r(__webpack_exports__);
       /**
       * If reasons list have additional field show
       */
-      reasons.forEach((elem, key) => {
-        elem.onclick = ev => {
+      reasons.forEach(function (elem, key) {
+        // on reason click
+        elem.onclick = function (ev) {
           // disable all actives 
-          modal.querySelectorAll('.reason.active').forEach(elem => {
+          modal.querySelectorAll('.reason.active').forEach(function (elem) {
             elem.classList.remove('active');
             elem.querySelector('input.main_reason').checked = false;
           });
           elem.classList.add('active');
           elem.querySelector('input.main_reason').checked = true;
+
+          if (is_form_valid()) {
+            modal_deactivation_button.disabled = false;
+          } else {
+            modal_deactivation_button.disabled = true;
+          }
+        };
+      }); // additional field changes
+
+      modal.querySelectorAll('.additional_field input').forEach(function (elem, key) {
+        elem.oninput = function (ev) {
+          if (is_form_valid()) {
+            modal_deactivation_button.disabled = false;
+          } else {
+            modal_deactivation_button.disabled = true;
+            elem.style.borderColor = "red";
+          }
         };
       });
+    }
+
+    function is_form_valid() {
+      var reason = modal.querySelector('.reason.active .additional_field input');
+
+      if (reason) {
+        if (reason.value === null || reason.value === "") {
+          return false;
+        }
+
+        reason.style.borderColor = "black";
+        return true;
+      }
+
+      return true;
     }
     /**
      * Send feedback
@@ -196,11 +230,11 @@ __webpack_require__.r(__webpack_exports__);
 
 
     function send_feedback() {
-      let formData = new FormData(),
+      var formData = new FormData(),
           main_reason_wrap = modal.querySelector('.reason.active');
 
       if (main_reason_wrap) {
-        let main_reason = main_reason_wrap.querySelector('input.main_reason').value,
+        var main_reason = main_reason_wrap.querySelector('input.main_reason').value,
             additional_info = main_reason_wrap.querySelector('.additional_field input');
 
         if (additional_info) {
@@ -215,9 +249,11 @@ __webpack_require__.r(__webpack_exports__);
       fetch(window.peerboard_admin.ajax_url, {
         method: 'POST',
         body: formData
-      }).then(response => response.json()).then(data => {
+      }).then(function (response) {
+        return response.json();
+      }).then(function (data) {
         if (data.success) {
-          let response = data.data;
+          var response = data.data;
           window.location.href = deactivation_url;
         } else {
           console.error(data);

@@ -83,10 +83,15 @@ class API
       'sslverify' => $ssl_verify // Last solution cURL error 60: SSL certificate problem
     ];
 
+<<<<<<< HEAD
 
     if (peerboard_get_environment() === 'dev') {
       $args['sslverify'] = false;
     }
+=======
+    // For mac os and other situation we do not know we are getting issue - cURL error 60: SSL certificate problem
+    $args['sslverify'] = false;
+>>>>>>> master
 
     if ($type === 'GET') {
       $request = wp_remote_get($url, $args);

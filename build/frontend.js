@@ -175,12 +175,25 @@ var createForum = function (forumID, container, options) {
         if (!forumSDK) {
             throw new Error("Forum should be loaded at the moment.");
         }
-        forumSDK.createForum(forumID, container, opts);
+        return new Promise(function (resolve, reject) {
+            var api = forumSDK.createForum(forumID, container, __assign(__assign({}, opts), { onFail: function () {
+                    if (opts.onFail) {
+                        opts.onFail();
+                    }
+                    reject(new Error("failed to initialize PeerBoard iframe internals"));
+                }, onReady: function () {
+                    if (opts.onReady) {
+                        opts.onReady();
+                    }
+                    resolve(api);
+                } }));
+        });
     }).catch(function (err) {
         console.error("Error creating forum: ", err);
         if (options.onFail) {
             options.onFail();
         }
+        throw err;
     });
 };
 
@@ -237,7 +250,7 @@ Object(_inc_create_forum__WEBPACK_IMPORTED_MODULE_2__["default"])(_peerboard_cor
  * Vanilla js serialize array function
  * @param {*} form 
  */
-var serializeArray = function (form) {
+var serializeArray = function serializeArray(form) {
   var arr = [];
   Array.prototype.slice.call(form.elements).forEach(function (field) {
     if (!field.name || field.disabled || ['file', 'reset', 'submit', 'button'].indexOf(field.type) > -1) return;
@@ -273,16 +286,18 @@ var serializeArray = function (form) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = (createForum => {
-  const setWaitingForReady = timeout => new Promise((resolve, reject) => {
-    _peerboardSettings['onReady'] = () => {
-      resolve();
-    };
+/* harmony default export */ __webpack_exports__["default"] = (function (createForum) {
+  var setWaitingForReady = function setWaitingForReady(timeout) {
+    return new Promise(function (resolve, reject) {
+      _peerboardSettings['onReady'] = function () {
+        resolve();
+      };
 
-    setTimeout(() => {
-      reject();
-    }, timeout);
-  });
+      setTimeout(function () {
+        reject();
+      }, timeout);
+    });
+  };
 
   function docReady(fn) {
     // see if DOM is already available
@@ -299,7 +314,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
   function fix_page_meta() {
-    let target = document.getElementById('peerboard-forum');
+    var target = document.getElementById('peerboard-forum');
 
     if (target === null) {
       return;
@@ -314,25 +329,27 @@ __webpack_require__.r(__webpack_exports__);
     ;
   }
 
-  _peerboardSettings['onTitleChanged'] = title => {
+  _peerboardSettings['onTitleChanged'] = function (title) {
     window.document.title = title;
   };
 
-  _peerboardSettings['onPathChanged'] = location => history.replaceState(null, '', location);
+  _peerboardSettings['onPathChanged'] = function (location) {
+    return history.replaceState(null, '', location);
+  };
 
   _peerboardSettings['minHeight'] = window.innerHeight + "px";
 
-  _peerboardSettings['onLogout'] = () => {
+  _peerboardSettings['onLogout'] = function () {
     document.cookie = 'wp-peerboard-auth=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;';
   };
 
-  _peerboardSettings['onFail'] = () => {
+  _peerboardSettings['onFail'] = function () {
     console.error('Failed to load forum - please contact us at support_wp@peerboard.com');
     alert("Something really unexpected happened - please contact us at support_wp@peerboard.com");
   };
 
   docReady(function () {
-    let target = document.getElementById('peerboard-forum');
+    var target = document.getElementById('peerboard-forum');
 
     if (target === null) {
       // Means that we have no the_content tag

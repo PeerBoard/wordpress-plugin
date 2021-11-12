@@ -47,6 +47,7 @@ export default () => {
 
                         modal.classList.add('active')
                         modal_deactivation_button.href = deactivation_url
+                        modal_deactivation_button.disabled = true
 
                         // Close modal and remove it
                         close.onclick = (ev) => {
@@ -59,8 +60,10 @@ export default () => {
 
                         modal_deactivation_button.onclick = (ev) => {
                             ev.preventDefault()
+
                             modal_deactivation_button.disabled = true
                             send_feedback()
+
                         }
                     } else {
                         console.log(console.error(data));
@@ -73,6 +76,7 @@ export default () => {
             * If reasons list have additional field show
             */
             reasons.forEach((elem, key) => {
+                // on reason click
                 elem.onclick = (ev) => {
                     // disable all actives 
                     modal.querySelectorAll('.reason.active').forEach((elem) => {
@@ -82,8 +86,44 @@ export default () => {
 
                     elem.classList.add('active')
                     elem.querySelector('input.main_reason').checked = true
+
+                    if (is_form_valid()) {
+                        modal_deactivation_button.disabled = false
+                    } else {
+                        modal_deactivation_button.disabled = true
+                    }
                 }
             })
+
+            // additional field changes
+            modal.querySelectorAll('.additional_field input').forEach((elem, key) => {
+
+                elem.oninput = (ev) => {
+                    if (is_form_valid()) {
+                        modal_deactivation_button.disabled = false
+                    } else {
+                        modal_deactivation_button.disabled = true
+                        elem.style.borderColor = "red";
+                    }
+                }
+
+            })
+        }
+
+        function is_form_valid() {
+            let reason = modal.querySelector('.reason.active .additional_field input')
+
+            if (reason) {
+                if (reason.value === null || reason.value === "") {
+                    return false
+                }
+
+                reason.style.borderColor = "black";
+
+                return true
+            }
+
+            return true
         }
 
         /**
@@ -100,7 +140,7 @@ export default () => {
                     additional_info = additional_info.value
                     formData.append('additional_info', additional_info);
                 }
-                
+
                 formData.append('main_reason', main_reason);
             }
 

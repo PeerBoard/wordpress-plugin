@@ -62,10 +62,10 @@ class PeerBoard
 	 */
 	public static function load_admin_scripts()
 	{
-		$assets = require PEERBOARD_PLUGIN_DIR_PATH . '/assets/admin/admin.asset.php';
+		$assets = require PEERBOARD_PLUGIN_DIR_PATH . '/build/admin.asset.php';
 
-		wp_enqueue_style('peerboard_integration_styles', plugin_dir_url(__FILE__) . "/assets/admin/admin.css", array(), $assets['version']);
-		wp_enqueue_script('peerboard-admin-js', plugin_dir_url(__FILE__) . "/assets/admin/admin.js", array(), $assets['version'], true);
+		wp_enqueue_style('peerboard_integration_styles', plugin_dir_url(__FILE__) . "/build/admin_style.css", array(), $assets['version']);
+		wp_enqueue_script('peerboard-admin-js', plugin_dir_url(__FILE__) . "/build/admin.js", array(), $assets['version'], true);
 
 		wp_localize_script('peerboard-admin-js', 'peerboard_admin', ['ajax_url' => admin_url('admin-ajax.php')]);
 	}
