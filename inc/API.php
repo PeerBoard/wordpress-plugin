@@ -30,12 +30,7 @@ class API
 
     if (is_wp_error($request)) {
       foreach ($request->errors as $notice => $message) {
-        // We are checking if we have this issue if yes we are trying to fix it
-        if ($message[0] === 'cURL error 60: SSL certificate problem: certificate has expired') {
-          return 'ssl_fix';
-        } else {
-          peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error', $function_args);
-        }
+        peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error', $function_args);
       }
       $success = false;
     }
@@ -93,26 +88,33 @@ class API
       $request = wp_remote_post($url, $args);
     }
 
+    // We are checking if we have SSL certificate problem
+    if (is_wp_error($request)) {
+      foreach ($request->errors as $notice => $message) {
+        // If we have issue with ssl
+        if ($message[0] === 'cURL error 60: SSL certificate problem: certificate has expired') {
+          // Try to update certificate and fix ssl issue 
+          $ssl_fix = self::update_wp_ca_bundle();
+
+          if (isset($ssl_fix['success'])) {
+            // Make the same request
+            $success = self::peerboard_api_call($slug, $token, $body, $type, $api_url);
+            // the last solution disable ssl
+            if (!$success) {
+              return self::peerboard_api_call($slug, $token, $body, $type, $api_url, $check_success = true, $ssl_verify = false);
+            } else {
+              return $success;
+            }
+          } else {
+            return self::peerboard_api_call($slug, $token, $body, $type, $api_url, $check_success = true, $ssl_verify = false);
+          }
+        }
+      }
+    }
+
     if ($check_success) {
       $success = self::check_request_success($request, func_get_args());
-      // If we have issue with ssl
-      if ($success === 'ssl_fix') {
-        // Try to update certificate and fix ssl issue 
-        $ssl_fix = self::update_wp_ca_bundle();
-
-        if (isset($ssl_fix['success'])) {
-          // Make the same request
-          $success = self::peerboard_api_call($slug, $token, $body, $type, $api_url);
-          // the last solution disable ssl
-          if (!$success) {
-            return self::peerboard_api_call($slug, $token, $body, $type, $api_url, $check_success = true, $ssl_verify = false);
-          } else {
-            return $success;
-          }
-        } else {
-          return self::peerboard_api_call($slug, $token, $body, $type, $api_url, $check_success = true, $ssl_verify = false);
-        }
-      } else if (!$success) {
+      if (!$success) {
         return false;
       }
     }
