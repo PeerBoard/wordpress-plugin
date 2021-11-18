@@ -39,21 +39,24 @@ class UserSync
     {
         $peerboard_options = self::$peerboard_options;
 
-        $sync_enabled = get_option('peerboard_users_sync_enabled');
-        if ($sync_enabled) {
-            $user = get_userdata($user_id);
+        $user_sync_enabled = (get_option('peerboard_users_sync_enabled') === '1') ? true : false;
 
-            $user_data = self::prepare_user_data($user);
-
-            $user = self::peerboard_create_user($peerboard_options['auth_token'], $user_data);
-
-            if (!$user['success']) {
-                return;
-            }
-
-            $count = intval(get_option('peerboard_users_count'));
-            update_option('peerboard_users_count', $count + 1);
+        if (!$user_sync_enabled) {
+            return;
         }
+
+        $user = get_userdata($user_id);
+
+        $user_data = self::prepare_user_data($user);
+
+        $user = self::peerboard_create_user($peerboard_options['auth_token'], $user_data);
+
+        if (!$user['success']) {
+            return;
+        }
+
+        $count = intval(get_option('peerboard_users_count'));
+        update_option('peerboard_users_count', $count + 1);
     }
 
     /**
@@ -79,7 +82,7 @@ class UserSync
         $sync_enabled = get_option('peerboard_users_sync_enabled');
         if ($sync_enabled === '1') {
             if ($value === 0) {
-                update_option('peerboard_users_sync_enabled', '0');
+                update_option('peerboard_users_sync_enabled', intval('0'));
                 return $old_value;
             }
             return $value;
@@ -99,7 +102,7 @@ class UserSync
             return $value;
         }
 
-        update_option('peerboard_users_sync_enabled', '1');
+        update_option('peerboard_users_sync_enabled', intval('1'));
         if ($value === 0) {
             $value = $old_value;
         }
@@ -131,7 +134,7 @@ class UserSync
             }
         }
 
-        if(is_array($user)){
+        if (is_array($user)) {
             $user_data = [
                 'external_id' => strval($user['ID']),
                 'email' =>  $user['user_email'],
@@ -190,10 +193,20 @@ class UserSync
      */
     public static function on_user_profile_update($user_id, $old_user_data, $new_user_data)
     {
+        $user_sync_enabled = (get_option('peerboard_users_sync_enabled') === '1') ? true : false;
+
+        if (!$user_sync_enabled) {
+            return;
+        }
+
         $peerboard_options = self::$peerboard_options;
 
         $token = $peerboard_options['auth_token'];
         $user_data = self::prepare_user_data($new_user_data);
+
+        if (empty($user_data)) {
+            return;
+        }
 
         $user_email = $user_data['email'];
         $email_before_change = $old_user_data->user_email;
@@ -218,7 +231,6 @@ class UserSync
 
             if (!$create_account['success'] && $message === 'user with such external_id or email already exists') {
                 $api_call = API::peerboard_api_call_with_success_check(sprintf('members/%s', $user_data['external_id']), $token, $user_data, 'POST', '');
-
             }
         } elseif ($req_body['code'] >= 400) {
             peerboard_add_notice($message, __FUNCTION__, 'error', func_get_args());
