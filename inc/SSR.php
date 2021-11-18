@@ -108,7 +108,7 @@ class SSR
 
     public static function get_post_data($post_url)
     {
-        $post_meta = API::peerboard_api_call(untrailingslashit('ssr?url='.$post_url), self::$peerboard_options['auth_token'], [], 'GET');
+        $post_meta = API::peerboard_api_call_with_success_check(untrailingslashit('ssr?url='.$post_url), self::$peerboard_options['auth_token'], [], 'GET');
 
         return $post_meta;
     }

@@ -19,18 +19,75 @@ class API
   }
 
   /**
+   * API Call with success check
+   *
+   * @param string $slug
+   * @param boolean $token
+   * @param array $body
+   * @param string $type
+   * @return array
+   */
+  public static function peerboard_api_call_with_success_check($slug, $token = 0, array $body, $type = 'GET', $api_url = '', array $args = [])
+  {
+
+    $default_args = [
+      'ssl_verify' => true,
+      'ssl_check' => true,
+      'report_error' => true
+    ];
+
+    $args = array_merge($default_args, $args);
+
+    $req_args = [];
+
+    $req_args['body'] = $body;
+
+    // Last solution cURL error 60: SSL certificate problem
+    $req_args['sslverify'] = $args['ssl_verify'];
+
+    $request = self::peerboard_api_call($slug, $token, $req_args, $type, $api_url);
+
+    // We are checking if we have SSL certificate problem
+    if ($args['ssl_check']) {
+      if (self::check_if_ssl_issue($request)) {
+        // Try to update certificate and fix ssl issue 
+        $ssl_fix = self::update_wp_ca_bundle();
+        if (isset($ssl_fix['success'])) {
+          // Make the same request but without ssl issue checking
+          $second_request = self::peerboard_api_call($slug, $token, $body, $type, $api_url);
+
+          if (self::check_if_ssl_issue($second_request)) {
+            // the last solution make request with disabled ssl and without ssl issue checking
+            return self::peerboard_api_call_with_success_check($slug, $token, $body, $type, $api_url,  ['ssl_verify' => false, 'ssl_check' => false]);
+          }
+        } else {
+
+          // If we can not fix ssl issue make request with disabled ssl and without ssl issue checking
+          return self::peerboard_api_call_with_success_check($slug, $token, $body, $type, $api_url, ['ssl_verify' => false, 'ssl_check' => false]);
+        }
+      }
+    }
+
+    $check_response = self::check_request_success_and_report_error($request, func_get_args(), $args['report_error']);
+
+    return $check_response;
+  }
+
+  /**
    * Check if API has error or not
    *
    * @param array or object $request
    * @return void
    */
-  public static function check_request_success($request, $function_args = [])
+  public static function check_request_success_and_report_error($request, $function_args = [], $report_error = true)
   {
     $success = true;
 
     if (is_wp_error($request)) {
       foreach ($request->errors as $notice => $message) {
-        peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error', $function_args);
+        if ($report_error) {
+          peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error', $function_args);
+        }
       }
       $success = false;
     }
@@ -39,25 +96,57 @@ class API
       if ($request['response']['code'] >= 400) {
         $message = json_decode(wp_remote_retrieve_body($request), true);
         $message = $message['message'];
-        peerboard_add_notice($message, __FUNCTION__, 'error', $function_args);
+        if ($report_error) {
+          peerboard_add_notice($message, __FUNCTION__, 'error', $function_args);
+        }
         $success = false;
       }
     }
 
-    return $success;
+    $response = [
+      'success' => $success,
+      'request' => $request
+    ];
+
+    return $response;
   }
 
   /**
-   * API Call
+   * PeerBoard integrations request
    *
-   * @param [type] $slug
    * @param [type] $token
-   * @param [type] $body
-   * @param string $type
+   * @param [type] $prefix
+   * @param [type] $domain
    * @return void
    */
-  public static function peerboard_api_call($slug, $token = 0, $body, $type = 'GET', $api_url = '', $check_success = true, $ssl_verify = true)
+  public static function peerboard_post_integration($token, $prefix, $domain)
   {
+    $prefix = apply_filters('peerboard_check_comm_slug_before_req', $prefix);
+
+    $req = self::peerboard_api_call_with_success_check('hosting', $token, [
+      "domain" => $domain,
+      "path" => $prefix,
+      "type" => 'sdk',
+      "js_storage_auth" => true,
+      "version" => PEERBOARD_PLUGIN_VERSION
+    ], 'POST');
+
+    return $req;
+  }
+
+  /**
+   * Undocumented function
+   *
+   * @param string $slug
+   * @param integer $token
+   * @param array $req_args
+   * @param string $type
+   * @param string $api_url
+   * @return object
+   */
+  public static function peerboard_api_call($slug, $token = 0, $req_args = [], $type = 'GET', $api_url = '')
+  {
+    // If not specified $api_url then take the default
     if (!empty($api_url)) {
       $url = $api_url . $slug;
     } else {
@@ -75,74 +164,45 @@ class API
 
     $args = [
       'timeout'     => 20,
-      'headers' => $headers,
-      'sslverify' => $ssl_verify // Last solution cURL error 60: SSL certificate problem
+      'headers' => $headers
     ];
+
+    $args = array_merge($args, $req_args);
 
     if ($type === 'GET') {
       $request = wp_remote_get($url, $args);
     }
 
     if ($type === 'POST') {
-      $args['body'] = json_encode($body);
+      $args['body'] = json_encode($args['body']);
       $request = wp_remote_post($url, $args);
-    }
-
-    // We are checking if we have SSL certificate problem
-    if (is_wp_error($request)) {
-      foreach ($request->errors as $notice => $message) {
-        // If we have issue with ssl
-        if ($message[0] === 'cURL error 60: SSL certificate problem: certificate has expired') {
-          // Try to update certificate and fix ssl issue 
-          $ssl_fix = self::update_wp_ca_bundle();
-
-          if (isset($ssl_fix['success'])) {
-            // Make the same request
-            $success = self::peerboard_api_call($slug, $token, $body, $type, $api_url);
-            // the last solution disable ssl
-            if (!$success) {
-              return self::peerboard_api_call($slug, $token, $body, $type, $api_url, $check_success = true, $ssl_verify = false);
-            } else {
-              return $success;
-            }
-          } else {
-            return self::peerboard_api_call($slug, $token, $body, $type, $api_url, $check_success = true, $ssl_verify = false);
-          }
-        }
-      }
-    }
-
-    if ($check_success) {
-      $success = self::check_request_success($request, func_get_args());
-      if (!$success) {
-        return false;
-      }
     }
 
     return $request;
   }
 
+
   /**
-   * PeerBoard integrations request
+   * Check if we have cURL error 60: SSL certificate problem: certificate has expired issue
    *
-   * @param [type] $token
-   * @param [type] $prefix
-   * @param [type] $domain
+   * @param [type] $request
    * @return void
    */
-  public static function peerboard_post_integration($token, $prefix, $domain)
+  public static function check_if_ssl_issue($request)
   {
-    $prefix = apply_filters('peerboard_check_comm_slug_before_req', $prefix);
+    // We are checking if we have SSL certificate problem
+    if (!is_wp_error($request)) {
+      return false;
+    }
 
-    $req = self::peerboard_api_call('hosting', $token, [
-      "domain" => $domain,
-      "path" => $prefix,
-      "type" => 'sdk',
-      "js_storage_auth" => true,
-      "version" => PEERBOARD_PLUGIN_VERSION
-    ], 'POST');
+    foreach ($request->errors as $notice => $message) {
+      // If we have issue with ssl
+      if ($message[0] === 'cURL error 60: SSL certificate problem: certificate has expired') {
+        return true;
+      }
+    }
 
-    return $req;
+    return false;
   }
 
   /**
@@ -153,7 +213,8 @@ class API
    */
   public static function peerboard_drop_integration($token)
   {
-    return self::peerboard_api_call('hosting', $token, ["type" => 'none'], 'POST');
+    $response = self::peerboard_api_call_with_success_check('hosting', $token, ["type" => 'none'], 'POST');
+    return $response['success'];
   }
 
   /**
@@ -163,13 +224,13 @@ class API
    */
   public static function peerboard_create_community()
   {
-    $request = self::peerboard_api_call('communities', 0, peerboard_bloginfo_array(), 'POST');
+    $response = self::peerboard_api_call_with_success_check('communities', 0, peerboard_bloginfo_array(), 'POST');
 
-    if (!$request) {
+    if (!$response['success']) {
       return false;
     }
 
-    return json_decode(wp_remote_retrieve_body($request), true);
+    return json_decode(wp_remote_retrieve_body($response['request']), true);
   }
 
   /**
@@ -180,13 +241,13 @@ class API
    */
   public static function peerboard_get_community($auth_token)
   {
-    $request = self::peerboard_api_call('communities', $auth_token, '');
+    $response = self::peerboard_api_call_with_success_check('communities', $auth_token, []);
 
-    if (!$request) {
+    if (!$response['success']) {
       return false;
     }
 
-    return json_decode(wp_remote_retrieve_body($request), true);
+    return json_decode(wp_remote_retrieve_body($response['request']), true);
   }
 
   /**
@@ -243,13 +304,13 @@ class API
       "main_url" => get_site_url() . "/" . $options['prefix']
     ];
 
-    $request = self::peerboard_api_call('events', 0, $body, 'POST', PEERBOARD_API_URL);
+    $response = self::peerboard_api_call_with_success_check('events', 0, $body, 'POST', PEERBOARD_API_URL);
 
-    if (!$request) {
-      wp_send_json_error(sprintf('%s %s', $request['response']['message'], __FUNCTION__));
+    if (!$response['success']) {
+      wp_send_json_error(sprintf('%s %s', $response['request']['response']['message'], __FUNCTION__));
     }
 
-    wp_send_json_success(wp_remote_retrieve_body($request));
+    wp_send_json_success(wp_remote_retrieve_body($response['request']));
   }
 
   /**
