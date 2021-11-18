@@ -50,9 +50,9 @@ class API
       $ssl_fix = self::update_wp_ca_bundle();
       if (isset($ssl_fix['success'])) {
         // Make the same request but without ssl issue checking
-        $second_request = self::peerboard_api_call($slug, $token, $req_args, $type, $api_url);
+        $request = self::peerboard_api_call($slug, $token, $req_args, $type, $api_url);
 
-        if (self::check_if_ssl_issue($second_request)) {
+        if (self::check_if_ssl_issue($request)) {
           // the last solution make request with disabled ssl and without ssl issue checking
           $req_args['ssl_verify'] = false;
           $request = self::peerboard_api_call($slug, $token, $req_args, $type, $api_url);
