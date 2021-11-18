@@ -31,8 +31,6 @@ class API
   {
 
     $default_args = [
-      'ssl_verify' => true,
-      'ssl_check' => true,
       'report_error' => true
     ];
 
@@ -43,30 +41,30 @@ class API
     $req_args['body'] = $body;
 
     // Last solution cURL error 60: SSL certificate problem
-    $req_args['sslverify'] = $args['ssl_verify'];
+    $req_args =  $args['ssl_verify'];
 
     $request = self::peerboard_api_call($slug, $token, $req_args, $type, $api_url);
 
     // We are checking if we have SSL certificate problem
-    if ($args['ssl_check']) {
-      if (self::check_if_ssl_issue($request)) {
-        // Try to update certificate and fix ssl issue 
-        $ssl_fix = self::update_wp_ca_bundle();
-        if (isset($ssl_fix['success'])) {
-          // Make the same request but without ssl issue checking
-          $second_request = self::peerboard_api_call($slug, $token, $body, $type, $api_url);
+    if (self::check_if_ssl_issue($request)) {
+      // Try to update certificate and fix ssl issue 
+      $ssl_fix = self::update_wp_ca_bundle();
+      if (isset($ssl_fix['success'])) {
+        // Make the same request but without ssl issue checking
+        $second_request = self::peerboard_api_call($slug, $token, $req_args, $type, $api_url);
 
-          if (self::check_if_ssl_issue($second_request)) {
-            // the last solution make request with disabled ssl and without ssl issue checking
-            return self::peerboard_api_call_with_success_check($slug, $token, $body, $type, $api_url,  ['ssl_verify' => false, 'ssl_check' => false]);
-          }
-        } else {
-
-          // If we can not fix ssl issue make request with disabled ssl and without ssl issue checking
-          return self::peerboard_api_call_with_success_check($slug, $token, $body, $type, $api_url, ['ssl_verify' => false, 'ssl_check' => false]);
+        if (self::check_if_ssl_issue($second_request)) {
+          // the last solution make request with disabled ssl and without ssl issue checking
+          $req_args['ssl_verify'] = false;
+          $request = self::peerboard_api_call($slug, $token, $req_args, $type, $api_url);
         }
+      } else {
+        // If we can not fix ssl issue make request with disabled ssl and without ssl issue checking
+        $req_args['ssl_verify'] = false;
+        $request = self::peerboard_api_call($slug, $token, $req_args, $type, $api_url);
       }
     }
+
 
     $check_response = self::check_request_success_and_report_error($request, func_get_args(), $args['report_error']);
 
