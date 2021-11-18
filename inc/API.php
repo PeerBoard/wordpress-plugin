@@ -40,8 +40,7 @@ class API
 
     $req_args['body'] = $body;
 
-    // Last solution cURL error 60: SSL certificate problem
-    $req_args =  $args['ssl_verify'];
+    $req_args['ssl_verify'] = true;
 
     $request = self::peerboard_api_call($slug, $token, $req_args, $type, $api_url);
 
