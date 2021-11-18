@@ -113,6 +113,7 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 * Injected peerboard SSR preview of post content into WP 
 * Fixed curl (60) certificate issue
 * Fixed issue with Gulp
+* User sync issue fixed
 
 = 0.9.4 =
 * User profile url fix
@@ -189,6 +190,7 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 * Injected peerboard SSR preview of post content into WP 
 * Fixed curl (60) certificate issue
 * Fixed issue with Gulp
+* User sync issue fixed
 
 = 0.9.4 =
 * User profile url fix
