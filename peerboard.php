@@ -4,7 +4,7 @@
  * Plugin Name: WordPress Forum Plugin – PeerBoard
  * Plugin URI: https://peerboard.com/integrations/wordpress-forum-plugin
  * Description: Forum, Community & User Profile Plugin
- * Version: 0.9.4
+ * Version: 0.9.5
  * Text Domain: peerboard
  * Domain Path: /languages
  * Author: <a href='https://peerboard.com' target='_blank'>Peerboard</a>, forumplugin
@@ -25,11 +25,13 @@ class PeerBoard
 	{
 
 		DEFINE('PEERBOARD_PROXY_PATH', 'peerboard_internal');
-		DEFINE('PEERBOARD_PLUGIN_VERSION', '0.9.4');
+		DEFINE('PEERBOARD_PLUGIN_VERSION', '0.9.5');
 		DEFINE('PEERBOARD_PLUGIN_URL', plugins_url('', __FILE__));
 		DEFINE('PEERBOARD_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 		DEFINE('PEERBOARD_PLUGIN_MAIN_TEMPLATE_NAME', 'page-full-width-template.php');
 
+		// PSR4 composer autoload
+		require_once plugin_dir_path(__FILE__) . '/vendor/autoload.php';
 		require_once plugin_dir_path(__FILE__) . "/inc/Settings.php";
 		require_once plugin_dir_path(__FILE__) . "functions.php";
 		require_once plugin_dir_path(__FILE__) . "/inc/API.php";
@@ -39,6 +41,7 @@ class PeerBoard
 		require_once plugin_dir_path(__FILE__) . "/inc/PageTemplate.php";
 		require_once plugin_dir_path(__FILE__) . "/inc/UserSync.php";
 		require_once plugin_dir_path(__FILE__) . "/inc/Sitemap.php";
+		require_once plugin_dir_path(__FILE__) . "/inc/SSR.php";
 
 		add_action('plugins_loaded', [__CLASS__, 'true_load_plugin_textdomain']);
 

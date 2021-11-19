@@ -4,7 +4,7 @@ Tags: forum, forums, community, discussion, knowledge base, membership, member, 
 Requires at least: 5.1
 Tested up to: 5.8.1
 Requires PHP: 7.0
-Stable tag: 0.9.3
+Stable tag: 0.9.5
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -108,6 +108,13 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 9. Private or public. Control your community’s visibility, access rights and registration options.
 
 == Changelog ==
+
+= 0.9.5 = 
+* Injected peerboard SSR preview of post content into WP 
+* Fixed curl (60) certificate issue
+* Fixed issue with Gulp
+* User sync issue fixed
+
 = 0.9.4 =
 * User profile url fix
 = 0.9.3 =
@@ -178,6 +185,13 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 * Fix: plugin reactivation now uses old community instead of creating new one
 
 == Upgrade Notice ==
+
+= 0.9.5 = 
+* Injected peerboard SSR preview of post content into WP 
+* Fixed curl (60) certificate issue
+* Fixed issue with Gulp
+* User sync issue fixed
+
 = 0.9.4 =
 * User profile url fix
 = 0.9.2 =

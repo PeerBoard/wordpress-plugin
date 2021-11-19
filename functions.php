@@ -70,7 +70,7 @@ function peerboard_get_wp_installed_sub_dir()
 /**
  * Returning community full slug (with parent page slug, and sub directory slug)
  *
- * @return void
+ * @return string
  */
 function peerboard_get_comm_full_slug()
 {
