@@ -61,7 +61,7 @@ class Sitemap
 
             $request = wp_remote_get(sprintf('https://peerboard.com/sitemap-%s.xml', $comm_id));
 
-            $success = API::check_request_success($request, func_get_args());
+            $success = API::check_request_success_and_report_error($request, func_get_args());
 
             if (!$success) {
                 return $query_vars;
