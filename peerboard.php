@@ -4,7 +4,7 @@
  * Plugin Name: WordPress Forum Plugin – PeerBoard
  * Plugin URI: https://peerboard.com/integrations/wordpress-forum-plugin
  * Description: Forum, Community & User Profile Plugin
- * Version: 0.9.6
+ * Version: 0.9.7
  * Text Domain: peerboard
  * Domain Path: /languages
  * Author: <a href='https://peerboard.com' target='_blank'>Peerboard</a>, forumplugin
