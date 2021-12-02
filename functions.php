@@ -1,5 +1,9 @@
 <?php
 
+use PEBO\UserSync;
+
+use Firebase\JWT\JWT;
+
 /**
  * Add notice to show
  *
@@ -145,16 +149,42 @@ function peerboard_get_script_settings($peerboard_options)
       $userdata['role'] = 'admin';
     }
 
-    $hash = peerboard_get_auth_hash($userdata, $auth_token);
-    $userdata['hash'] = $hash;
-    $userdata = http_build_query($userdata);
-    $result['wpPayload'] = "$payload?$userdata";
+    $payload = [
+      'creds' => [
+        'v' => 'v1',
+        'fields' => $userdata,
+      ],
+      'exp' => time() + 3600
+    ];
+
+    $result['jwtToken'] = pebo_get_jwt_token($payload, $isUserLogged);
+  } else {
+    $result['anon'] = true;
   }
 
   $result['baseURL'] = PEERBOARD_URL;
   $result['sdkURL'] = PEERBOARD_EMBED_URL;
 
   return $result;
+}
+
+/**
+ * Array to JWT
+ *
+ * @param [type] $payload
+ * @return void
+ */
+function pebo_get_jwt_token($payload)
+{
+
+  $peerboard_options = get_option('peerboard_options');
+
+  $auth_token = $peerboard_options['auth_token'];
+
+  JWT::$leeway = 60 * 2; // $leeway in seconds
+  $jwt = JWT::encode($payload, $auth_token, 'HS256');
+
+  return $jwt;
 }
 
 function peerboard_get_domain()
@@ -278,7 +308,6 @@ function peerboard_update_post_slug($slug)
     "ID" => intval(get_option('peerboard_post')),
     "post_name" => $sanitized_slug,
   ), false, false);
-
 }
 
 /**
@@ -286,15 +315,16 @@ function peerboard_update_post_slug($slug)
  *
  * @return boolean
  */
-function peerboard_is_comm_set_static_home_page(){
+function peerboard_is_comm_set_static_home_page()
+{
   $page_id = intval(get_option('peerboard_post'));
-  $home_id = intval(get_option( 'page_on_front' ));
+  $home_id = intval(get_option('page_on_front'));
 
-  if(!$home_id){
+  if (!$home_id) {
     return false;
   }
 
-  if($page_id === $home_id){
+  if ($page_id === $home_id) {
     return true;
   }
 
