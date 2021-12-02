@@ -4,7 +4,7 @@ Tags: forum, forums, community, discussion, knowledge base, membership, member, 
 Requires at least: 5.1
 Tested up to: 5.8.1
 Requires PHP: 7.0
-Stable tag: 0.9.7
+Stable tag: 0.9.8
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -108,6 +108,9 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 9. Private or public. Control your community’s visibility, access rights and registration options.
 
 == Changelog ==
+
+= 0.9.8 = 
+* Integration optimization
 
 = 0.9.7 = 
 * Fixed issue with sitemap
