@@ -84,6 +84,7 @@ class ForumPage
             unset($query_vars['pagename']);
         }
 
+        // if the user set the community page as static home page
         if (peerboard_is_comm_set_static_home_page()) {
 
             // if we are on category or page slug
@@ -94,7 +95,7 @@ class ForumPage
                     unset($query_vars['pagename']);
                 }
             }
-            
+
             // if we are on post slug
             if (isset($query_vars['page']) && isset($query_vars['name'])) {
                 if (is_numeric($query_vars['page']) && $query_vars['name'] === 'post') {
