@@ -152,14 +152,13 @@ function peerboard_get_script_settings($peerboard_options)
     $payload = [
       'creds' => [
         'v' => 'v1',
+        'ephemeral_session' => true,
         'fields' => $userdata,
       ],
       'exp' => time() + 3600
     ];
 
     $result['jwtToken'] = pebo_get_jwt_token($payload, $isUserLogged);
-  } else {
-    $result['anon'] = true;
   }
 
   $result['baseURL'] = PEERBOARD_URL;
