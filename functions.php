@@ -247,8 +247,9 @@ function peerboard_is_embed_page($prefix)
 {
   $slug = untrailingslashit(substr($_SERVER['REQUEST_URI'], 0, strlen($prefix) + 1));
   $comm_path = untrailingslashit($prefix);
+  $is_embed_page = $slug === $comm_path;
 
-  return $slug === $comm_path;
+  return $is_embed_page;
 }
 
 function peerboard_get_tail_path($prefix)
