@@ -41,7 +41,13 @@ class ForumPage
          * Checking url and showing needed page (legacy leave here to not break old users pages)
          */
         add_filter('request', [__CLASS__, 'implement_comm_page']);
+
+        /**
+         * Disable the default home rewrite to a static page
+         */
+        add_filter('redirect_canonical', [__CLASS__, 'disable_default_home_rewrite']);
     }
+
 
     /**
      * Registering css and js
@@ -61,14 +67,62 @@ class ForumPage
      */
     public static function implement_comm_page(array $query_vars)
     {
+        if (self::is_admin_request()) {
+            return $query_vars;
+        }
+
+        if (isset($query_vars['rest_route'])) {
+            return $query_vars;
+        }
+
         $peerboard_options = get_option('peerboard_options');
         $peerboard_options['prefix'] = peerboard_get_comm_full_slug();
-        if (peerboard_is_embed_page($peerboard_options['prefix'])) {
+
+        // if the comm is not static page
+        if (peerboard_is_embed_page($peerboard_options['prefix']) && !peerboard_is_comm_set_static_home_page()) {
             $query_vars = array("page_id" => get_option("peerboard_post"));
             unset($query_vars['pagename']);
         }
-        
+
+        // if the user set the community page as static home page
+        if (peerboard_is_comm_set_static_home_page()) {
+
+            // if we are on category or page slug
+            if (isset($query_vars['category_name'])) {
+
+                if (is_numeric($query_vars['category_name'])) {
+                    $query_vars = array("page_id" => get_option("peerboard_post"));
+                    unset($query_vars['pagename']);
+                }
+            }
+
+            // if we are on post slug
+            if (isset($query_vars['page']) && isset($query_vars['name'])) {
+                if (is_numeric($query_vars['page']) && $query_vars['name'] === 'post') {
+                    $query_vars = array("page_id" => get_option("peerboard_post"));
+                    unset($query_vars['pagename']);
+                }
+            }
+        }
+
         return $query_vars;
+    }
+
+    /**
+     * Disable the default home rewrite to a static page
+     */
+    public static function disable_default_home_rewrite($redirect)
+    {
+        if (!peerboard_is_comm_set_static_home_page()) {
+            return $redirect;
+        }
+
+        if (is_page() && $front_page = get_option('page_on_front')) {
+            if (is_page($front_page))
+                $redirect = false;
+        }
+
+        return $redirect;
     }
 
     /**
@@ -197,6 +251,37 @@ class ForumPage
     public static function fix_community_slug_before_req($prefix)
     {
         return peerboard_get_comm_full_slug();
+    }
+
+    /**
+     * Check if this is a request at the backend.
+     *
+     * @return bool true if is admin request, otherwise false.
+     */
+    public static function is_admin_request()
+    {
+        /**
+         * Get current URL.
+         *
+         * @link https://wordpress.stackexchange.com/a/126534
+         */
+        $current_url = home_url(add_query_arg(null, null));
+
+        /**
+         * Get admin URL and referrer.
+         *
+         * @link https://core.trac.wordpress.org/browser/tags/4.8/src/wp-includes/pluggable.php#L1076
+         */
+        $admin_url = strtolower(admin_url());
+        $referrer  = strtolower(wp_get_referer());
+        /**
+         * Check if this is a admin request. If true, it
+         */
+        if (0 === strpos($current_url, $admin_url)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
 

@@ -218,8 +218,9 @@ function peerboard_is_embed_page($prefix)
 {
   $slug = untrailingslashit(substr($_SERVER['REQUEST_URI'], 0, strlen($prefix) + 1));
   $comm_path = untrailingslashit($prefix);
+  $is_embed_page = $slug === $comm_path;
 
-  return $slug === $comm_path;
+  return $is_embed_page;
 }
 
 function peerboard_get_tail_path($prefix)
@@ -278,7 +279,6 @@ function peerboard_update_post_slug($slug)
     "ID" => intval(get_option('peerboard_post')),
     "post_name" => $sanitized_slug,
   ), false, false);
-
 }
 
 /**
@@ -286,15 +286,16 @@ function peerboard_update_post_slug($slug)
  *
  * @return boolean
  */
-function peerboard_is_comm_set_static_home_page(){
+function peerboard_is_comm_set_static_home_page()
+{
   $page_id = intval(get_option('peerboard_post'));
-  $home_id = intval(get_option( 'page_on_front' ));
+  $home_id = intval(get_option('page_on_front'));
 
-  if(!$home_id){
+  if (!$home_id) {
     return false;
   }
 
-  if($page_id === $home_id){
+  if ($page_id === $home_id) {
     return true;
   }
 
