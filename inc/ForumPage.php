@@ -28,7 +28,7 @@ class ForumPage
          */
         add_filter('the_content', [__CLASS__, 'check_page_shortcode']);
 
-        add_action('init', [__CLASS__, 'init_plugin_logic_on_page']);
+        add_action('peerboard_before_forum', [__CLASS__, 'init_plugin_logic_on_page']);
 
         add_filter('peerboard_check_comm_slug_before_req', [__CLASS__, 'fix_community_slug_before_req']);
 

@@ -110,7 +110,8 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 == Changelog ==
 
 = 0.9.7 = 
-* Fixed issue with sitemap
+* Fixed redirect to home page if community set as static page  
+* Fixed issues reporting bug
 
 = 0.9.6 = 
 * Robots txt sitemap fixed issue
@@ -193,7 +194,8 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 == Upgrade Notice ==
 
 = 0.9.7 = 
-* Fixed issue with sitemap
+* Fixed redirect to home page if community set as static page  
+* Fixed issues reporting bug
 
 = 0.9.6 = 
 * Robots txt sitemap fixed issue
