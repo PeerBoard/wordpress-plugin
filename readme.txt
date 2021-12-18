@@ -113,6 +113,9 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 * Fixed redirect to home page if community set as static page  
 * Fixed issues reporting bug
 
+= 0.9.6 = 
+* Robots txt sitemap fixed issue
+
 = 0.9.5 = 
 * Injected peerboard SSR preview of post content into WP 
 * Fixed curl (60) certificate issue
@@ -193,6 +196,9 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 = 0.9.7 = 
 * Fixed redirect to home page if community set as static page  
 * Fixed issues reporting bug
+
+= 0.9.6 = 
+* Robots txt sitemap fixed issue
 
 = 0.9.5 = 
 * Injected peerboard SSR preview of post content into WP 
