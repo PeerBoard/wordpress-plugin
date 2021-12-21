@@ -131,7 +131,7 @@ function peerboard_get_script_settings($peerboard_options)
   $result = array(
     'board-id' => $community_id,
     // временное решение
-    'prefix' => empty($peerboard_prefix)?'//':'',
+    'prefix' => $peerboard_prefix,
   );
 
   if ($isUserLogged) {
