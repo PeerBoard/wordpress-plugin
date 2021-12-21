@@ -34,7 +34,11 @@ function peerboard_add_notice($notice, $function_name, $type = "success", $args 
       'args' => $args
     ];
 
-    PEBO\API::add_sentry_error($notice, $function_name, $extra);
+    // temporary solution
+    if ($notice !== 'provide auth token') {
+      PEBO\API::add_sentry_error($notice, $function_name, $extra);
+    }
+    
   }
 
   set_transient('peerboard_notices', $notices, 60);

@@ -110,9 +110,10 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 == Changelog ==
 
 = 0.9.8 = 
-* Integration optimization
+* Fixed redirect to home page if community set as static page  
+* Fixed issues reporting bug
 
-= 0.9.7 = 
+= 0.9.7 =
 * Fixed issue with sitemap
 
 = 0.9.6 = 
@@ -195,7 +196,11 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 
 == Upgrade Notice ==
 
-= 0.9.7 = 
+= 0.9.8 = 
+* Fixed redirect to home page if community set as static page  
+* Fixed issues reporting bug
+
+= 0.9.7 =
 * Fixed issue with sitemap
 
 = 0.9.6 = 
