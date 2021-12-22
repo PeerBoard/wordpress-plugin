@@ -241,9 +241,10 @@ function peerboard_base64url_encode($data)
  */
 function peerboard_is_embed_page($prefix)
 {
-  $slug = untrailingslashit(substr($_SERVER['REQUEST_URI'], 0, strlen($prefix) + 1));
-  $comm_path = untrailingslashit($prefix);
-  $is_embed_page = $slug === $comm_path;
+  $current_url = home_url(add_query_arg(null, null));
+  $url_with_path = home_url($prefix);
+  
+  $is_embed_page = 0 === strpos($current_url, $url_with_path);
 
   return $is_embed_page;
 }

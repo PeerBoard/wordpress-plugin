@@ -97,8 +97,8 @@ class ForumPage
             }
 
             // if we are on post slug
-            if (isset($query_vars['page']) && isset($query_vars['name'])) {
-                if (is_numeric($query_vars['page']) && $query_vars['name'] === 'post') {
+            if (isset($query_vars['page']) && peerboard_is_embed_page('post')) {
+                if (is_numeric($query_vars['page'])) {
                     $query_vars = array("page_id" => get_option("peerboard_post"));
                     unset($query_vars['pagename']);
                 }
