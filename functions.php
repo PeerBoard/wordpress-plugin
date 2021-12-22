@@ -105,18 +105,9 @@ function peerboard_get_comm_full_slug()
 function peerboard_get_script_settings($peerboard_options)
 {
   $peerboard_prefix = $peerboard_options['prefix'];
-  $auth_token = $peerboard_options['auth_token'];
   $community_id = intval($peerboard_options['community_id']);
   $user = wp_get_current_user();
 
-  $payload = peerboard_base64url_encode(json_encode(
-    array(
-      'communityID' => $community_id,
-      'location' => peerboard_get_tail_path($peerboard_prefix),
-    )
-  ));
-
-  $login_data_string = "";
   $isUserLogged = false;
   if (!function_exists('is_user_logged_in')) {
     if (!empty($user->ID)) {
@@ -160,7 +151,7 @@ function peerboard_get_script_settings($peerboard_options)
         'ephemeral_session' => true,
         'fields' => $userdata,
       ],
-      'exp' => time() + 3600
+      'exp' => time() + 300
     ];
 
     $result['jwtToken'] = pebo_get_jwt_token($payload, $isUserLogged);
@@ -255,17 +246,6 @@ function peerboard_is_embed_page($prefix)
   $is_embed_page = $slug === $comm_path;
 
   return $is_embed_page;
-}
-
-function peerboard_get_tail_path($prefix)
-{
-  $r = $_SERVER['REQUEST_URI'];
-  // Trim /peerboard from request - uses for login redirect
-  $trimmed = substr($r, strlen($prefix) + 1);
-  if ($trimmed === "") {
-    $trimmed = "/";
-  }
-  return $trimmed;
 }
 
 function peerboard_get_auth_hash($params, $secret)
