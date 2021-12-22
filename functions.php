@@ -1,5 +1,9 @@
 <?php
 
+use PEBO\UserSync;
+
+use Firebase\JWT\JWT;
+
 /**
  * Add notice to show
  *
@@ -101,18 +105,9 @@ function peerboard_get_comm_full_slug()
 function peerboard_get_script_settings($peerboard_options)
 {
   $peerboard_prefix = $peerboard_options['prefix'];
-  $auth_token = $peerboard_options['auth_token'];
   $community_id = intval($peerboard_options['community_id']);
   $user = wp_get_current_user();
 
-  $payload = peerboard_base64url_encode(json_encode(
-    array(
-      'communityID' => $community_id,
-      'location' => peerboard_get_tail_path($peerboard_prefix),
-    )
-  ));
-
-  $login_data_string = "";
   $isUserLogged = false;
   if (!function_exists('is_user_logged_in')) {
     if (!empty($user->ID)) {
@@ -126,6 +121,7 @@ function peerboard_get_script_settings($peerboard_options)
 
   $result = array(
     'board-id' => $community_id,
+    // временное решение
     'prefix' => $peerboard_prefix,
   );
 
@@ -149,16 +145,41 @@ function peerboard_get_script_settings($peerboard_options)
       $userdata['role'] = 'admin';
     }
 
-    $hash = peerboard_get_auth_hash($userdata, $auth_token);
-    $userdata['hash'] = $hash;
-    $userdata = http_build_query($userdata);
-    $result['wpPayload'] = "$payload?$userdata";
+    $payload = [
+      'creds' => [
+        'v' => 'v1',
+        'ephemeral_session' => true,
+        'fields' => $userdata,
+      ],
+      'exp' => time() + 300
+    ];
+
+    $result['jwtToken'] = pebo_get_jwt_token($payload, $isUserLogged);
   }
 
   $result['baseURL'] = PEERBOARD_URL;
   $result['sdkURL'] = PEERBOARD_EMBED_URL;
 
   return $result;
+}
+
+/**
+ * Array to JWT
+ *
+ * @param [type] $payload
+ * @return void
+ */
+function pebo_get_jwt_token($payload)
+{
+
+  $peerboard_options = get_option('peerboard_options');
+
+  $auth_token = $peerboard_options['auth_token'];
+
+  JWT::$leeway = 60 * 2; // $leeway in seconds
+  $jwt = JWT::encode($payload, $auth_token, 'HS256');
+
+  return $jwt;
 }
 
 function peerboard_get_domain()
@@ -225,17 +246,6 @@ function peerboard_is_embed_page($prefix)
   $is_embed_page = $slug === $comm_path;
 
   return $is_embed_page;
-}
-
-function peerboard_get_tail_path($prefix)
-{
-  $r = $_SERVER['REQUEST_URI'];
-  // Trim /peerboard from request - uses for login redirect
-  $trimmed = substr($r, strlen($prefix) + 1);
-  if ($trimmed === "") {
-    $trimmed = "/";
-  }
-  return $trimmed;
 }
 
 function peerboard_get_auth_hash($params, $secret)
