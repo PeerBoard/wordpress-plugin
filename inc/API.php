@@ -335,9 +335,9 @@ class API
         'args' => $extra,
       ],
       'tags' => [
-        'wp_version' => get_bloginfo('version'),
-        'php_version' => phpversion(),
-        'p_version' => PEERBOARD_PLUGIN_VERSION
+        'wp_v' => get_bloginfo('version'),
+        'php_v' => phpversion(),
+        'pb_v' => PEERBOARD_PLUGIN_VERSION
       ]
     ];
 
