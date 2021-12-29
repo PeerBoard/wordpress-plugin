@@ -15,7 +15,7 @@ if (substr(get_site_url(), 0, 5) === "http:" && getenv("PEERBOARD_ENV") !== 'loc
         <br /><br />
     </div>
 <?php else : ?>
-    <div id='peerboard-forum'></div>
+    <div id='peerboard-forum' pb_v="<?= PEERBOARD_PLUGIN_VERSION ?>" ></div>
 <?php endif;
 remove_filter('the_content', 'wpautop');
 ?>
