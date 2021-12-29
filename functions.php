@@ -14,7 +14,15 @@ use Firebase\JWT\JWT;
 function peerboard_add_notice($notice, $function_name, $type = "success", $args = [])
 {
   $notices = is_array(get_transient('peerboard_notices')) ? get_transient('peerboard_notices') : [];
-  $new_notice = sprintf('PeerBoard: %s (%s) - %s', $notice, $function_name, __('please contact us at support_wp@peerboard.com', 'peerboard'));
+  $new_notice = sprintf(
+    'PeerBoard: (Only administrator see this message) <br>%s (%s) - %s%s<br> %s',
+    $notice,
+    $function_name,
+    $args['file'] ?? '',
+    isset($args['line']) ? ':' . $args['line'] : '',
+    __('please contact us at support_wp@peerboard.com', 'peerboard')
+  );
+
   $notice_exist = false;
 
   // Check if notice already exist
@@ -38,7 +46,6 @@ function peerboard_add_notice($notice, $function_name, $type = "success", $args 
     if ($notice !== 'provide auth token') {
       PEBO\API::add_sentry_error($notice, $function_name, $extra);
     }
-    
   }
 
   set_transient('peerboard_notices', $notices, 60);
@@ -243,7 +250,7 @@ function peerboard_is_embed_page($prefix)
 {
   $current_url = home_url(add_query_arg(null, null));
   $url_with_path = home_url($prefix);
-  
+
   $is_embed_page = 0 === strpos($current_url, $url_with_path);
 
   return $is_embed_page;
