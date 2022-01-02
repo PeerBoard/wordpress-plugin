@@ -28,7 +28,7 @@ class ForumPage
          */
         add_filter('the_content', [__CLASS__, 'check_page_shortcode']);
 
-        add_action('peerboard_before_forum', [__CLASS__, 'init_plugin_logic_on_page']);
+        add_action('peerboard_before_forum', [__CLASS__, 'sync_plugin_and_peerboard_versions']);
 
         add_filter('peerboard_check_comm_slug_before_req', [__CLASS__, 'fix_community_slug_before_req']);
 
@@ -218,23 +218,23 @@ class ForumPage
      *
      * @return void
      */
-    public static function init_plugin_logic_on_page()
+    public static function sync_plugin_and_peerboard_versions()
     {
         global $peerboard_options;
         $peerboard_options = get_option('peerboard_options', array());
         if (!array_key_exists('peerboard_version_synced', $peerboard_options)) {
-            $success = API::peerboard_post_integration($peerboard_options['auth_token'], $peerboard_options['prefix'], peerboard_get_domain());
+            $req = API::peerboard_post_integration($peerboard_options['auth_token'], $peerboard_options['prefix'], peerboard_get_domain());
 
-            if (!$success) {
+            if (!$req['success']) {
                 return false;
             }
 
             $peerboard_options['peerboard_version_synced'] = PEERBOARD_PLUGIN_VERSION;
             update_option('peerboard_options', $peerboard_options);
         } else if ($peerboard_options['peerboard_version_synced'] != PEERBOARD_PLUGIN_VERSION) {
-            $success = API::peerboard_post_integration($peerboard_options['auth_token'], $peerboard_options['prefix'], peerboard_get_domain());
+            $req = API::peerboard_post_integration($peerboard_options['auth_token'], $peerboard_options['prefix'], peerboard_get_domain());
 
-            if (!$success) {
+            if (!$req['success']) {
                 return false;
             }
 

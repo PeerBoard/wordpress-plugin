@@ -77,7 +77,7 @@ class Installation
 
         $integration = API::peerboard_post_integration($peerboard_options['auth_token'], $peerboard_options['prefix'], peerboard_get_domain());
 
-        if (!$integration) {
+        if (!$integration['success']) {
           return false;
         }
 
