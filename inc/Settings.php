@@ -41,6 +41,8 @@ class Settings
          */
         add_action('updated_option', [__CLASS__, 'forum_page_template_updated'], 10, 3);
 
+        //add_action('updated_option', [__CLASS__, 'update_peerboard_prefix'], 10, 3);
+
         /**
          * After update_comm_parent_page option updated
          */
@@ -238,7 +240,7 @@ class Settings
         $synced = intval($option_count);
         $diff =  $users_count - $synced;
         $sync_enabled = get_option('peerboard_users_sync_enabled');
-        
+
         if ($diff !== 0) {
             printf(__("You have %s users that can be imported to PeerBoard.<br/><br/><i>Note that this will send them a welcome email and subscribe them to digests.</i><br/>", 'peerboard'), $diff);
         } else {
@@ -352,9 +354,9 @@ class Settings
             }
             peerboard_update_post_slug($value['prefix']);
 
-            $success = API::peerboard_post_integration($value['auth_token'], $value['prefix'], peerboard_get_domain());
+            $req = API::peerboard_post_integration($value['auth_token'], $value['prefix'], peerboard_get_domain());
 
-            if (!$success) {
+            if (!$req['success']) {
                 return $old_value;
             }
         }
@@ -368,9 +370,9 @@ class Settings
 
             $value['community_id'] = $community['id'];
             peerboard_send_analytics('set_auth_token', $community['id']);
-            $success = API::peerboard_post_integration($value['auth_token'], $value['prefix'], peerboard_get_domain());
+            $req = API::peerboard_post_integration($value['auth_token'], $value['prefix'], peerboard_get_domain());
 
-            if (!$success) {
+            if (!$req['success']) {
                 return $old_value;
             }
 
@@ -412,6 +414,31 @@ class Settings
              */
             update_post_meta($forum_page, '_wp_page_template', $sel_template);
         }
+    }
+
+    public static function update_peerboard_prefix($option_name, $old_value, $option_value)
+    {
+
+        if ($option_name !== "show_on_front") {
+            return;
+        }
+
+        $peerboard_options = get_option('peerboard_options', true);
+
+        // Checkin opposite way because this hook is working before the options updated in DB
+        if (peerboard_is_comm_set_static_home_page()) {
+            $peerboard_options['prefix'] = peerboard_get_comm_full_slug();
+        } else {
+            $peerboard_options['prefix'] = '';
+        }
+
+        $req = API::peerboard_post_integration($peerboard_options['auth_token'], $peerboard_options['prefix'], peerboard_get_domain());
+
+        if (!$req['success']) {
+            return;
+        }
+
+        //update_option('peerboard_options', $peerboard_options);
     }
 
     /**
