@@ -87,13 +87,10 @@ class ForumPage
         // if the user set the community page as static home page
         if (peerboard_is_comm_set_static_home_page()) {
 
-            // if we are on category or page slug
-            if (isset($query_vars['category_name'])) {
-
-                if (is_numeric($query_vars['category_name'])) {
-                    $query_vars = array("page_id" => get_option("peerboard_post"));
-                    unset($query_vars['pagename']);
-                }
+            // if we are on space
+            if (peerboard_is_embed_page('space')) {
+                $query_vars = array("page_id" => get_option("peerboard_post"));
+                unset($query_vars['pagename']);
             }
 
             // if we are on post slug
