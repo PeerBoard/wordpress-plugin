@@ -121,12 +121,18 @@ class Installation
    */
   public static function peerboard_deactivation()
   {
-    global $peerboard_options;
+    $peerboard_options = get_option('peerboard_options');
+
     if (!current_user_can('activate_plugins')) return;
+
     $post_id = get_option('peerboard_post');
+
     wp_delete_post($post_id, true);
+
     $board_id = $peerboard_options['community_id'];
+    
     peerboard_send_analytics('deactivate_plugin', $board_id);
+
     $success = API::peerboard_drop_integration($peerboard_options['auth_token']);
 
     if (!$success) {
