@@ -29,7 +29,7 @@ class Installation
     if (!current_user_can('activate_plugins'))
       return;
 
-    $forum_page_exist = get_option("peerboard_post");
+    $forum_page_exist = get_post(intval(get_option("peerboard_post")));
 
     if ($forum_page_exist) {
       return;
@@ -64,7 +64,7 @@ class Installation
     $peerboard_options = get_option('peerboard_options', array());
     if (count($peerboard_options) === 0) {
       $peerboard_options = array();
-
+      
       $recovery = get_option('peerboard_recovery_token');
       if ($recovery !== false && $recovery !== NULL && $recovery !== '') {
         $peerboard_options = peerboard_get_options(API::peerboard_get_community($recovery));
@@ -130,12 +130,13 @@ class Installation
     wp_delete_post($post_id, true);
 
     $board_id = $peerboard_options['community_id'];
-    
+
     peerboard_send_analytics('deactivate_plugin', $board_id);
 
     $success = API::peerboard_drop_integration($peerboard_options['auth_token']);
 
     if (!$success) {
+      update_option('peerboard_recovery_token','');
       return;
     }
 

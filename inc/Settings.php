@@ -41,7 +41,10 @@ class Settings
          */
         add_action('updated_option', [__CLASS__, 'forum_page_template_updated'], 10, 3);
 
-        //add_action('updated_option', [__CLASS__, 'update_peerboard_prefix'], 10, 3);
+        /**
+         * If community set as static page update prefix on peerboard side
+         */
+        add_action('update_option_page_on_front', [__CLASS__, 'update_peerboard_prefix'], 10, 3);
 
         /**
          * After update_comm_parent_page option updated
@@ -416,29 +419,23 @@ class Settings
         }
     }
 
-    public static function update_peerboard_prefix($option_name, $old_value, $option_value)
+    /**
+     * If community set as static page update prefix on peerboard side
+     */
+    public static function update_peerboard_prefix($old_value, $value, $option)
     {
-
-        if ($option_name !== "show_on_front") {
-            return;
-        }
 
         $peerboard_options = get_option('peerboard_options', true);
 
-        // Checkin opposite way because this hook is working before the options updated in DB
-        if (peerboard_is_comm_set_static_home_page()) {
-            $peerboard_options['prefix'] = peerboard_get_comm_full_slug();
+        if(peerboard_is_comm_set_static_home_page()){
+            $req = API::peerboard_post_integration($peerboard_options['auth_token'], '', peerboard_get_domain());
         } else {
-            $peerboard_options['prefix'] = '';
+            $req = API::peerboard_post_integration($peerboard_options['auth_token'], $peerboard_options['prefix'], peerboard_get_domain());
         }
-
-        $req = API::peerboard_post_integration($peerboard_options['auth_token'], $peerboard_options['prefix'], peerboard_get_domain());
 
         if (!$req['success']) {
             return;
         }
-
-        //update_option('peerboard_options', $peerboard_options);
     }
 
     /**
