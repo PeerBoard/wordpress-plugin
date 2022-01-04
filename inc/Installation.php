@@ -135,7 +135,7 @@ class Installation
 
     $success = API::peerboard_drop_integration($peerboard_options['auth_token']);
 
-    if (!$success) {
+    if (!$success && peerboard_get_environment() === 'dev') {
       update_option('peerboard_recovery_token','');
       return;
     }
