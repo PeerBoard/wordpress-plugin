@@ -92,6 +92,11 @@ function peerboard_get_comm_full_slug()
 
   $post_id = intval(get_option('peerboard_post'));
   $post = get_post($post_id);
+
+  if(!$post){
+    return '';
+  }
+
   $slug = $post->post_name;
 
   $comm_slug = substr(get_permalink($post_id), strlen(home_url('/')));
@@ -281,7 +286,7 @@ function peerboard_get_options($data)
   return array(
     'community_id' => $data['id'],
     'auth_token' => $data['auth_token'],
-    'prefix' => $data['hosting']['path'],
+    'prefix' => $data['hosting']['path']??'',
     'redirect' => $data['url'],
     'mode' => $mode,
   );
