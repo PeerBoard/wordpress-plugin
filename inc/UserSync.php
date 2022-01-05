@@ -95,6 +95,12 @@ class UserSync
 
             $user_data = self::prepare_user_data($user);
 
+            $activate_emails = get_option('peerboard_bulk_activate_email', true);
+
+            if($activate_emails === '0'){
+                $user_data['activate_email'] = false;
+            }
+
             $result[] = $user_data;
         }
 

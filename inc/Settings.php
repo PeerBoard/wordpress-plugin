@@ -78,6 +78,8 @@ class Settings
     public static function peerboard_settings_init()
     {
         register_setting('circles', 'peerboard_options');
+
+        register_setting('peerboard_users_count', 'peerboard_bulk_activate_email', 'intval');
         register_setting('peerboard_users_count', 'peerboard_users_count', 'intval');
         register_setting('peerboard_users_count', 'peerboard_users_sync_enabled', 'intval');
 
@@ -253,12 +255,16 @@ class Settings
                 _e("Enable automatic import of your new WordPress users to PeerBoard.<br/><br/><i>Note that they will start receiving welcome emails and get subscribed to email digests.</i><br/>", 'peerboard');
             }
         }
+
+        $option = get_option('peerboard_bulk_activate_email', true);
+        $checked = checked('1', $option, false);
+        $text = __('Send welcome email and subscribe new members to community digests.', 'peerboard');
+
+        printf('<table class="form-table"><tbody><tr><th scope="row">%s</th><td><input name="peerboard_bulk_activate_email" type="checkbox" value="1" %s %s></td></tr></tbody></table>', $text, $checked, $sync_enabled ? 'disabled' : '');
+
         printf("<input name='peerboard_users_count' style='display:none' value='%s' />", $option_count);
         printf("<input name='peerboard_users_sync_enabled' style='display:none' value='%s' />", $sync_enabled ? 0 : 1);
     }
-
-
-
 
     public static function peerboard_show_readme()
     {
@@ -427,7 +433,7 @@ class Settings
 
         $peerboard_options = get_option('peerboard_options', true);
 
-        if(peerboard_is_comm_set_static_home_page()){
+        if (peerboard_is_comm_set_static_home_page()) {
             $req = API::peerboard_post_integration($peerboard_options['auth_token'], '', peerboard_get_domain());
         } else {
             $req = API::peerboard_post_integration($peerboard_options['auth_token'], $peerboard_options['prefix'], peerboard_get_domain());
