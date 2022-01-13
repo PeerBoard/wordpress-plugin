@@ -90,16 +90,14 @@ class ForumPage
         if (peerboard_is_comm_set_static_home_page()) {
 
 
-            $external_login_url = $peerboard_external_comm_settings['hosting']['external_login_url'];
-            $external_login_url_path = empty($external_login_url) ? 'login' : peerboard_get_path_from_url($external_login_url);
-
+            
             // if we are on space
             if (
                 peerboard_is_embed_page('space') ||
                 peerboard_is_embed_page('settings') ||
                 peerboard_is_embed_page('members') ||
                 peerboard_is_embed_page('customization') ||
-                peerboard_is_embed_page($external_login_url_path)
+                peerboard_is_embed_page('login')
             ) {
                 $query_vars = array("page_id" => get_option("peerboard_post"));
                 unset($query_vars['pagename']);
