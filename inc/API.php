@@ -133,7 +133,7 @@ class API
       "version" => PEERBOARD_PLUGIN_VERSION
     ];
 
-    if(isset($args['external_login_url']) && !empty($args['external_login_url'])){
+    if(isset($args['external_login_url'])){
       $req_args['external_login_url'] = $args['external_login_url'];
     }
 

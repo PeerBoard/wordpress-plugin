@@ -446,7 +446,7 @@ class Settings
          */
         if (self::get_board_full_login_url() !== $value['external_login_url']) {
 
-            if (filter_var($value['external_login_url'], FILTER_VALIDATE_URL)) {
+            if (filter_var($value['external_login_url'], FILTER_VALIDATE_URL) || $value['external_login_url'] === '') {
                 $args['external_login_url'] = $value['external_login_url'];
 
                 $update_login_url = API::peerboard_post_integration($value['auth_token'], $value['prefix'], peerboard_get_domain(), $args);
