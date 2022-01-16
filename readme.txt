@@ -110,7 +110,7 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 == Changelog ==
 
 = 1.0.4 =
-* Added board external login url
+* Added board external login url settings
 * Fixed small issue with use sync
 
 = 1.0.2 =
@@ -213,7 +213,7 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 == Upgrade Notice ==
 
 = 1.0.4 =
-* Added board external login url
+* Added board external login url settings
 * Fixed small issue with use sync
 
 = 1.0.2 =
