@@ -4,7 +4,7 @@ Tags: forum, forums, community, discussion, knowledge base, membership, member, 
 Requires at least: 5.1
 Tested up to: 5.8.1
 Requires PHP: 7.0
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -109,7 +109,8 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 
 == Changelog ==
 
-= 1.0.3 =
+= 1.0.4 =
+* Added board external login url
 * Fixed small issue with use sync
 
 = 1.0.2 =
@@ -211,7 +212,8 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 
 == Upgrade Notice ==
 
-= 1.0.3 =
+= 1.0.4 =
+* Added board external login url
 * Fixed small issue with use sync
 
 = 1.0.2 =

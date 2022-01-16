@@ -140,7 +140,7 @@ class Settings
 
         add_settings_field(
             'external_login_url',
-            __('Board login url', 'peerboard'),
+            __('Board external login url', 'peerboard'),
             [__CLASS__, 'external_login_url'],
             'circles',
             'peerboard_section_integration'
