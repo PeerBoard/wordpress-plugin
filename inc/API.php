@@ -79,11 +79,15 @@ class API
   public static function check_request_success_and_report_error($request, $function_args = [], $report_error = true)
   {
     $success = true;
+    $trace = debug_backtrace();
+    $ref_function_name = $trace[2]['function'];
+    $function_args['line'] = $trace[2]['line'];
+    $function_args['file'] = $trace[2]['file'];
 
     if (is_wp_error($request)) {
       foreach ($request->errors as $notice => $message) {
         if ($report_error) {
-          peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), __FUNCTION__, 'error', $function_args);
+          peerboard_add_notice(sprintf('%s : %s', $notice, $message[0]), $ref_function_name, 'error', $function_args);
         }
       }
       $success = false;
@@ -91,10 +95,11 @@ class API
 
     if (is_array($request)) {
       if ($request['response']['code'] >= 400) {
+        $response_body = wp_remote_retrieve_body($request);
         $message = json_decode(wp_remote_retrieve_body($request), true);
-        $message = $message['message'];
+        $message = empty($message['message']) ? $response_body : $message['message'];
         if ($report_error) {
-          peerboard_add_notice($message, __FUNCTION__, 'error', $function_args);
+          peerboard_add_notice($message, $ref_function_name, 'error', $function_args);
         }
         $success = false;
       }
@@ -116,17 +121,23 @@ class API
    * @param [type] $domain
    * @return void
    */
-  public static function peerboard_post_integration($token, $prefix, $domain)
+  public static function peerboard_post_integration($token, $prefix, $domain, $args = [])
   {
     $prefix = apply_filters('peerboard_check_comm_slug_before_req', $prefix);
 
-    $req = self::peerboard_api_call_with_success_check('hosting', $token, [
+    $req_args = [
       "domain" => $domain,
       "path" => $prefix,
       "type" => 'sdk',
       "js_storage_auth" => true,
       "version" => PEERBOARD_PLUGIN_VERSION
-    ], 'POST');
+    ];
+
+    if(isset($args['external_login_url'])){
+      $req_args['external_login_url'] = $args['external_login_url'];
+    }
+
+    $req = self::peerboard_api_call_with_success_check('hosting', $token, $req_args, 'POST');
 
     return $req;
   }
@@ -323,7 +334,17 @@ class API
       "timestamp" => $timestamp,
       "message" => $message,
       "environment" => peerboard_get_environment(),
-      "extra" => $extra
+      "extra" => [
+        'wp_info' => [
+          'wp_url' => get_bloginfo('url'),
+        ],
+        'args' => $extra,
+      ],
+      'tags' => [
+        'wp_v' => get_bloginfo('version'),
+        'php_v' => phpversion(),
+        'pb_v' => PEERBOARD_PLUGIN_VERSION
+      ]
     ];
 
     $request = wp_remote_post('https://150cbac0a6e941bd89c935104211614e@o468053.ingest.sentry.io/api/5900112/store/', [

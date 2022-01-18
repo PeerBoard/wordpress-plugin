@@ -14,7 +14,15 @@ use Firebase\JWT\JWT;
 function peerboard_add_notice($notice, $function_name, $type = "success", $args = [])
 {
   $notices = is_array(get_transient('peerboard_notices')) ? get_transient('peerboard_notices') : [];
-  $new_notice = sprintf('PeerBoard: %s (%s) - %s', $notice, $function_name, __('please contact us at support_wp@peerboard.com', 'peerboard'));
+  $new_notice = sprintf(
+    'PeerBoard: (Only administrator see this message) <br>%s (%s) - %s%s<br> %s',
+    $notice,
+    $function_name,
+    $args['file'] ?? '',
+    isset($args['line']) ? ':' . $args['line'] : '',
+    __('please contact us at support_wp@peerboard.com', 'peerboard')
+  );
+
   $notice_exist = false;
 
   // Check if notice already exist
@@ -38,7 +46,6 @@ function peerboard_add_notice($notice, $function_name, $type = "success", $args 
     if ($notice !== 'provide auth token') {
       PEBO\API::add_sentry_error($notice, $function_name, $extra);
     }
-    
   }
 
   set_transient('peerboard_notices', $notices, 60);
@@ -85,6 +92,11 @@ function peerboard_get_comm_full_slug()
 
   $post_id = intval(get_option('peerboard_post'));
   $post = get_post($post_id);
+
+  if (!$post) {
+    return '';
+  }
+
   $slug = $post->post_name;
 
   $comm_slug = substr(get_permalink($post_id), strlen(home_url('/')));
@@ -96,71 +108,11 @@ function peerboard_get_comm_full_slug()
   return untrailingslashit($comm_slug);
 }
 
-/**
- * Get peerboard js settings for script
- *
- * @param array $result
- * @return void
- */
-function peerboard_get_script_settings($peerboard_options)
-{
-  $peerboard_prefix = $peerboard_options['prefix'];
-  $community_id = intval($peerboard_options['community_id']);
-  $user = wp_get_current_user();
+function peerboard_get_path_from_url($full_slug){
 
-  $isUserLogged = false;
-  if (!function_exists('is_user_logged_in')) {
-    if (!empty($user->ID)) {
-      $isUserLogged = true;
-    }
-  } else {
-    if (is_user_logged_in()) {
-      $isUserLogged = true;
-    }
-  }
+  $path = parse_url($full_slug)['path'];
 
-  $result = array(
-    'board-id' => $community_id,
-    // временное решение
-    'prefix' => $peerboard_prefix,
-  );
-
-  if ($isUserLogged) {
-    $userdata = array(
-      'email' =>  $user->user_email,
-      'username' => $user->nickname,
-      'bio' => urlencode($user->description),
-      'photo_url' => get_avatar_url($user->user_email),
-      'first_name' => '',
-      'last_name' => ''
-    );
-
-    // Will send first and last name only if this true
-    if ($peerboard_options['expose_user_data'] == '1') {
-      $userdata['first_name'] = $user->first_name;
-      $userdata['last_name'] = $user->last_name;
-    }
-
-    if (current_user_can('manage_options')) {
-      $userdata['role'] = 'admin';
-    }
-
-    $payload = [
-      'creds' => [
-        'v' => 'v1',
-        'ephemeral_session' => true,
-        'fields' => $userdata,
-      ],
-      'exp' => time() + 300
-    ];
-
-    $result['jwtToken'] = pebo_get_jwt_token($payload, $isUserLogged);
-  }
-
-  $result['baseURL'] = PEERBOARD_URL;
-  $result['sdkURL'] = PEERBOARD_EMBED_URL;
-
-  return $result;
+  return untrailingslashit($path);
 }
 
 /**
@@ -243,7 +195,7 @@ function peerboard_is_embed_page($prefix)
 {
   $current_url = home_url(add_query_arg(null, null));
   $url_with_path = home_url($prefix);
-  
+
   $is_embed_page = 0 === strpos($current_url, $url_with_path);
 
   return $is_embed_page;
@@ -274,7 +226,7 @@ function peerboard_get_options($data)
   return array(
     'community_id' => $data['id'],
     'auth_token' => $data['auth_token'],
-    'prefix' => $data['hosting']['path'],
+    'prefix' => $data['hosting']['path'] ?? '',
     'redirect' => $data['url'],
     'mode' => $mode,
   );
@@ -316,3 +268,5 @@ function peerboard_is_comm_set_static_home_page()
 
   return false;
 }
+
+

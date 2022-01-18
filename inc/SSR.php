@@ -63,13 +63,13 @@ class SSR
 
                 $page_info = self::get_post_data($post_url);
 
-                if (!$page_info || empty($page_info['body'])) {
+                if(empty($page_info) || !$page_info['success']){
                     echo $wp_head;
 
                     return;
                 }
 
-                $page_info = json_decode($page_info['body']);
+                $page_info = json_decode($page_info['request']['body']);
 
                 $wp_head->find('title', 0)->innertext = $page_info->title;
 

@@ -4,7 +4,7 @@ Tags: forum, forums, community, discussion, knowledge base, membership, member, 
 Requires at least: 5.1
 Tested up to: 5.8.1
 Requires PHP: 7.0
-Stable tag: 0.9.9
+Stable tag: 1.0.4
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -109,6 +109,19 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 
 == Changelog ==
 
+= 1.0.4 =
+* Added board external login url settings
+* Fixed small issue with use sync
+
+= 1.0.2 =
+* Activate_emails flag for batch import
+* On home page community ssr and not correct links issue fixed
+
+= 1.0.0 =
+* SSR fixed for community except if community set as home page (working on it)
+* Fixed 404 on space slug direct entering
+* Error handling is better now
+
 = 0.9.9 =
 * integration was optimized
 
@@ -198,6 +211,19 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 * Fix: plugin reactivation now uses old community instead of creating new one
 
 == Upgrade Notice ==
+
+= 1.0.4 =
+* Added board external login url settings
+* Fixed small issue with use sync
+
+= 1.0.2 =
+* Activate_emails flag for batch import
+* On home page community ssr and not correct links issue fixed
+
+= 1.0.0 =
+* SSR fixed for community except if community set as home page (working on it)
+* Fixed 404 on space slug direct entering
+* Error handling is better now
 
 = 0.9.9 =
 * integration was optimized
