@@ -77,6 +77,8 @@ class ForumPage
 
         $peerboard_options = get_option('peerboard_options');
         $peerboard_options['prefix'] = peerboard_get_comm_full_slug();
+        global $peerboard_external_comm_settings;
+        $peerboard_external_comm_settings = API::peerboard_get_community($peerboard_options['auth_token']);
 
         // if the comm is not static page
         if (peerboard_is_embed_page($peerboard_options['prefix']) && !peerboard_is_comm_set_static_home_page()) {
@@ -87,8 +89,16 @@ class ForumPage
         // if the user set the community page as static home page
         if (peerboard_is_comm_set_static_home_page()) {
 
+
+            
             // if we are on space
-            if (peerboard_is_embed_page('space')) {
+            if (
+                peerboard_is_embed_page('space') ||
+                peerboard_is_embed_page('settings') ||
+                peerboard_is_embed_page('members') ||
+                peerboard_is_embed_page('customization') ||
+                peerboard_is_embed_page('login')
+            ) {
                 $query_vars = array("page_id" => get_option("peerboard_post"));
                 unset($query_vars['pagename']);
             }
@@ -146,7 +156,7 @@ class ForumPage
 
         wp_enqueue_script('peerboard-integration');
 
-        wp_localize_script('peerboard-integration', '_peerboardSettings', peerboard_get_script_settings($peerboard_options));
+        wp_localize_script('peerboard-integration', '_peerboardSettings', self::peerboard_get_script_settings($peerboard_options));
 
         do_action('peerboard_before_forum');
 
@@ -158,6 +168,75 @@ class ForumPage
         do_action('peerboard_after_forum');
 
         return ob_get_clean();
+    }
+
+    /**
+     * Get peerboard js settings for script
+     *
+     * @param array $result
+     * @return void
+     */
+    public static function peerboard_get_script_settings($peerboard_options)
+    {
+        $peerboard_prefix = $peerboard_options['prefix'];
+        global $peerboard_external_comm_settings;
+        $community_id = intval($peerboard_options['community_id']);
+        $user = wp_get_current_user();
+
+        $isUserLogged = false;
+        if (!function_exists('is_user_logged_in')) {
+            if (!empty($user->ID)) {
+                $isUserLogged = true;
+            }
+        } else {
+            if (is_user_logged_in()) {
+                $isUserLogged = true;
+            }
+        }
+
+        $result = array(
+            'board-id' => $community_id,
+            // временное решение
+            'prefix' => $peerboard_prefix,
+            'external_login_url' => $peerboard_external_comm_settings['hosting']['external_login_url']
+        );
+
+        if ($isUserLogged) {
+            $userdata = array(
+                'email' =>  $user->user_email,
+                'username' => $user->nickname,
+                'bio' => urlencode($user->description),
+                'photo_url' => get_avatar_url($user->user_email),
+                'first_name' => '',
+                'last_name' => ''
+            );
+
+            // Will send first and last name only if this true
+            if ($peerboard_options['expose_user_data'] == '1') {
+                $userdata['first_name'] = $user->first_name;
+                $userdata['last_name'] = $user->last_name;
+            }
+
+            if (current_user_can('manage_options')) {
+                $userdata['role'] = 'admin';
+            }
+
+            $payload = [
+                'creds' => [
+                    'v' => 'v1',
+                    'ephemeral_session' => true,
+                    'fields' => $userdata,
+                ],
+                'exp' => time() + 300
+            ];
+
+            $result['jwtToken'] = pebo_get_jwt_token($payload, $isUserLogged);
+        }
+
+        $result['baseURL'] = PEERBOARD_URL;
+        $result['sdkURL'] = PEERBOARD_EMBED_URL;
+
+        return $result;
     }
 
     /**

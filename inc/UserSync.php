@@ -199,7 +199,7 @@ class UserSync
      *
      * @return void
      */
-    public static function on_user_profile_update($user_id, $old_user_data, $new_user_data)
+    public static function on_user_profile_update($user_id, $old_user_data, $new_user_data = [])
     {
         $user_sync_enabled = (get_option('peerboard_users_sync_enabled') === '1') ? true : false;
 
@@ -226,12 +226,13 @@ class UserSync
         $api_call = API::peerboard_api_call_with_success_check(sprintf('members/%s?key=email', urlencode($user_email)), $token, $user_data, 'POST', '', ['report_error' => false]);
 
         $req_body = json_decode(wp_remote_retrieve_body($api_call['request']), true);
-        $message = $req_body['message'];
+        $response = $api_call['request']['response'];
+        $message = $response['message'];
 
         /**
          * If user is not found
          */
-        if ($req_body['code'] === 404) {
+        if ($response['code'] === 404) {
 
             $create_account = self::peerboard_create_user($token, $user_data);
             $req_body = json_decode(wp_remote_retrieve_body($create_account['request']), true);
@@ -240,7 +241,7 @@ class UserSync
             if (!$create_account['success'] && $message === 'user with such external_id or email already exists') {
                 $api_call = API::peerboard_api_call_with_success_check(sprintf('members/%s', $user_data['external_id']), $token, $user_data, 'POST', '');
             }
-        } elseif ($req_body['code'] >= 400) {
+        } elseif ($response['code'] >= 400) {
             peerboard_add_notice($message, __FUNCTION__, 'error', func_get_args());
         }
     }

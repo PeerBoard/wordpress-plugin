@@ -121,17 +121,23 @@ class API
    * @param [type] $domain
    * @return void
    */
-  public static function peerboard_post_integration($token, $prefix, $domain)
+  public static function peerboard_post_integration($token, $prefix, $domain, $args = [])
   {
     $prefix = apply_filters('peerboard_check_comm_slug_before_req', $prefix);
 
-    $req = self::peerboard_api_call_with_success_check('hosting', $token, [
+    $req_args = [
       "domain" => $domain,
       "path" => $prefix,
       "type" => 'sdk',
       "js_storage_auth" => true,
       "version" => PEERBOARD_PLUGIN_VERSION
-    ], 'POST');
+    ];
+
+    if(isset($args['external_login_url'])){
+      $req_args['external_login_url'] = $args['external_login_url'];
+    }
+
+    $req = self::peerboard_api_call_with_success_check('hosting', $token, $req_args, 'POST');
 
     return $req;
   }
