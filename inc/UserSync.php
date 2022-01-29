@@ -51,6 +51,8 @@ class UserSync
 
         $user_data = self::prepare_user_data($user);
 
+        $user_data = apply_filters('peerboard_before_user_creation', $user_id, $user_data);
+
         $user = self::peerboard_create_user($peerboard_options['auth_token'], $user_data);
 
         if (!$user['success']) {
@@ -97,7 +99,7 @@ class UserSync
 
             $activate_emails = get_option('peerboard_bulk_activate_email', true);
 
-            if($activate_emails === '0'){
+            if ($activate_emails === '0') {
                 $user_data['activate_email'] = false;
             }
 
