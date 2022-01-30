@@ -60,8 +60,10 @@ class UserSync
             return;
         }
 
+        do_action('peerboard_after_user_successfully_created', $user_id);
+
         $count = intval(get_option('peerboard_users_count'));
-        
+
         update_option('peerboard_users_count', $count + 1);
     }
 

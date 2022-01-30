@@ -13,7 +13,10 @@ class Groups
 
     public static function init()
     {
+        // the api is not working properly on user creation group are not adding
         add_filter('peerboard_prepare_user_data_before_sync', [__CLASS__, 'add_groups_to_user_data'], 10, 2);
+        // after user created we adding user to role/group on peerboard
+        add_action('peerboard_after_user_successfully_created', [__CLASS__, 'add_member_to_group_after_user_creation']);
 
         // Update group on user update 
         add_action('set_user_role', [__CLASS__, 'on_user_profile_update_update_group'], 10, 3);
@@ -46,6 +49,25 @@ class Groups
         }
 
         return $user_data;
+    }
+
+    /**
+     * Add member to group after user creation
+     *
+     * @param string,int $user_id
+     * @return void
+     */
+    public static function add_member_to_group_after_user_creation($user_id)
+    {
+
+        $user_groups = self::get_user_groups($user_id);
+
+        // check if groups exist if not create
+        $check_create_groups = self::check_groups_create($user_groups);
+
+        foreach ($user_groups as $group_external_id => $group_name) {
+            $add_member_to_groups = self::add_members_to_group($group_external_id, [$user_id]);
+        }
     }
 
     /**
