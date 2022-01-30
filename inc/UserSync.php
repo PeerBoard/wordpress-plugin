@@ -34,6 +34,7 @@ class UserSync
         // on user deletion block user in peerboard
         add_action('delete_user', [__CLASS__, 'block_user_in_peerboard']);
     }
+
     /**
      * Create user on PeerBoard on user registration on WordPress
      */
@@ -51,7 +52,7 @@ class UserSync
 
         $user_data = self::prepare_user_data($user);
 
-        $user_data = apply_filters('peerboard_before_user_creation', $user_id, $user_data);
+        $user_data = apply_filters('peerboard_before_user_creation', $user_data);
 
         $user = self::peerboard_create_user($peerboard_options['auth_token'], $user_data);
 
@@ -60,6 +61,7 @@ class UserSync
         }
 
         $count = intval(get_option('peerboard_users_count'));
+        
         update_option('peerboard_users_count', $count + 1);
     }
 
@@ -160,7 +162,7 @@ class UserSync
         }
 
 
-        return $user_data;
+        return apply_filters('peerboard_prepare_user_data_before_sync', $user_data);
     }
 
     /**

@@ -13,23 +13,65 @@ class Groups
 
     public static function init()
     {
-        add_filter('peerboard_before_user_creation', [__CLASS__, 'add_groups_to_user_data'], 10, 2);
+        add_filter('peerboard_prepare_user_data_before_sync', [__CLASS__, 'add_groups_to_user_data'], 10, 2);
+
+        // Update group on user update 
+        add_action('set_user_role', [__CLASS__, 'on_user_profile_update_update_group'], 10, 3);
     }
 
-    public static function add_groups_to_user_data($user_id, $user_data){
+    /**
+     * Before user is created add groups
+     *
+     * @param [type] $user_id
+     * @param [type] $user_data
+     * @return void
+     */
+    public static function add_groups_to_user_data($user_data)
+    {
+
+        $user_id = $user_data['external_id'];
 
         $user_groups = self::get_user_groups($user_id);
 
-        foreach($user_groups as $group_external_id => $group_name){
+        $user_data['groups'] = [];
 
-            $is_group_exist = self::get_group($group_external_id);
+        foreach ($user_groups as $group_external_id => $group_name) {
+            $is_group_exist = self::is_group_exist($group_external_id);
 
-            var_dump($is_group_exist);
+            if (!$is_group_exist) {
+                $group_created = self::create_new_group($group_name, $group_external_id);
+            }
+
+            $user_data['groups'][] = ['external_id' => $group_external_id];
         }
 
         return $user_data;
     }
-    
+
+    /**
+     * Update group on user update 
+     *
+     * @return void
+     */
+    public static function on_user_profile_update_update_group($user_id, $role, $old_roles = [])
+    {
+
+        $user_groups = self::get_user_groups($user_id);
+
+        // check if groups exist if not create
+        $check_create_groups = self::check_groups_create($user_groups);
+
+        // remove from old groups
+        foreach ($old_roles as $group_id) {
+            $remove_members = self::remove_members_from_group($group_id, [$user_id]);
+        }
+
+        // add to new group
+        foreach ($user_groups as $external_id => $group) {
+            $add_members = self::add_members_to_group($external_id, [$user_id]);
+        }
+    }
+
     /**
      * Create new group
      *
@@ -39,7 +81,7 @@ class Groups
      * @param string $color
      * @return array
      */
-    public static function create_new_group(string $name, string $external_id, string $visibility = 'all', string $color)
+    public static function create_new_group(string $name, string $external_id, string $visibility = 'all', string $color = '')
     {
         $peerboard_options = get_option('peerboard_options');
 
@@ -85,20 +127,84 @@ class Groups
     }
 
     /**
+     * Remove members from group
+     *
+     * @param string $group_external_id
+     * @param array $users_id_array
+     * @return array
+     */
+    public static function remove_members_from_group(string $group_external_id, array $users_id_array = [])
+    {
+        $peerboard_options = get_option('peerboard_options');
+
+        $token = $peerboard_options['auth_token'];
+
+        $args = ["members" => []];
+
+        foreach ($users_id_array as $user_id) {
+            $args['members'][] = ["external_id" => strval($user_id)];
+        }
+
+        $api_call = API::peerboard_api_call_with_success_check(sprintf('groups/%s/remove-members?key=external_id', $group_external_id), $token, $args, 'POST');
+
+        return $api_call;
+    }
+
+    /**
      * Get existing group
      *
      * @param string $group_external_id
      * @return array
      */
-    public static function get_group(string $group_external_id){
+    public static function get_group(string $group_external_id)
+    {
 
         $peerboard_options = get_option('peerboard_options');
 
         $token = $peerboard_options['auth_token'];
 
-        $api_call = API::peerboard_api_call(sprintf('groups/%s?key=external_id', $group_external_id), $token, [], 'GET');
+        $api_call = API::peerboard_api_call_with_success_check(sprintf('groups/%s?key=external_id', $group_external_id), $token, [], 'GET', '', ['report_error' => false]);
 
         return $api_call;
+    }
+
+    /**
+     * Is group exist in peerboard
+     *
+     * @param [type] $group_external_id
+     * @return boolean
+     */
+    public static function is_group_exist($group_external_id)
+    {
+
+        // peerboard already have admin role so 
+        if ('administrator' === $group_external_id) {
+            return true;
+        }
+
+        $is_group_exist = self::get_group($group_external_id);
+
+        return $is_group_exist['success'];
+    }
+
+    /**
+     * Check groups if not exist create
+     *
+     * @param array $groups
+     * @return array
+     */
+    public static function check_groups_create(array $groups)
+    {
+
+        foreach ($groups as $group_external_id => $group_name) {
+            $is_group_exist = self::is_group_exist($group_external_id);
+
+            if (!$is_group_exist) {
+                $group_created = self::create_new_group($group_name, $group_external_id);
+            }
+        }
+
+        return $groups;
     }
 
     /**
