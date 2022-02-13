@@ -16,7 +16,7 @@ class Groups
         // the api is not working properly on user creation group are not adding
         add_filter('peerboard_prepare_user_data_before_sync', [__CLASS__, 'add_groups_to_user_data'], 10, 2);
         // after user created we adding user to role/group on peerboard
-        add_action('peerboard_after_user_successfully_created', [__CLASS__, 'add_member_to_group_after_user_creation']);
+        //add_action('peerboard_after_user_successfully_created', [__CLASS__, 'add_member_to_group_after_user_creation']);
 
         // Update group on user update 
         add_action('set_user_role', [__CLASS__, 'on_user_profile_update_update_group'], 10, 3);

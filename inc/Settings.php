@@ -217,7 +217,7 @@ class Settings
      */
     public static function peerboard_field_prefix_cb($args)
     {
-        $prefix = self::$peerboard_options['prefix']??'community';
+        $prefix = self::$peerboard_options['prefix'] ?? 'community';
         $disabled = peerboard_is_comm_set_static_home_page() ? 'disabled' : '';
 
         printf("<input name='peerboard_options[prefix]' value='%s' %s />", $prefix, $disabled);
@@ -272,7 +272,7 @@ class Settings
         $diff =  $users_count - $synced;
         $sync_enabled = get_option('peerboard_users_sync_enabled');
 
-        if ($diff !== 0) {
+        if ($diff >= 0) {
             printf(__("You have %s users that can be imported to PeerBoard.<br/><br/><i>Note that this will send them a welcome email and subscribe them to digests.</i><br/>", 'peerboard'), $diff);
         } else {
             if ($sync_enabled) {
@@ -406,7 +406,7 @@ class Settings
                 }
             }
         } else {
-            if(isset($old_value['prefix'])){
+            if (isset($old_value['prefix'])) {
                 $value['prefix'] = $old_value['prefix'];
             } else {
                 $value['prefix'] = peerboard_get_comm_full_slug();
