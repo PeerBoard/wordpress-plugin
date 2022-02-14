@@ -18,15 +18,12 @@ class UserSync
     public static function init()
     {
 
-        self::$peerboard_options = get_option('peerboard_options');
-
         /**
          * Create user on PeerBoard on user registration on WordPress
          */
         add_action('user_register', [__CLASS__, 'sync_user_if_enabled']);
 
-        // Bulk add users
-        add_filter('pre_update_option_peerboard_users_count', [__CLASS__, 'handle_users_sync_flag_changed'], 10, 3);
+        add_action('rest_api_init', [__CLASS__, 'custom_api_end_points']);
 
         // Update user on user update 
         add_action('profile_update', [__CLASS__, 'on_user_profile_update'], 10, 3);
@@ -36,13 +33,30 @@ class UserSync
     }
 
     /**
+     * Register new endpoints
+     *
+     * @return void
+     */
+    public static function custom_api_end_points()
+    {
+        // Sync users
+        register_rest_route('peerboard/v1', '/members/sync', array(
+            'methods' => \WP_REST_Server::DELETABLE,
+            'callback' => [__CLASS__, 'manually_sync_users'],
+            'permission_callback' => function () {
+                return current_user_can('edit_others_pages');
+            }
+        ));
+    }
+
+    /**
      * Create user on PeerBoard on user registration on WordPress
      */
     public static function sync_user_if_enabled($user_id)
     {
-        $peerboard_options = self::$peerboard_options;
+        $peerboard_options = get_option('peerboard_options');
 
-        $user_sync_enabled = (get_option('peerboard_users_sync_enabled') === '1') ? true : false;
+        $user_sync_enabled = empty($peerboard_options['peerboard_users_sync_enabled']) ? false : true;
 
         if (!$user_sync_enabled) {
             return;
@@ -75,9 +89,9 @@ class UserSync
      * @param [type] $option
      * @return void
      */
-    public static function handle_users_sync_flag_changed($value, $old_value, $option)
+    public static function manually_sync_users($value, $old_value, $option)
     {
-        $peerboard_options = self::$peerboard_options;
+        $peerboard_options = get_option('peerboard_options');
         $wp_users_count = count_users();
         $users_count = $wp_users_count['total_users'];
 
@@ -87,12 +101,9 @@ class UserSync
 
         $users = get_users();
 
-        $sync_enabled = get_option('peerboard_users_sync_enabled');
-        if ($sync_enabled === '1') {
-            if ($value === 0) {
-                update_option('peerboard_users_sync_enabled', intval('0'));
-                return $old_value;
-            }
+        $sync_enabled = empty($peerboard_options['peerboard_users_sync_enabled']) ? false : true;
+
+        if ($sync_enabled) {
             return $value;
         }
 
@@ -101,7 +112,7 @@ class UserSync
 
             $user_data = self::prepare_user_data($user);
 
-            $activate_emails = get_option('peerboard_bulk_activate_email', true);
+            $activate_emails = empty($peerboard_options['peerboard_bulk_activate_email']) ? false : true;
 
             if ($activate_emails === '0') {
                 $user_data['activate_email'] = false;
@@ -116,7 +127,6 @@ class UserSync
             return $value;
         }
 
-        update_option('peerboard_users_sync_enabled', intval('1'));
         if ($value === 0) {
             $value = $old_value;
         }
@@ -132,6 +142,7 @@ class UserSync
      */
     public static function prepare_user_data($user)
     {
+        $peerboard_options = get_option('peerboard_options');
 
         if (is_object($user)) {
             $user_data = [
@@ -143,7 +154,7 @@ class UserSync
                 'last_name' => ''
             ];
 
-            if (self::$peerboard_options['expose_user_data'] == '1') {
+            if ($peerboard_options['expose_user_data'] == '1') {
                 $user_data['last_name'] = $user->last_name;
             }
         }
@@ -158,7 +169,7 @@ class UserSync
                 'last_name' => ''
             ];
 
-            if (self::$peerboard_options['expose_user_data'] == '1') {
+            if ($peerboard_options['expose_user_data'] == '1') {
                 $user_data['last_name'] = $user['last_name'];
             }
         }
@@ -207,13 +218,14 @@ class UserSync
      */
     public static function on_user_profile_update($user_id, $old_user_data, $new_user_data = [])
     {
-        $user_sync_enabled = (get_option('peerboard_users_sync_enabled') === '1') ? true : false;
+        $peerboard_options = get_option('peerboard_options');
+        $user_sync_enabled = empty($peerboard_options['peerboard_users_sync_enabled']) ? false : true;
 
         if (!$user_sync_enabled) {
             return;
         }
 
-        $peerboard_options = self::$peerboard_options;
+        $peerboard_options = get_option('peerboard_options');
 
         $token = $peerboard_options['auth_token'];
         $user_data = self::prepare_user_data($new_user_data);
@@ -261,7 +273,7 @@ class UserSync
      */
     public static function block_user_in_peerboard($user_id)
     {
-        $peerboard_options = self::$peerboard_options;
+        $peerboard_options = get_option('peerboard_options');
 
         $token = $peerboard_options['auth_token'];
 

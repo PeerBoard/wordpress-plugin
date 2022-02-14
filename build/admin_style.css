@@ -34,4 +34,8 @@
   display: block;
 }
 
+.toplevel_page_peerboard .sub_settings th {
+  padding-left: 50px;
+}
+
 /*# sourceMappingURL=admin_style.css.map*/

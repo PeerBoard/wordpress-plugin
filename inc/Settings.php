@@ -51,6 +51,16 @@ class Settings
         add_action('updated_option', [__CLASS__, 'update_comm_parent_page'], 10, 3);
 
         add_filter('pre_update_option_peerboard_options', [__CLASS__, 'pre_update_option_peerboard_options'], 10, 3);
+
+        /**
+         * Add script and style to admin page
+         */
+        add_action('admin_enqueue_scripts', [__CLASS__, 'peerboard_admin_scripts']);
+
+        /**
+         * Will load on all pages to prevent issues
+         */
+        add_action('init', [__CLASS__, 'new_version_changes']);
     }
 
     /**
@@ -70,6 +80,25 @@ class Settings
     }
 
     /**
+     * Scripts and stiles on settings page
+     *
+     * @param [type] $hook
+     * @return void
+     */
+    public static function peerboard_admin_scripts($hook)
+    {
+
+        if ($hook == 'peerboard') {
+            $assets = require PEERBOARD_PLUGIN_DIR_PATH . '/build/admin.asset.php';
+
+            wp_enqueue_style('peerboard_integration_styles', plugin_dir_url(__FILE__) . "/build/admin_style.css", array(), $assets['version']);
+            wp_enqueue_script('peerboard-admin-js', plugin_dir_url(__FILE__) . "/build/admin.js", array(), $assets['version'], true);
+
+            wp_localize_script('peerboard-admin-js', 'peerboard_admin', ['ajax_url' => admin_url('admin-ajax.php')]);
+        }
+    }
+
+    /**
      * Register settings page menu fields
      *
      * @return void
@@ -83,7 +112,6 @@ class Settings
 
         register_setting('peerboard_users_count', 'peerboard_bulk_activate_email', 'intval');
         register_setting('peerboard_users_count', 'peerboard_users_count', 'intval');
-        register_setting('peerboard_users_count', 'peerboard_users_sync_enabled', 'intval');
 
         add_settings_section(
             'peerboard_section_users_sync',
@@ -147,9 +175,25 @@ class Settings
         );
 
         add_settings_field(
+            'peerboard_users_sync_enabled',
+            __('Automatic user import', 'peerboard'),
+            [__CLASS__, 'peerboard_users_sync_enabled'],
+            'circles',
+            'peerboard_section_options'
+        );
+
+        add_settings_field(
             'expose_user_data',
-            __('Automatically import first and last names', 'peerboard'),
+            '--- ' . __('Automatically import first and last names', 'peerboard'),
             [__CLASS__, 'peerboard_field_expose_cb'],
+            'circles',
+            'peerboard_section_options'
+        );
+
+        add_settings_field(
+            'peerboard_bulk_activate_email',
+            '--- ' . __('Send welcome email and subscribe new members to community digests.', 'peerboard'),
+            [__CLASS__, 'peerboard_bulk_activate_email'],
             'circles',
             'peerboard_section_options'
         );
@@ -244,13 +288,29 @@ class Settings
         $mode = $peerboard_options['mode'];
         echo "<input name='peerboard_options[mode]' value='$mode' style='display: none;'/>";
     }
+    
+    public static function peerboard_users_sync_enabled($args)
+    {
+        $options = get_option('peerboard_options', array());
+        $checked = (array_key_exists('peerboard_users_sync_enabled', $options)) ? checked('1', $options['peerboard_users_sync_enabled'], false) : '';
+        echo "<input name='peerboard_options[peerboard_users_sync_enabled]' id='peerboard_users_sync_enabled' type='checkbox' value='1' $checked/>";
+    }
 
     public static function peerboard_field_expose_cb($args)
     {
         $options = get_option('peerboard_options', array());
         $checked = (array_key_exists('expose_user_data', $options)) ? checked('1', $options['expose_user_data'], false) : '';
-        echo "<input name='peerboard_options[expose_user_data]' type='checkbox' value='1' $checked/>";
+        echo "<input name='peerboard_options[expose_user_data]' id='expose_user_data' type='checkbox' value='1' $checked/>";
     }
+
+    public static function peerboard_bulk_activate_email($args)
+    {
+        $options = get_option('peerboard_options', array());
+        $checked = (array_key_exists('peerboard_bulk_activate_email', $options)) ? checked('1', $options['peerboard_bulk_activate_email'], false) : '';
+        echo "<input name='peerboard_options[peerboard_bulk_activate_email]' id='peerboard_bulk_activate_email' type='checkbox' value='1' $checked/>";
+    }
+
+
 
     /**
      * User sync settings 
@@ -262,6 +322,7 @@ class Settings
     {
         $wp_users_count = count_users();
         $users_count = $wp_users_count['total_users'];
+        $peerboard_options = get_option('peerboard_options');
 
         $option_count = get_option('peerboard_users_count');
         if ($option_count === false) {
@@ -270,7 +331,7 @@ class Settings
 
         $synced = intval($option_count);
         $diff =  $users_count - $synced;
-        $sync_enabled = get_option('peerboard_users_sync_enabled');
+        $sync_enabled = empty($peerboard_options['peerboard_users_sync_enabled']) ? false : true;
 
         if ($diff >= 0) {
             printf(__("You have %s users that can be imported to PeerBoard.<br/><br/><i>Note that this will send them a welcome email and subscribe them to digests.</i><br/>", 'peerboard'), $diff);
@@ -282,14 +343,7 @@ class Settings
             }
         }
 
-        $option = get_option('peerboard_bulk_activate_email', true);
-        $checked = checked('1', $option, false);
-        $text = __('Send welcome email and subscribe new members to community digests.', 'peerboard');
-
-        printf('<table class="form-table"><tbody><tr><th scope="row">%s</th><td><input name="peerboard_bulk_activate_email" type="checkbox" value="1" %s %s></td></tr></tbody></table>', $text, $checked, $sync_enabled ? 'disabled' : '');
-
         printf("<input name='peerboard_users_count' style='display:none' value='%s' />", $option_count);
-        printf("<input name='peerboard_users_sync_enabled' style='display:none' value='%s' />", $sync_enabled ? 0 : 1);
     }
 
     public static function peerboard_show_readme()
@@ -541,6 +595,10 @@ class Settings
      */
     public static function peerboard_options_page_html()
     {
+        $peerboard_options = get_option('peerboard_options', true);
+
+        do_action('peerboard_before_admin_settings_form');
+
         if (!current_user_can('manage_options')) {
             return;
         }
@@ -581,7 +639,7 @@ class Settings
         settings_fields('peerboard_users_count');
         do_settings_sections('peerboard_users_count');
 
-        $sync_enabled = get_option('peerboard_users_sync_enabled');
+        $sync_enabled = empty($peerboard_options['peerboard_users_sync_enabled']) ? false : true;
 
         if (!$sync_enabled) {
             submit_button(__('Activate Automatic Import', 'peerboard'));
@@ -597,6 +655,38 @@ class Settings
         printf('<p><strong>Community ID:</strong> %s</p>', $comm_id);
 
         echo '</div>';
+    }
+
+    /**
+     * New version changes integration
+     *
+     * @return void
+     */
+    public static function new_version_changes()
+    {
+
+        $peerboard_options = get_option('peerboard_options', true);
+
+        $old_sync_option = get_option('peerboard_users_sync_enabled');
+
+        // sync was enabled update new value and delete old option
+        if ($old_sync_option === '1') {
+            $peerboard_options['peerboard_users_sync_enabled'] = '1';
+
+            delete_option('peerboard_users_sync_enabled');
+        }
+
+        $old_sync_email = get_option('peerboard_bulk_activate_email');
+
+        // sync email was enabled update new value and delete old option
+        if ($old_sync_email === '1') {
+            $peerboard_options['peerboard_bulk_activate_email'] = '1';
+
+            delete_option('peerboard_users_sync_enabled');
+        }
+
+
+        update_option('peerboard_options', $peerboard_options);
     }
 
     public static function get_board_full_login_url()

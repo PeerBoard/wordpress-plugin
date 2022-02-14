@@ -96,11 +96,22 @@
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _admin_feedback_form__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./admin/feedback-form */ "./src/js/admin/feedback-form.js");
+/* harmony import */ var _admin_settings_page__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./admin/settings-page */ "./src/js/admin/settings-page.js");
 /**
  * Feedback form
  */
 
-Object(_admin_feedback_form__WEBPACK_IMPORTED_MODULE_0__["default"])();
+
+var admin_path = window.location.href; // if plugin activation or deactivation page
+
+if (admin_path.includes('plugins.php')) {
+  Object(_admin_feedback_form__WEBPACK_IMPORTED_MODULE_0__["default"])();
+} // if plugin activation or deactivation page
+
+
+if (admin_path.includes('page=peerboard')) {
+  Object(_admin_settings_page__WEBPACK_IMPORTED_MODULE_1__["default"])();
+}
 
 /***/ }),
 
@@ -290,6 +301,48 @@ __webpack_require__.r(__webpack_exports__);
   }
 
   ;
+});
+
+/***/ }),
+
+/***/ "./src/js/admin/settings-page.js":
+/*!***************************************!*\
+  !*** ./src/js/admin/settings-page.js ***!
+  \***************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (function () {
+  var user_sync_checkbox = document.querySelector('#peerboard_users_sync_enabled');
+  var bulk_activate_email_notifications = document.querySelector('#peerboard_bulk_activate_email');
+  var expose_user_data = document.querySelector('#expose_user_data'); // update sync settings
+
+  function check_user_settings_sync() {
+    if (!user_sync_checkbox.checked) {
+      bulk_activate_email_notifications.disabled = true;
+      bulk_activate_email_notifications.checked = false;
+      expose_user_data.disabled = true;
+      expose_user_data.checked = false;
+    } else {
+      bulk_activate_email_notifications.disabled = false;
+      expose_user_data.disabled = false;
+    }
+  }
+
+  user_sync_checkbox.onchange = function (element) {
+    check_user_settings_sync();
+  };
+
+  window.onload = function () {
+    check_user_settings_sync(); // add class sub settings
+
+    var email_notifications_parent_tr = bulk_activate_email_notifications.parentElement.parentElement;
+    email_notifications_parent_tr.classList.add("sub_settings");
+    var expose_user_data_parent_tr = expose_user_data.parentElement.parentElement;
+    expose_user_data_parent_tr.classList.add("sub_settings"); // add class sub settings
+  };
 });
 
 /***/ })
