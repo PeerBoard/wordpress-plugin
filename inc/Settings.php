@@ -288,7 +288,7 @@ class Settings
         $mode = $peerboard_options['mode'];
         echo "<input name='peerboard_options[mode]' value='$mode' style='display: none;'/>";
     }
-    
+
     public static function peerboard_users_sync_enabled($args)
     {
         $options = get_option('peerboard_options', array());
@@ -693,7 +693,11 @@ class Settings
     {
         $post_id = intval(get_option('peerboard_post'));
         $community_link = get_permalink($post_id);
-        $external_login_url = self::$external_comm_settings['hosting']['external_login_url'];
+        $external_login_url = false;
+
+        if (isset(self::$external_comm_settings['hosting'])) {
+            $external_login_url = self::$external_comm_settings['hosting']['external_login_url'];
+        }
 
         if (empty($external_login_url)) {
             $external_login_url  = $community_link . 'login';
