@@ -317,7 +317,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = (function () {
   var user_sync_checkbox = document.querySelector('#peerboard_users_sync_enabled');
   var bulk_activate_email_notifications = document.querySelector('#peerboard_bulk_activate_email');
-  var expose_user_data = document.querySelector('#expose_user_data'); // update sync settings
+  var expose_user_data = document.querySelector('#expose_user_data');
+  var manually_sync_users = document.querySelector('#sync_users');
+  var manually_sync_users_image = document.querySelector('#sync_users img'); // update sync settings
 
   function check_user_settings_sync() {
     if (!user_sync_checkbox.checked) {
@@ -342,6 +344,23 @@ __webpack_require__.r(__webpack_exports__);
     email_notifications_parent_tr.classList.add("sub_settings");
     var expose_user_data_parent_tr = expose_user_data.parentElement.parentElement;
     expose_user_data_parent_tr.classList.add("sub_settings"); // add class sub settings
+  };
+
+  manually_sync_users.onclick = function () {
+    manually_sync_users_image.className = 'rotating';
+    fetch(window.peerboard_admin.user_sync_url, {
+      method: 'POST',
+      body: {}
+    }).then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      if (data.success) {
+        var response = data.data;
+        console.log(response);
+      } else {
+        console.error(data);
+      }
+    }).catch(console.error);
   };
 });
 

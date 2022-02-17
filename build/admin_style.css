@@ -37,5 +37,45 @@
 .toplevel_page_peerboard .sub_settings th {
   padding-left: 50px;
 }
+.toplevel_page_peerboard #sync_users {
+  display: flex;
+  border: 1px solid;
+  justify-content: center;
+  align-content: center;
+  width: 166px;
+  padding: 5px 0px;
+  background: white;
+  border-radius: 5px;
+  font-size: 18px;
+  margin: 20px 0px;
+}
+.toplevel_page_peerboard #sync_users:hover {
+  cursor: pointer;
+  opacity: 0.7;
+}
+.toplevel_page_peerboard #sync_users img {
+  margin-right: 10px;
+  width: 20px;
+}
+@-webkit-keyframes rotating /* Safari and Chrome */ {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes rotating {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.toplevel_page_peerboard .rotating {
+  -webkit-animation: rotating 2s linear infinite;
+  animation: rotating 2s linear infinite;
+}
 
 /*# sourceMappingURL=admin_style.css.map*/

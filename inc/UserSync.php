@@ -41,7 +41,7 @@ class UserSync
     {
         // Sync users
         register_rest_route('peerboard/v1', '/members/sync', array(
-            'methods' => \WP_REST_Server::DELETABLE,
+            'methods' => 'POST',
             'callback' => [__CLASS__, 'manually_sync_users'],
             'permission_callback' => function () {
                 return current_user_can('edit_others_pages');
@@ -82,56 +82,39 @@ class UserSync
     }
 
     /**
-     * Import all users
-     *
-     * @param [type] $value
-     * @param [type] $old_value
-     * @param [type] $option
-     * @return void
+     * Import all users manually from settings page
      */
-    public static function manually_sync_users($value, $old_value, $option)
+    public static function manually_sync_users($request)
     {
         $peerboard_options = get_option('peerboard_options');
         $wp_users_count = count_users();
         $users_count = $wp_users_count['total_users'];
 
-        if ($users_count >= 100000) {
-            return $old_value;
-        }
+        // get how much pages we have by 1000 users
+        $pages_count = ceil($users_count / 1000);
 
-        $users = get_users();
+        for ($i = 1; $i <= $pages_count; $i++) {
 
-        $sync_enabled = empty($peerboard_options['peerboard_users_sync_enabled']) ? false : true;
+            // get user by 1000 because there is some problems can be with peerboard api
+            $users = get_users(['number' => 1000, 'paged' => $i, 'fields' => 'all']);
 
-        if ($sync_enabled) {
-            return $value;
-        }
+            $prepared_users_data = [];
 
-        $result = [];
-        foreach ($users as $user) {
+            foreach ($users as $user) {
 
-            $user_data = self::prepare_user_data($user);
+                $user_data = self::prepare_user_data($user);
 
-            $activate_emails = empty($peerboard_options['peerboard_bulk_activate_email']) ? false : true;
-
-            if ($activate_emails === '0') {
-                $user_data['activate_email'] = false;
+                $prepared_users_data[] = $user_data;
             }
 
-            $result[] = $user_data;
+            $response = self::peerboard_sync_users($peerboard_options['auth_token'], $prepared_users_data);
+
+            if (!$response['success']) {
+                wp_send_json_error(sprintf('something goes wrong, please retry later: already imported:%s users', ($i - 1) * 1000));
+            }
         }
 
-        $response = self::peerboard_sync_users($peerboard_options['auth_token'], $result);
-
-        if (!$response) {
-            return $value;
-        }
-
-        if ($value === 0) {
-            $value = $old_value;
-        }
-
-        return $response['result'] + intval($value);
+        wp_send_json_success($response);
     }
 
     /**
@@ -174,6 +157,11 @@ class UserSync
             }
         }
 
+        $activate_emails = empty($peerboard_options['peerboard_bulk_activate_email']) ? false : true;
+
+        if (empty($activate_emails)) {
+            $user_data['activate_email'] = false;
+        }
 
         return apply_filters('peerboard_prepare_user_data_before_sync', $user_data);
     }
@@ -204,11 +192,7 @@ class UserSync
     {
         $response = API::peerboard_api_call_with_success_check('members/batch', $token, $users, 'POST');
 
-        if (!$response['success']) {
-            return false;
-        }
-
-        return json_decode(wp_remote_retrieve_body($response['request']), true);
+        return $response;
     }
 
     /**

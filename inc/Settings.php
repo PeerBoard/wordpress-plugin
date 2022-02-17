@@ -55,7 +55,7 @@ class Settings
         /**
          * Add script and style to admin page
          */
-        add_action('admin_enqueue_scripts', [__CLASS__, 'peerboard_admin_scripts']);
+        add_filter('peerboard_admin_script_localize', [__CLASS__, 'peerboard_admin_scripts_data']);
 
         /**
          * Will load on all pages to prevent issues
@@ -85,17 +85,12 @@ class Settings
      * @param [type] $hook
      * @return void
      */
-    public static function peerboard_admin_scripts($hook)
+    public static function peerboard_admin_scripts_data($localize_data_array)
     {
 
-        if ($hook == 'peerboard') {
-            $assets = require PEERBOARD_PLUGIN_DIR_PATH . '/build/admin.asset.php';
-
-            wp_enqueue_style('peerboard_integration_styles', plugin_dir_url(__FILE__) . "/build/admin_style.css", array(), $assets['version']);
-            wp_enqueue_script('peerboard-admin-js', plugin_dir_url(__FILE__) . "/build/admin.js", array(), $assets['version'], true);
-
-            wp_localize_script('peerboard-admin-js', 'peerboard_admin', ['ajax_url' => admin_url('admin-ajax.php')]);
-        }
+        $localize_data_array['user_sync_url'] = get_rest_url(null, 'peerboard/v1/members/sync');
+        
+        return $localize_data_array;
     }
 
     /**
@@ -628,7 +623,8 @@ class Settings
         submit_button('Save Settings');
 
         echo '</form>';
-        echo '<form action="options.php" method="post">';
+
+        // manual sync user 
         $wp_users_count = count_users();
         $users_count = $wp_users_count['total_users'];
 
@@ -639,17 +635,11 @@ class Settings
         settings_fields('peerboard_users_count');
         do_settings_sections('peerboard_users_count');
 
-        $sync_enabled = empty($peerboard_options['peerboard_users_sync_enabled']) ? false : true;
+        printf('<div id="sync_users"><span><img src="%s"></span>%s</div>', PEERBOARD_PLUGIN_URL . '/img/sync.png', __('Sync users', 'peerboard'));
 
-        if (!$sync_enabled) {
-            submit_button(__('Activate Automatic Import', 'peerboard'));
-        } else {
-            submit_button(__('Deactivate Automatic Import', 'peerboard'));
-        }
-        echo '</form>';
         // Some info on the bottom 
         $sitemap_url = home_url('/') . Sitemap::$sitemap_path;
-        printf('<p><strong>Sitemap:</strong> <a href="%s" target="_blank">%s</a></p>', $sitemap_url, $sitemap_url);
+        printf('<strong>Sitemap:</strong> <a href="%s" target="_blank">%s</a></p>', $sitemap_url, $sitemap_url);
 
         $comm_id = self::$peerboard_options["community_id"];
         printf('<p><strong>Community ID:</strong> %s</p>', $comm_id);

@@ -68,7 +68,7 @@ class PeerBoard
 		wp_enqueue_style('peerboard_integration_styles', plugin_dir_url(__FILE__) . "/build/admin_style.css", array(), $assets['version']);
 		wp_enqueue_script('peerboard-admin-js', plugin_dir_url(__FILE__) . "/build/admin.js", array(), $assets['version'], true);
 
-		wp_localize_script('peerboard-admin-js', 'peerboard_admin', ['ajax_url' => admin_url('admin-ajax.php')]);
+		wp_localize_script('peerboard-admin-js', 'peerboard_admin', apply_filters('peerboard_admin_script_localize', ['ajax_url' => admin_url('admin-ajax.php')]));
 	}
 
 	/**

@@ -2,6 +2,8 @@ export default () => {
     let user_sync_checkbox = document.querySelector('#peerboard_users_sync_enabled');
     let bulk_activate_email_notifications = document.querySelector('#peerboard_bulk_activate_email');
     let expose_user_data = document.querySelector('#expose_user_data');
+    let manually_sync_users = document.querySelector('#sync_users');
+    let manually_sync_users_image = document.querySelector('#sync_users img');
 
     // update sync settings
     function check_user_settings_sync() {
@@ -35,6 +37,26 @@ export default () => {
         expose_user_data_parent_tr.classList.add("sub_settings");
         // add class sub settings
 
+    }
+
+
+    manually_sync_users.onclick = () => {
+
+        manually_sync_users_image.className = 'rotating';
+
+        fetch(window.peerboard_admin.user_sync_url, {
+            method: 'POST',
+            body: {}
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    let response = data.data
+                    console.log(response)
+                } else {
+                    console.error(data);
+                }
+            }).catch(console.error)
     }
 
 }
