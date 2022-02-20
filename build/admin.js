@@ -327,9 +327,11 @@ __webpack_require__.r(__webpack_exports__);
       bulk_activate_email_notifications.checked = false;
       expose_user_data.disabled = true;
       expose_user_data.checked = false;
+      manually_sync_users.disabled = true;
     } else {
       bulk_activate_email_notifications.disabled = false;
       expose_user_data.disabled = false;
+      manually_sync_users.disabled = false;
     }
   }
 
@@ -338,12 +340,7 @@ __webpack_require__.r(__webpack_exports__);
   };
 
   window.onload = function () {
-    check_user_settings_sync(); // add class sub settings
-
-    var email_notifications_parent_tr = bulk_activate_email_notifications.parentElement.parentElement;
-    email_notifications_parent_tr.classList.add("sub_settings");
-    var expose_user_data_parent_tr = expose_user_data.parentElement.parentElement;
-    expose_user_data_parent_tr.classList.add("sub_settings"); // add class sub settings
+    check_user_settings_sync();
   };
 
   manually_sync_users.onclick = function () {

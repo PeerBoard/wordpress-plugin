@@ -190,7 +190,7 @@ class UserSync
      */
     public static function peerboard_sync_users($token, $users)
     {
-        $response = API::peerboard_api_call_with_success_check('members/batch', $token, $users, 'POST');
+        $response = API::peerboard_api_call_with_success_check('members/batch', $token, ['update_existing_members' => true, $users], 'POST');
 
         return $response;
     }

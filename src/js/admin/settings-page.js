@@ -14,9 +14,12 @@ export default () => {
 
             expose_user_data.disabled = true
             expose_user_data.checked = false
+
+            manually_sync_users.disabled = true;
         } else {
             bulk_activate_email_notifications.disabled = false
             expose_user_data.disabled = false
+            manually_sync_users.disabled = false;
         }
 
     }
@@ -28,14 +31,6 @@ export default () => {
 
     window.onload = () => {
         check_user_settings_sync()
-        // add class sub settings
-        let email_notifications_parent_tr = bulk_activate_email_notifications.parentElement.parentElement;
-        email_notifications_parent_tr.classList.add("sub_settings");
-
-        let expose_user_data_parent_tr = expose_user_data.parentElement.parentElement;
-        expose_user_data_parent_tr.classList.add("sub_settings");
-        // add class sub settings
-
     }
 
     

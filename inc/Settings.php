@@ -263,6 +263,8 @@ class Settings
             }
         }
 
+        $value['external_login_url'] = empty($value['external_login_url'])?'':$value['external_login_url'];
+
         /**
          * External login url updating
          */

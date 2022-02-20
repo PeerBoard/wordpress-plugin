@@ -206,8 +206,9 @@ $peerboard_options = get_option('peerboard_options');
         <div class="import-wrap">
             <?php $_wpnonce = wp_create_nonce('wp_rest'); ?>
             <input type='hidden' id='_wp_rest_nonce' name='_wp_rest_nonce' value='<?= $_wpnonce ?>' />
-            <div id="sync_users" class="sub_settings"><span><img src="<?= PEERBOARD_PLUGIN_URL . '/img/sync.png' ?>"></span><?= __('Import Existing Users', 'peerboard') ?></div>
+            <button id="sync_users" class="sub_settings" type="button"><span><img src="<?= PEERBOARD_PLUGIN_URL . '/img/sync.png' ?>"></span><?= __('Import Existing Users', 'peerboard') ?></button>
 
+            
         </div>
 
     </div>

@@ -25,7 +25,6 @@ class Installation
    */
   public static function peerboard_install()
   {
-    global $peerboard_options;
     if (!current_user_can('activate_plugins'))
       return;
 
@@ -60,8 +59,8 @@ class Installation
    */
   public static function peerboard_activate($plugin)
   {
-    global $peerboard_options;
-    $peerboard_options = get_option('peerboard_options', array());
+    $peerboard_options = get_option('peerboard_options', []);
+
     if (count($peerboard_options) === 0) {
       $peerboard_options = array();
       

@@ -153,8 +153,10 @@ class PeerBoard
 	 */
 	public static function add_deactivation_feedback_dialog_box()
 	{
-		global $peerboard_options;
+		$peerboard_options = get_option('peerboard_options');
+
 		$board_id = $peerboard_options['community_id'];
+
 		$reasons = [
 			[
 				'id' => '1',
