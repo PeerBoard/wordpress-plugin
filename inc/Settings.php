@@ -198,6 +198,11 @@ class Settings
         if ($old_value === NULL || $old_value === false) {
             return $value;
         }
+
+        if (!is_array($old_value) || !is_array($old_value)) {
+            return $value;
+        }
+        
         //self::$peerboard_options = get_option('peerboard_options');
         //self::$external_comm_settings = API::peerboard_get_community(self::$peerboard_options['auth_token']);
 

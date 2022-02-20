@@ -61,7 +61,7 @@ class Installation
   {
     $peerboard_options = get_option('peerboard_options', []);
 
-    if (count($peerboard_options) === 0) {
+    if (!is_array($peerboard_options) || empty($peerboard_options)) {
       $peerboard_options = array();
       
       $recovery = get_option('peerboard_recovery_token');
