@@ -89,7 +89,7 @@ class Settings
     {
 
         $localize_data_array['user_sync_url'] = get_rest_url(null, 'peerboard/v1/members/sync');
-        
+
         return $localize_data_array;
     }
 
@@ -105,9 +105,6 @@ class Settings
 
         register_setting('circles', 'peerboard_options');
 
-        register_setting('peerboard_users_count', 'peerboard_bulk_activate_email', 'intval');
-        register_setting('peerboard_users_count', 'peerboard_users_count', 'intval');
-
         add_settings_section(
             'peerboard_section_users_sync',
             __('Users synchronisation', 'peerboard'),
@@ -120,77 +117,6 @@ class Settings
             __('Integration Settings', 'peerboard'),
             [__CLASS__, 'peerboard_integration_readme'],
             'circles'
-        );
-
-        add_settings_section(
-            'peerboard_section_options',
-            '',
-            [__CLASS__, 'peerboard_options_readme'],
-            'circles'
-        );
-
-        add_settings_field(
-            'auth_token',
-            __('Auth token', 'peerboard'),
-            [__CLASS__, 'peerboard_field_token_cb'],
-            'circles',
-            'peerboard_section_integration'
-        );
-
-        add_settings_field(
-            'forum_page_template',
-            __('Community page template', 'peerboard'),
-            [__CLASS__, 'field_select_forum_page_template'],
-            'circles',
-            'peerboard_section_integration'
-        );
-
-        add_settings_field(
-            'parent_page',
-            __('Parent page', 'peerboard'),
-            [__CLASS__, 'field_select_peerboard_page_parent'],
-            'circles',
-            'peerboard_section_integration'
-        );
-
-        add_settings_field(
-            'prefix',
-            __('Board path', 'peerboard'),
-            [__CLASS__, 'peerboard_field_prefix_cb'],
-            'circles',
-            'peerboard_section_integration'
-        );
-
-        add_settings_field(
-            'external_login_url',
-            __('Board external login url', 'peerboard'),
-            [__CLASS__, 'external_login_url'],
-            'circles',
-            'peerboard_section_integration'
-        );
-
-        add_settings_field(
-            'peerboard_users_sync_enabled',
-            __('Automatic user import', 'peerboard'),
-            [__CLASS__, 'peerboard_users_sync_enabled'],
-            'circles',
-            'peerboard_section_options'
-        );
-
-        add_settings_field(
-            'expose_user_data',
-            '--- ' . __('Automatically import first and last names', 'peerboard'),
-            [__CLASS__, 'peerboard_field_expose_cb'],
-            'circles',
-            'peerboard_section_options'
-        );
-
-        add_settings_field(
-            'peerboard_bulk_activate_email',
-            '--- ' . __('Send welcome email and subscribe new members to community digests.', 'peerboard'),
-            [__CLASS__, 'peerboard_bulk_activate_email'],
-            'circles',
-            'peerboard_section_options'
         );
     }
 
@@ -221,88 +147,6 @@ class Settings
                 'https://yoast.com/help/how-do-i-change-the-permalink-structure/'
             );
         }
-    }
-
-    /**
-     * Live community link and board login url
-     *
-     * @return void
-     */
-    public static function peerboard_options_readme()
-    {
-        $post_id = intval(get_option('peerboard_post'));
-        $community_link = get_permalink($post_id);
-        if (peerboard_is_comm_set_static_home_page()) {
-            printf(__("The community page is set as the homepage <a target='_blank' href='%s'>%s</a>", 'peerboard'), $community_link, $community_link);
-            $user_ID = get_current_user_id();
-            $reading_settings_url = get_dashboard_url($user_ID, 'options-reading.php');
-            echo '<br><br>';
-            printf(__('To change the community page slug or the parent page, do not use it as a static homepage. You can change it <a target="_blank" href="%s">here</a>', 'peerboard'), $reading_settings_url);
-        } else {
-            printf(__("PeerBoard will be live at <a target='_blank' href='%s'>%s</a>", 'peerboard'), $community_link, $community_link);
-        }
-
-        // Board login link message
-        $external_login_url = self::get_board_full_login_url();
-        echo '<br><br>';
-        printf(__('Your board login url: <a href="%s">%s</a>'), $external_login_url, $external_login_url);
-    }
-
-    /**
-     * Add page slug input
-     *
-     * @param [type] $args
-     * @return void
-     */
-    public static function peerboard_field_prefix_cb($args)
-    {
-        $prefix = self::$peerboard_options['prefix'] ?? 'community';
-        $disabled = peerboard_is_comm_set_static_home_page() ? 'disabled' : '';
-
-        printf("<input name='peerboard_options[prefix]' value='%s' %s />", $prefix, $disabled);
-    }
-
-    /**
-     * External login url input
-     *
-     * @return void
-     */
-    public static function external_login_url()
-    {
-        printf("<input name='peerboard_options[external_login_url]' value='%s' style='width: 300px;'/>", self::get_board_full_login_url());
-    }
-
-    public static function peerboard_field_token_cb($args)
-    {
-        $peerboard_options = self::$peerboard_options;
-        $token = $peerboard_options['auth_token'];
-        echo "<input style='width: 300px;' name='peerboard_options[auth_token]' value='$token' />";
-
-        $community_id = $peerboard_options['community_id'];
-        echo "<input name='peerboard_options[community_id]' value='$community_id' style='display: none;'/>";
-        $mode = $peerboard_options['mode'];
-        echo "<input name='peerboard_options[mode]' value='$mode' style='display: none;'/>";
-    }
-
-    public static function peerboard_users_sync_enabled($args)
-    {
-        $options = get_option('peerboard_options', array());
-        $checked = (array_key_exists('peerboard_users_sync_enabled', $options)) ? checked('1', $options['peerboard_users_sync_enabled'], false) : '';
-        echo "<input name='peerboard_options[peerboard_users_sync_enabled]' id='peerboard_users_sync_enabled' type='checkbox' value='1' $checked/>";
-    }
-
-    public static function peerboard_field_expose_cb($args)
-    {
-        $options = get_option('peerboard_options', array());
-        $checked = (array_key_exists('expose_user_data', $options)) ? checked('1', $options['expose_user_data'], false) : '';
-        echo "<input name='peerboard_options[expose_user_data]' id='expose_user_data' type='checkbox' value='1' $checked/>";
-    }
-
-    public static function peerboard_bulk_activate_email($args)
-    {
-        $options = get_option('peerboard_options', array());
-        $checked = (array_key_exists('peerboard_bulk_activate_email', $options)) ? checked('1', $options['peerboard_bulk_activate_email'], false) : '';
-        echo "<input name='peerboard_options[peerboard_bulk_activate_email]' id='peerboard_bulk_activate_email' type='checkbox' value='1' $checked/>";
     }
 
 
@@ -339,77 +183,6 @@ class Settings
         }
 
         printf("<input name='peerboard_users_count' style='display:none' value='%s' />", $option_count);
-    }
-
-    public static function peerboard_show_readme()
-    {
-        $contact_email = "<a href='mailto:support_wp@peerboard.com' target='_blank'>support_wp@peerboard.com</a>";
-        printf(__("If you have experienced any problems during the setup, please don't hesitate to contact us at %s.", 'peerboard'), $contact_email);
-    }
-
-    /**
-     * Select page parent
-     *
-     * @return void
-     */
-    public static function field_select_peerboard_page_parent()
-    {
-        $id = 'peerboard_comm_parent';
-        $forum_page = get_post(intval(get_option('peerboard_post')));
-        $pages = get_pages(['exclude' => [$forum_page->ID]]);
-        $sel_parent = wp_get_post_parent_id($forum_page);
-
-        if (empty($sel_parent)) {
-            $sel_parent = 'default';
-        }
-
-        $options = [
-            'none' => __('None', 'peerboard'),
-        ];
-
-        foreach ($pages as $page) {
-            $options[$page->ID] = $page->post_title;
-        }
-
-        $disabled = peerboard_is_comm_set_static_home_page() ? 'disabled' : '';
-        echo sprintf('<select name="peerboard_options[%s]" %s>', $id, $disabled);
-        foreach ($options as $val => $option) {
-            $selected = selected($val, $sel_parent, false);
-            echo sprintf('<option value="%s" %s >%s</option>', $val, $selected, $option);
-        }
-        echo '</select>';
-    }
-
-    /**
-     * community page template
-     *
-     * @return void
-     */
-    public static function field_select_forum_page_template()
-    {
-        $id = 'forum_page_template';
-        $forum_page = intval(get_option('peerboard_post'));
-        $templates = get_page_templates($forum_page);
-        $sel_template = get_post_meta($forum_page, '_wp_page_template', true);
-
-        if (empty($sel_template)) {
-            $sel_template = 'default';
-        }
-
-        $options = [
-            'default' => __('Default', 'peerboard'),
-        ];
-
-        foreach ($templates as $template => $file) {
-            $options[$file] = $template;
-        }
-
-        echo sprintf('<select name="peerboard_options[%s]">', $id);
-        foreach ($options as $val => $option) {
-            $selected = selected($val, $sel_template, false);
-            echo sprintf('<option value="%s" %s >%s</option>', $val, $selected, $option);
-        }
-        echo '</select>';
     }
 
     /**
@@ -607,6 +380,8 @@ class Settings
 
         echo '<div class="wrap">';
         printf('<h1></h1>', esc_html(get_admin_page_title()));
+        
+        echo '<div class="peerboard-settings-wrap">';
 
         echo '<form action="options.php" method="post">';
 
@@ -614,35 +389,14 @@ class Settings
 
         do_settings_sections('circles');
 
-        _e("For more information please check our ", 'peerboard');
-
-        printf("<a href='https://community.peerboard.com/post/396436794' target='_blank'>%s</a><br/><br/>", __('How-To guide for WordPress', 'peerboard'));
-
-        self::peerboard_show_readme();
+        require_once PEERBOARD_PLUGIN_DIR_PATH . 'templates/admin/settings-page.php';
 
         submit_button('Save Settings');
 
         echo '</form>';
 
-        // manual sync user 
-        $wp_users_count = count_users();
-        $users_count = $wp_users_count['total_users'];
-
-        if ($users_count >= 100000) {
-            _e('<h2>Note: this feature is manually activated for large customers, email us at <a href="mailto:support_wp@peerboard.com">support_wp@peerboard.com</a></h2>', 'peerboard');
-        }
-
-        settings_fields('peerboard_users_count');
-        do_settings_sections('peerboard_users_count');
-
-        printf('<div id="sync_users"><span><img src="%s"></span>%s</div>', PEERBOARD_PLUGIN_URL . '/img/sync.png', __('Sync users', 'peerboard'));
-
-        // Some info on the bottom 
-        $sitemap_url = home_url('/') . Sitemap::$sitemap_path;
-        printf('<strong>Sitemap:</strong> <a href="%s" target="_blank">%s</a></p>', $sitemap_url, $sitemap_url);
-
-        $comm_id = self::$peerboard_options["community_id"];
-        printf('<p><strong>Community ID:</strong> %s</p>', $comm_id);
+        require_once PEERBOARD_PLUGIN_DIR_PATH . 'templates/admin/settings-sidebar.php';
+        echo '</div>';
 
         echo '</div>';
     }

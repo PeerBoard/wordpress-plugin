@@ -137,7 +137,7 @@ class UserSync
                 'last_name' => ''
             ];
 
-            if ($peerboard_options['expose_user_data'] == '1') {
+            if (empty($peerboard_options['expose_user_data']) ? false : true) {
                 $user_data['last_name'] = $user->last_name;
             }
         }
@@ -152,7 +152,7 @@ class UserSync
                 'last_name' => ''
             ];
 
-            if ($peerboard_options['expose_user_data'] == '1') {
+            if (empty($peerboard_options['expose_user_data']) ? false : true) {
                 $user_data['last_name'] = $user['last_name'];
             }
         }

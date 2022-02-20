@@ -350,7 +350,10 @@ __webpack_require__.r(__webpack_exports__);
     manually_sync_users_image.className = 'rotating';
     fetch(window.peerboard_admin.user_sync_url, {
       method: 'POST',
-      body: {}
+      body: {},
+      headers: {
+        'X-WP-Nonce': document.querySelector('#_wp_rest_nonce').value
+      }
     }).then(function (response) {
       return response.json();
     }).then(function (data) {

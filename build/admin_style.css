@@ -34,20 +34,54 @@
   display: block;
 }
 
-.toplevel_page_peerboard .sub_settings th {
-  padding-left: 50px;
+.peerboard-settings-wrap {
+  display: flex;
+  flex-wrap: wrap;
 }
+.peerboard-settings-wrap form {
+  flex: 1 0 auto;
+}
+.peerboard-settings-wrap .peerboard-sidebar {
+  width: 400px;
+  border: 1px solid;
+  padding: 15px;
+  border-radius: 5px;
+}
+.peerboard-settings-wrap .settings .option-field {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 20px 0px;
+}
+.peerboard-settings-wrap .settings .option-field .option-name {
+  min-width: 200px;
+  max-width: 265px;
+}
+.peerboard-settings-wrap .settings .input-check .option-name {
+  margin-right: 20px;
+}
+.peerboard-settings-wrap .settings .sub_settings {
+  padding-left: 20px;
+}
+.peerboard-settings-wrap .settings .divider {
+  border: 0.7px solid;
+  margin-right: 20px;
+}
+
 .toplevel_page_peerboard #sync_users {
   display: flex;
   border: 1px solid;
   justify-content: center;
   align-content: center;
-  width: 166px;
-  padding: 5px 0px;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  padding: 5px 10px;
   background: white;
   border-radius: 5px;
   font-size: 18px;
   margin: 20px 0px;
+  flex-wrap: wrap;
+  margin-left: 20px;
 }
 .toplevel_page_peerboard #sync_users:hover {
   cursor: pointer;

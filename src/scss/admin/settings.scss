@@ -1,63 +1,97 @@
-.toplevel_page_peerboard {
+.peerboard-settings-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  form {
+    flex: 1 0 auto;
+  }
+  .peerboard-sidebar {
+    width: 400px;
+    border: 1px solid;
+    padding: 15px;
+    border-radius: 5px;
+  }
+  .settings {
+    .option-field {
+      display: flex;
+      flex-wrap: wrap;
+      margin: 20px 0px;
+      .option-name {
+        min-width: 200px;
+        max-width: 265px;
+      }
+    }
+    .input-check {
+      .option-name {
+        margin-right: 20px;
+      }
+    }
     .sub_settings {
-        th {
-            padding-left: 50px;
-        }
+      padding-left: 20px;
     }
-    #sync_users {
-        display: flex;
-        border: 1px solid;
-        justify-content: center;
-        align-content: center;
-        width: 166px;
-        padding: 5px 0px;
-        background: white;
-        border-radius: 5px;
-        font-size: 18px;
-        margin: 20px 0px;
-        &:hover{
-            cursor: pointer;
-            opacity: 0.7;
-        }
-        img {
-            margin-right: 10px;
-            width: 20px;
-        }
+    .divider{
+      border:.7px solid;
+      margin-right: 20px;
     }
+  }
+}
 
-    @-webkit-keyframes rotating /* Safari and Chrome */ {
-        from {
-          -webkit-transform: rotate(0deg);
-          -o-transform: rotate(0deg);
-          transform: rotate(0deg);
-        }
-        to {
-          -webkit-transform: rotate(360deg);
-          -o-transform: rotate(360deg);
-          transform: rotate(360deg);
-        }
-      }
-      @keyframes rotating {
-        from {
-          -ms-transform: rotate(0deg);
-          -moz-transform: rotate(0deg);
-          -webkit-transform: rotate(0deg);
-          -o-transform: rotate(0deg);
-          transform: rotate(0deg);
-        }
-        to {
-          -ms-transform: rotate(360deg);
-          -moz-transform: rotate(360deg);
-          -webkit-transform: rotate(360deg);
-          -o-transform: rotate(360deg);
-          transform: rotate(360deg);
-        }
-      }
-      .rotating {
-        -webkit-animation: rotating 2s linear infinite;
-        -moz-animation: rotating 2s linear infinite;
-        -ms-animation: rotating 2s linear infinite;
-        -o-animation: rotating 2s linear infinite;
-        animation: rotating 2s linear infinite;
-      }
+.toplevel_page_peerboard {
+  #sync_users {
+    display: flex;
+    border: 1px solid;
+    justify-content: center;
+    align-content: center;
+    width: fit-content;
+    padding: 5px 10px;
+    background: white;
+    border-radius: 5px;
+    font-size: 18px;
+    margin: 20px 0px;
+    flex-wrap: wrap;
+    margin-left: 20px;
+    &:hover {
+      cursor: pointer;
+      opacity: 0.7;
+    }
+    img {
+      margin-right: 10px;
+      width: 20px;
+    }
+  }
+
+  @-webkit-keyframes rotating /* Safari and Chrome */ {
+    from {
+      -webkit-transform: rotate(0deg);
+      -o-transform: rotate(0deg);
+      transform: rotate(0deg);
+    }
+    to {
+      -webkit-transform: rotate(360deg);
+      -o-transform: rotate(360deg);
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes rotating {
+    from {
+      -ms-transform: rotate(0deg);
+      -moz-transform: rotate(0deg);
+      -webkit-transform: rotate(0deg);
+      -o-transform: rotate(0deg);
+      transform: rotate(0deg);
+    }
+    to {
+      -ms-transform: rotate(360deg);
+      -moz-transform: rotate(360deg);
+      -webkit-transform: rotate(360deg);
+      -o-transform: rotate(360deg);
+      transform: rotate(360deg);
+    }
+  }
+  .rotating {
+    -webkit-animation: rotating 2s linear infinite;
+    -moz-animation: rotating 2s linear infinite;
+    -ms-animation: rotating 2s linear infinite;
+    -o-animation: rotating 2s linear infinite;
+    animation: rotating 2s linear infinite;
+  }
 }

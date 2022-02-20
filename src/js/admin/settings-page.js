@@ -28,7 +28,6 @@ export default () => {
 
     window.onload = () => {
         check_user_settings_sync()
-
         // add class sub settings
         let email_notifications_parent_tr = bulk_activate_email_notifications.parentElement.parentElement;
         email_notifications_parent_tr.classList.add("sub_settings");
@@ -39,14 +38,17 @@ export default () => {
 
     }
 
-
+    
     manually_sync_users.onclick = () => {
 
         manually_sync_users_image.className = 'rotating';
-
+        
         fetch(window.peerboard_admin.user_sync_url, {
             method: 'POST',
-            body: {}
+            body: {},
+            headers: {
+                'X-WP-Nonce': document.querySelector('#_wp_rest_nonce').value
+            },
         })
             .then(response => response.json())
             .then(data => {
