@@ -319,7 +319,9 @@ __webpack_require__.r(__webpack_exports__);
   var bulk_activate_email_notifications = document.querySelector('#peerboard_bulk_activate_email');
   var expose_user_data = document.querySelector('#expose_user_data');
   var manually_sync_users = document.querySelector('#sync_users');
-  var manually_sync_users_image = document.querySelector('#sync_users img'); // update sync settings
+  var manually_sync_users_image = document.querySelector('#sync_users img');
+  var users_amount_pages = document.querySelector('#sync-progress').getAttribute('page-count');
+  var old_text = manually_sync_users.querySelector('.text').innerHTML; // update sync settings
 
   function check_user_settings_sync() {
     if (!user_sync_checkbox.checked) {
@@ -351,12 +353,26 @@ __webpack_require__.r(__webpack_exports__);
   manually_sync_users.onclick = function () {
     if (manually_sync_users.disabled) {
       return;
-    }
+    } // show progress bar
 
+
+    document.querySelector('.sync-progress-wrap').style.display = 'block'; // make request for every page of user query
+
+    for (var page = 0; page < users_amount_pages; page++) {
+      import_users();
+    }
+  };
+
+  function import_users() {
     manually_sync_users_image.className = 'rotating';
+    var new_text = 'Importing';
+    manually_sync_users.querySelector('.text').innerHTML = new_text;
+    var every_step_persent = 100 / users_amount_pages;
     fetch(window.peerboard_admin.user_sync_url, {
       method: 'POST',
-      body: {},
+      body: JSON.stringify({
+        'paged': document.querySelector('#sync-progress').getAttribute('current-page')
+      }),
       headers: {
         'X-WP-Nonce': document.querySelector('#_wp_rest_nonce').value
       }
@@ -365,14 +381,30 @@ __webpack_require__.r(__webpack_exports__);
     }).then(function (data) {
       if (data.success) {
         var response = data.data;
-        manually_sync_users_image.classList.remove("rotating");
+        var current_page = document.querySelector('#sync-progress').getAttribute('current-page'); // after last page request is ready
+
+        if (parseInt(current_page) == users_amount_pages) {
+          manually_sync_users_image.classList.remove("rotating");
+          manually_sync_users.querySelector('.text').innerHTML = old_text;
+        }
+
+        console.log(parseInt(current_page));
+        document.querySelector('#sync-progress').setAttribute('current-page', parseInt(current_page) + 1);
+        var width = Math.round(every_step_persent * parseInt(current_page) + 1);
+
+        if (width > 100) {
+          width = 100;
+        }
+
+        document.querySelector('#bar').style.width = width + "%";
+        document.querySelector('#sync-progress #bar').innerHTML = width + "%";
         console.log(response);
       } else {
         manually_sync_users_image.classList.remove("rotating");
         console.error(data);
       }
     }).catch(console.error);
-  };
+  }
 });
 
 /***/ })

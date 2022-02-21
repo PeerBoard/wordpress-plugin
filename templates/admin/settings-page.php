@@ -3,6 +3,9 @@
 namespace PEBO;
 
 $peerboard_options = get_option('peerboard_options');
+
+$wp_users_count = count_users();
+$users_count = $wp_users_count['total_users'];
 ?>
 
 <div class="settings">
@@ -174,7 +177,7 @@ $peerboard_options = get_option('peerboard_options');
         <!-- Automatically import first and last names -->
         <div class="sub_settings option-field form-table input-check">
 
-            <div class="option-name"><strong><?=  __('Automatically import first and last names', 'peerboard') ?></strong></div>
+            <div class="option-name"><strong><?= __('Automatically import first and last names', 'peerboard') ?></strong></div>
 
             <div class="option-val">
                 <?php
@@ -190,7 +193,7 @@ $peerboard_options = get_option('peerboard_options');
         <!-- Send welcome email and subscribe new members to community digests. -->
         <div class="sub_settings option-field form-table input-check">
 
-            <div class="option-name"><strong><?=  __('Send welcome email and subscribe new members to community digests.', 'peerboard') ?></strong></div>
+            <div class="option-name"><strong><?= __('Send welcome email and subscribe new members to community digests.', 'peerboard') ?></strong></div>
 
             <div class="option-val">
                 <?php
@@ -204,11 +207,24 @@ $peerboard_options = get_option('peerboard_options');
         <!-- Send welcome email and subscribe new members to community digests. -->
 
         <div class="import-wrap">
-            <?php $_wpnonce = wp_create_nonce('wp_rest'); ?>
+            <?php
+            $_wpnonce = wp_create_nonce('wp_rest');
+            // get how much pages we have by 1000 users
+            $pages_count = ceil($users_count / 1000);
+            ?>
             <input type='hidden' id='_wp_rest_nonce' name='_wp_rest_nonce' value='<?= $_wpnonce ?>' />
-            <button id="sync_users" class="sub_settings" type="button"><span><img src="<?= PEERBOARD_PLUGIN_URL . '/img/sync.png' ?>"></span><?= __('Import Existing Users', 'peerboard') ?></button>
+            <button id="sync_users" class="sub_settings" type="button"><span><img src="<?= PEERBOARD_PLUGIN_URL . '/img/sync.png' ?>"></span><span class="text"><?= __('Import Existing Users', 'peerboard') ?></span></button>
 
-            
+            <div class="sync-progress-wrap">
+                <div id="sync-progress" page-count=<?= $pages_count ?> current-page="1">
+                    <div id="bar"></div>
+                </div>
+                <div class="numbers">
+                    <p>0</p>
+                    <p><?= $users_count ?></p>
+                </div>
+            </div>
+
         </div>
 
     </div>

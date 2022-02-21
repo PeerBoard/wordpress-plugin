@@ -84,36 +84,30 @@ class UserSync
     /**
      * Import all users manually from settings page
      */
-    public static function manually_sync_users($request)
+    public static function manually_sync_users(\WP_REST_Request $request)
     {
         $peerboard_options = get_option('peerboard_options');
-        $wp_users_count = count_users();
-        $users_count = $wp_users_count['total_users'];
+        $body = json_decode($request->get_body(), true);
 
-        // get how much pages we have by 1000 users
-        $pages_count = ceil($users_count / 1000);
+        // get user by 1000 because there is some problems can be with peerboard api
+        $users = get_users(['number' => 1000, 'paged' => intval($body['paged']), 'fields' => 'all']);
 
-        for ($i = 1; $i <= $pages_count; $i++) {
+        $prepared_users_data = ['members' => []];
 
-            // get user by 1000 because there is some problems can be with peerboard api
-            $users = get_users(['number' => 1000, 'paged' => $i, 'fields' => 'all']);
+        foreach ($users as $user) {
 
-            $prepared_users_data = ['members' => []];
+            $user_roles = $user->roles;
+            $user_data = self::prepare_user_data($user);
 
-            foreach ($users as $user) {
-
-                $user_roles = $user->roles;
-                $user_data = self::prepare_user_data($user);
-
-                $prepared_users_data['members'][] = $user_data;
-            }
-
-            $response = self::peerboard_sync_users($peerboard_options['auth_token'], $prepared_users_data);
-
-            if (!$response['success']) {
-                wp_send_json_error(sprintf('something goes wrong, please retry later: already imported:%s users', ($i - 1) * 1000));
-            }
+            $prepared_users_data['members'][] = $user_data;
         }
+
+        $response = self::peerboard_sync_users($peerboard_options['auth_token'], $prepared_users_data);
+
+        if (!$response['success']) {
+            wp_send_json_error(sprintf('something goes wrong, please retry later: already imported:%s users', (intval($body['paged']) - 1) * 1000));
+        }
+
 
         wp_send_json_success($response);
     }

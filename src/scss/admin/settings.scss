@@ -28,9 +28,35 @@
     .sub_settings {
       padding-left: 20px;
     }
-    .divider{
-      border:.7px solid;
+    .divider {
+      border: 0.7px solid;
       margin-right: 20px;
+    }
+  }
+}
+
+.import-wrap {
+  padding: 0px 20px;
+
+  .sync-progress-wrap {
+    display: none;
+    #sync-progress {
+      width: 100%;
+      background-color: white;
+      #bar {
+        width: 0%;
+        height: 30px;
+        background-color: #04aa6d;
+        text-align: center; /* To center it horizontally (if you want) */
+        line-height: 30px; /* To center it vertically */
+        color: white;
+      }
+    }
+
+    .numbers {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
     }
   }
 }

@@ -67,6 +67,32 @@
   margin-right: 20px;
 }
 
+.import-wrap {
+  padding: 0px 20px;
+}
+.import-wrap .sync-progress-wrap {
+  display: none;
+}
+.import-wrap .sync-progress-wrap #sync-progress {
+  width: 100%;
+  background-color: white;
+}
+.import-wrap .sync-progress-wrap #sync-progress #bar {
+  width: 0%;
+  height: 30px;
+  background-color: #04aa6d;
+  text-align: center;
+  /* To center it horizontally (if you want) */
+  line-height: 30px;
+  /* To center it vertically */
+  color: white;
+}
+.import-wrap .sync-progress-wrap .numbers {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
 .toplevel_page_peerboard #sync_users {
   display: flex;
   border: 1px solid;
