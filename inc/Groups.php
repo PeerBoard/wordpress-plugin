@@ -91,16 +91,24 @@ class Groups
         $peerboard_options = get_option('peerboard_options');
         $user_sync_enabled = empty($peerboard_options['peerboard_users_sync_enabled']) ? false : true;
 
-        if(!$user_sync_enabled){
+        if (!$user_sync_enabled) {
             return;
         }
 
         $user_groups = self::get_user_groups($user_id);
 
+        // is wp user role set as Administrator or Editor
         if (in_array($role, self::$wp_not_group_roles)) {
-            UserSync::change_user_role($user_id, $role);
+            UserSync::change_user_role($user_id, self::$wp_peerboard_roles[$role]);
+
+            // remove old groups
+            foreach ($old_roles as $group_id) {
+                $remove_members = self::remove_members_from_group($group_id, [$user_id]);
+            }
 
             return;
+        } else {
+            UserSync::change_user_role($user_id, 'MEMBER');
         }
 
         // check if groups exist if not create
@@ -108,7 +116,10 @@ class Groups
 
         // remove from old groups
         foreach ($old_roles as $group_id) {
-            $remove_members = self::remove_members_from_group($group_id, [$user_id]);
+            if(!in_array($role, self::$wp_not_group_roles)){
+                $remove_members = self::remove_members_from_group($group_id, [$user_id]);
+            }
+            
         }
 
         // add to new group
