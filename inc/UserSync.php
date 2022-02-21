@@ -98,13 +98,14 @@ class UserSync
             // get user by 1000 because there is some problems can be with peerboard api
             $users = get_users(['number' => 1000, 'paged' => $i, 'fields' => 'all']);
 
-            $prepared_users_data = [];
+            $prepared_users_data = ['members' => []];
 
             foreach ($users as $user) {
 
+                $user_roles = $user->roles;
                 $user_data = self::prepare_user_data($user);
 
-                $prepared_users_data[] = $user_data;
+                $prepared_users_data['members'][] = $user_data;
             }
 
             $response = self::peerboard_sync_users($peerboard_options['auth_token'], $prepared_users_data);
@@ -188,9 +189,10 @@ class UserSync
      * @param array $users
      * @return void
      */
-    public static function peerboard_sync_users($token, $users)
+    public static function peerboard_sync_users($token, $req_args)
     {
-        $response = API::peerboard_api_call_with_success_check('members/batch', $token, ['update_existing_members' => true, $users], 'POST');
+        $req_args['update_existing_members'] = true;
+        $response = API::peerboard_api_call_with_success_check('members/batch', $token,  $req_args, 'POST');
 
         return $response;
     }
@@ -264,6 +266,25 @@ class UserSync
         $user_data = self::prepare_user_data(get_user_by('ID', $user_id));
 
         $user_data['role'] = 'BLOCKED';
+
+        $request = API::peerboard_api_call_with_success_check(sprintf('members/%s?key=email', urlencode($user_data['email'])), $token, $user_data, 'POST');
+    }
+
+    /**
+     * Block user when user deleted from WP
+     *
+     * @param [type] $user_id
+     * @return void
+     */
+    public static function change_user_role($user_id, $role)
+    {
+        $peerboard_options = get_option('peerboard_options');
+
+        $token = $peerboard_options['auth_token'];
+
+        $user_data = self::prepare_user_data(get_user_by('ID', $user_id));
+
+        $user_data['role'] = $role;
 
         $request = API::peerboard_api_call_with_success_check(sprintf('members/%s?key=email', urlencode($user_data['email'])), $token, $user_data, 'POST');
     }

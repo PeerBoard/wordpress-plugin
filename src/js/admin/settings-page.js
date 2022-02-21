@@ -33,8 +33,15 @@ export default () => {
         check_user_settings_sync()
     }
 
-    
+    /**
+     * On import button click
+     * @returns 
+     */
     manually_sync_users.onclick = () => {
+
+        if(manually_sync_users.disabled){
+            return;
+        }
 
         manually_sync_users_image.className = 'rotating';
         
@@ -49,8 +56,11 @@ export default () => {
             .then(data => {
                 if (data.success) {
                     let response = data.data
+                    manually_sync_users_image.classList.remove("rotating");
+
                     console.log(response)
                 } else {
+                    manually_sync_users_image.classList.remove("rotating");
                     console.error(data);
                 }
             }).catch(console.error)

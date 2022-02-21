@@ -11,10 +11,16 @@ defined('ABSPATH') || exit;
 class Groups
 {
 
+    // wp roles that will be roles on peerboard side
+    public static $wp_not_group_roles = ['administrator', 'editor'];
+
+    public static $wp_peerboard_roles = ['administrator' => 'ADMIN', 'editor' => 'MODERATOR'];
+
     public static function init()
     {
         // the api is not working properly on user creation group are not adding
         add_filter('peerboard_prepare_user_data_before_sync', [__CLASS__, 'add_groups_to_user_data'], 10, 2);
+
         // after user created we adding user to role/group on peerboard
         //add_action('peerboard_after_user_successfully_created', [__CLASS__, 'add_member_to_group_after_user_creation']);
 
@@ -45,7 +51,12 @@ class Groups
                 $group_created = self::create_new_group($group_name, $group_external_id);
             }
 
-            $user_data['groups'][] = ['external_id' => $group_external_id];
+            if (in_array($group_external_id, self::$wp_not_group_roles)) {
+
+                $user_data['role'] = self::$wp_peerboard_roles[$group_external_id];
+            } else {
+                $user_data['groups'][] = ['external_id' => $group_external_id];
+            }
         }
 
         return $user_data;
@@ -77,8 +88,20 @@ class Groups
      */
     public static function on_user_profile_update_update_group($user_id, $role, $old_roles = [])
     {
+        $peerboard_options = get_option('peerboard_options');
+        $user_sync_enabled = empty($peerboard_options['peerboard_users_sync_enabled']) ? false : true;
+
+        if(!$user_sync_enabled){
+            return;
+        }
 
         $user_groups = self::get_user_groups($user_id);
+
+        if (in_array($role, self::$wp_not_group_roles)) {
+            UserSync::change_user_role($user_id, $role);
+
+            return;
+        }
 
         // check if groups exist if not create
         $check_create_groups = self::check_groups_create($user_groups);

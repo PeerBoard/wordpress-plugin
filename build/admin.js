@@ -342,8 +342,17 @@ __webpack_require__.r(__webpack_exports__);
   window.onload = function () {
     check_user_settings_sync();
   };
+  /**
+   * On import button click
+   * @returns 
+   */
+
 
   manually_sync_users.onclick = function () {
+    if (manually_sync_users.disabled) {
+      return;
+    }
+
     manually_sync_users_image.className = 'rotating';
     fetch(window.peerboard_admin.user_sync_url, {
       method: 'POST',
@@ -356,8 +365,10 @@ __webpack_require__.r(__webpack_exports__);
     }).then(function (data) {
       if (data.success) {
         var response = data.data;
+        manually_sync_users_image.classList.remove("rotating");
         console.log(response);
       } else {
+        manually_sync_users_image.classList.remove("rotating");
         console.error(data);
       }
     }).catch(console.error);

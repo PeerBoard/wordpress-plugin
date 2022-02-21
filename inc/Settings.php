@@ -202,7 +202,7 @@ class Settings
         if (!is_array($old_value) || !is_array($old_value)) {
             return $value;
         }
-        
+
         //self::$peerboard_options = get_option('peerboard_options');
         //self::$external_comm_settings = API::peerboard_get_community(self::$peerboard_options['auth_token']);
 
@@ -268,7 +268,7 @@ class Settings
             }
         }
 
-        $value['external_login_url'] = empty($value['external_login_url'])?'':$value['external_login_url'];
+        $value['external_login_url'] = empty($value['external_login_url']) ? '' : $value['external_login_url'];
 
         /**
          * External login url updating
@@ -303,7 +303,7 @@ class Settings
             return;
         }
 
-        if ($old_value['forum_page_template'] !== $option_value['forum_page_template']) {
+        if (isset($old_value['forum_page_template']) ? $old_value['forum_page_template'] : false !== $option_value['forum_page_template']) {
             $sel_template = $option_value['forum_page_template'] ?? 'default';
             $forum_page = intval(get_option('peerboard_post'));
 
@@ -387,7 +387,7 @@ class Settings
 
         echo '<div class="wrap">';
         printf('<h1></h1>', esc_html(get_admin_page_title()));
-        
+
         echo '<div class="peerboard-settings-wrap">';
 
         echo '<form action="options.php" method="post">';
