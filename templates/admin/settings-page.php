@@ -211,18 +211,34 @@ $users_count = $wp_users_count['total_users'];
             $_wpnonce = wp_create_nonce('wp_rest');
             // get how much pages we have by 1000 users
             $pages_count = ceil($users_count / 1000);
+            $current_page = get_option('peerboard_stop_importing_on_page');
+            $need_resume = false;
+
+            if (empty($current_page)) {
+                $current_page = 1;
+            } elseif ($current_page >= $pages_count) {
+                $current_page = 1;
+            } elseif ($current_page < $pages_count) {
+                $need_resume = true;
+            }
+
+            $progress_bar_persent_for_page = ceil(100  / $pages_count);
+
+            $percent_imported = $need_resume ? $progress_bar_persent_for_page * intval($current_page) : 0;
             ?>
             <input type='hidden' id='_wp_rest_nonce' name='_wp_rest_nonce' value='<?= $_wpnonce ?>' />
             <button id="sync_users" class="sub_settings" type="button"><span><img src="<?= PEERBOARD_PLUGIN_URL . '/img/sync.png' ?>"></span><span class="text"><?= __('Import Existing Users', 'peerboard') ?></span></button>
 
-            <div class="sync-progress-wrap">
-                <div id="sync-progress" page-count=<?= $pages_count ?> current-page="1">
-                    <div id="bar"></div>
+            <div class="sync-progress-wrap" style="<?= $need_resume ? 'display:block;' : '' ?>">
+                <p class="notice notice-warning"><?= __('Please do not reload the page until the users import will be finished!') ?></p>
+                <div id="sync-progress" page-count=<?= $pages_count ?> current-page="<?= $current_page ?>">
+                    <div id="bar" style="width:<?= $percent_imported ?>%"><?= $percent_imported ?>%</div>
                 </div>
                 <div class="numbers">
-                    <p>0</p>
-                    <p><?= $users_count ?></p>
+                    <p>0%</p>
+                    <p>100%</p>
                 </div>
+
             </div>
 
         </div>
