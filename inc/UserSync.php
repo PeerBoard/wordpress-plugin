@@ -143,7 +143,7 @@ class UserSync
 
         $response = self::peerboard_sync_users($peerboard_options['auth_token'], $prepared_users_data);
 
-        $already_saved_users = get_option('peerboard_user_imported_or_updated', true);
+        $already_saved_users = get_option('peerboard_user_imported_or_updated');
 
         if (!$already_saved_users) {
             $already_saved_users = 0;
