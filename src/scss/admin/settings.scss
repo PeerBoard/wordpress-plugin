@@ -33,6 +33,19 @@
       margin-right: 20px;
     }
   }
+  .option-name {
+    min-height: 30px;
+    strong {
+      display: flex;
+      align-content: center;
+      align-items: center;
+      min-height: 30px;
+      height: 30px;
+    }
+  }
+  input[type=text] {
+    min-height: 30px;
+  }
 }
 
 .import-wrap {
