@@ -14,9 +14,23 @@ class UserSync
 {
 
     public static $peerboard_options;
+    public static $import_count_by_step = 100;
+
 
     public static function init()
     {
+        // register wp cli command
+        // add_action('cli_init', function () {
+        //     \WP_CLI::add_command('peerboard_generate_test_users', function ($args, $assoc_args) {
+        //         for ($i = 1; $i <= 1000; $i++) {
+        //             $rand = rand(1000, 100000);
+        //             $user_login = $rand . $i . 'generated_user';
+        //             $user_email = $rand . $i . '@rand.ru';
+        //             $user_id = register_new_user($user_login, $user_email);
+        //             var_dump($user_id);
+        //         }
+        //     });
+        // });
 
         /**
          * Create user on PeerBoard on user registration on WordPress
@@ -87,27 +101,73 @@ class UserSync
     public static function manually_sync_users(\WP_REST_Request $request)
     {
         $peerboard_options = get_option('peerboard_options');
+
         $body = json_decode($request->get_body(), true);
+        $paged = $body['paged'];
+
+        // if this button clicked update option
+        $peerboard_options['peerboard_users_sync_enabled'] = '1';
+
+        if ($body['expose_user_data']) {
+            $peerboard_options['expose_user_data'] = '1';
+        }
+
+        if ($body['peerboard_bulk_activate_email']) {
+            $peerboard_options['peerboard_bulk_activate_email'] = '1';
+        }
+
+
+        update_option('peerboard_options', $peerboard_options);
+
+        if (empty($paged)) {
+            wp_send_json_error('page is not set');
+        }
 
         // get user by 1000 because there is some problems can be with peerboard api
-        $users = get_users(['number' => 1000, 'paged' => intval($body['paged']), 'fields' => 'all']);
+        $users = get_users(['number' => self::$import_count_by_step, 'paged' => intval($body['paged']), 'fields' => 'all']);
 
-        $prepared_users_data = ['members' => []];
+        $prepared_users_data = [];
+        $request_members = [];
 
         foreach ($users as $user) {
 
             $user_roles = $user->roles;
             $user_data = self::prepare_user_data($user);
 
-            $prepared_users_data['members'][] = $user_data;
+            $request_members[] = $user_data;
         }
+
+        $prepared_users_data['members'] = $request_members;
+
+        do_action('peerboard_before_bulk_user_sync');
 
         $response = self::peerboard_sync_users($peerboard_options['auth_token'], $prepared_users_data);
 
-        if (!$response['success']) {
-            wp_send_json_error(sprintf('something goes wrong, please retry later: already imported:%s users', (intval($body['paged']) - 1) * 1000));
+        $request_count = 0;
+        while (++$request_count) {
+            if($request_count === 3){
+                wp_send_json_error(sprintf('something goes wrong, please retry later: already imported:%s users', (intval($body['paged']) - 1) * 1000));
+                break;
+            } 
+
+            if($response['success']){
+                break;
+            }
+
+            if(!$response['success']){
+                $response = self::peerboard_sync_users($peerboard_options['auth_token'], $prepared_users_data);
+            }
         }
 
+        update_option('peerboard_stop_importing_on_page', $paged);
+
+        $wp_users_count = count_users();
+        $users_count = $wp_users_count['total_users'];
+        $pages_count = ceil($users_count / self::$import_count_by_step);
+
+        if ($paged === $pages_count) {
+            delete_option('peerboard_stop_importing_on_page');
+        }
 
         wp_send_json_success($response);
     }

@@ -12,9 +12,11 @@ class Groups
 {
 
     // wp roles that will be roles on peerboard side
-    public static $wp_not_group_roles = ['administrator', 'editor'];
+    public static $wp_not_group_roles = ['administrator'];
 
-    public static $wp_peerboard_roles = ['administrator' => 'ADMIN', 'editor' => 'MODERATOR'];
+    public static $wp_peerboard_roles = ['administrator' => 'ADMIN'];
+
+    public static $groups_created = false;
 
     public static function init()
     {
@@ -26,6 +28,8 @@ class Groups
 
         // Update group on user update 
         add_action('set_user_role', [__CLASS__, 'on_user_profile_update_update_group'], 10, 3);
+
+        add_action('peerboard_before_bulk_user_sync', [__CLASS__, 'check_create_all_groups']);
     }
 
     /**
@@ -35,29 +39,22 @@ class Groups
      * @param [type] $user_data
      * @return void
      */
-    public static function add_groups_to_user_data($user_data)
+    public static function add_groups_to_user_data($user_data = [])
     {
-
         $user_id = $user_data['external_id'];
 
         $user_groups = self::get_user_groups($user_id);
-
-        $user_data['groups'] = [];
+        $groups = [];
 
         foreach ($user_groups as $group_external_id => $group_name) {
-            $is_group_exist = self::is_group_exist($group_external_id);
-
-            if (!$is_group_exist) {
-                $group_created = self::create_new_group($group_name, $group_external_id);
-            }
-
             if (in_array($group_external_id, self::$wp_not_group_roles)) {
-
-                $user_data['role'] = self::$wp_peerboard_roles[$group_external_id];
+                $changed_user_data['role'] = self::$wp_peerboard_roles[$group_external_id];
             } else {
-                $user_data['groups'][] = ['external_id' => $group_external_id];
+                $groups[] = ['external_id' => $group_external_id];
             }
         }
+
+        $user_data['groups'] = $groups;
 
         return $user_data;
     }
@@ -116,10 +113,9 @@ class Groups
 
         // remove from old groups
         foreach ($old_roles as $group_id) {
-            if(!in_array($role, self::$wp_not_group_roles)){
+            if (!in_array($role, self::$wp_not_group_roles)) {
                 $remove_members = self::remove_members_from_group($group_id, [$user_id]);
             }
-            
         }
 
         // add to new group
@@ -291,6 +287,27 @@ class Groups
         }
 
         return $user_roles_array;
+    }
+
+    public static function check_create_all_groups()
+    {
+        global $wp_roles;
+
+        $all_roles = $wp_roles->roles;
+
+        $changed_array = [];
+
+        foreach ($all_roles as $external_id => $role) {
+
+            // do not add Administrator as group
+            if (!in_array($external_id, self::$wp_not_group_roles)) {
+                $role_name = $role['name'];
+
+                $changed_array[$external_id] = $role_name;
+            }
+        }
+
+        return self::check_groups_create($changed_array);
     }
 }
 
