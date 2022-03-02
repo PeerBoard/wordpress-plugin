@@ -321,7 +321,8 @@ __webpack_require__.r(__webpack_exports__);
   var manually_sync_users = document.querySelector('#sync_users');
   var manually_sync_users_image = document.querySelector('#sync_users img');
   var users_amount_pages = document.querySelector('#sync-progress').getAttribute('page-count');
-  var old_text = manually_sync_users.querySelector('.text').innerHTML; // update sync settings
+  var old_text = manually_sync_users.querySelector('.text').innerHTML;
+  var new_text = 'Importing'; // update sync settings
 
   function check_user_settings_sync() {
     if (!user_sync_checkbox.checked) {
@@ -356,22 +357,23 @@ __webpack_require__.r(__webpack_exports__);
     } // show progress bar
 
 
-    document.querySelector('.sync-progress-wrap').style.display = 'block'; // make request for every page of user query
-
-    for (var page = 0; page < users_amount_pages; page++) {
-      import_users();
-    }
+    document.querySelector('.sync-progress-wrap').style.display = 'block';
+    document.querySelector('#result_message_success').style.display = 'none';
+    document.querySelector('#result_message_waring').style.display = 'none';
+    import_users();
   };
 
   function import_users() {
     manually_sync_users_image.className = 'rotating';
-    var new_text = 'Importing';
+    manually_sync_users.disabled = true;
     manually_sync_users.querySelector('.text').innerHTML = new_text;
     var every_step_persent = 100 / users_amount_pages;
     fetch(window.peerboard_admin.user_sync_url, {
       method: 'POST',
       body: JSON.stringify({
-        'paged': document.querySelector('#sync-progress').getAttribute('current-page')
+        'paged': document.querySelector('#sync-progress').getAttribute('current-page'),
+        'expose_user_data': document.querySelector('#expose_user_data').checked,
+        'peerboard_bulk_activate_email': document.querySelector('#peerboard_bulk_activate_email').checked
       }),
       headers: {
         'X-WP-Nonce': document.querySelector('#_wp_rest_nonce').value
@@ -381,14 +383,8 @@ __webpack_require__.r(__webpack_exports__);
     }).then(function (data) {
       if (data.success) {
         var response = data.data;
-        var current_page = document.querySelector('#sync-progress').getAttribute('current-page'); // after last page request is ready
-
-        if (parseInt(current_page) == users_amount_pages) {
-          manually_sync_users_image.classList.remove("rotating");
-          manually_sync_users.querySelector('.text').innerHTML = old_text;
-        }
-
-        console.log(parseInt(current_page));
+        var current_page = document.querySelector('#sync-progress').getAttribute('current-page');
+        console.log(response);
         document.querySelector('#sync-progress').setAttribute('current-page', parseInt(current_page) + 1);
         var width = Math.round(every_step_persent * parseInt(current_page) + 1);
 
@@ -397,13 +393,39 @@ __webpack_require__.r(__webpack_exports__);
         }
 
         document.querySelector('#bar').style.width = width + "%";
-        document.querySelector('#sync-progress #bar').innerHTML = width + "%";
-        console.log(response);
+        document.querySelector('#sync-progress #bar').innerHTML = width + "%"; // next page request
+
+        if (response.resume) {
+          import_users();
+        } // after last page request is ready
+
+
+        if (!response.resume) {
+          importing_finished(data);
+        }
       } else {
-        manually_sync_users_image.classList.remove("rotating");
-        console.error(data);
+        importing_finished(data);
       }
     }).catch(console.error);
+  }
+
+  function importing_finished(data) {
+    var response = data.data;
+    manually_sync_users_image.classList.remove("rotating");
+    manually_sync_users.querySelector('.text').innerHTML = old_text;
+
+    if (data.success) {
+      // show success message
+      document.querySelector('#result_message_success').innerHTML = response.message;
+      document.querySelector('#result_message_success').style.display = 'block';
+    } else {
+      document.querySelector('#result_message_waring').innerHTML = response.message;
+      document.querySelector('#result_message_waring').style.display = 'block';
+      manually_sync_users.disabled = false;
+    } // hide progress bar
+
+
+    document.querySelector('.sync-progress-wrap').style.display = 'none';
   }
 });
 

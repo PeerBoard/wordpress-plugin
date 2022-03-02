@@ -19,13 +19,13 @@ $users_count = $wp_users_count['total_users'];
             $peerboard_options = $peerboard_options;
             $token = $peerboard_options['auth_token'];
             ?>
-            <input style='width: 300px;' name='peerboard_options[auth_token]' value='<?= $token ?>' />
+            <input type='text' style='width: 300px;' name='peerboard_options[auth_token]' value='<?= $token ?>' />
 
             <?php
             $community_id = $peerboard_options['community_id'];
-            echo "<input name='peerboard_options[community_id]' value='$community_id' style='display: none;'/>";
+            echo "<input type='text' name='peerboard_options[community_id]' value='$community_id' style='display: none;'/>";
             $mode = $peerboard_options['mode'];
-            echo "<input name='peerboard_options[mode]' value='$mode' style='display: none;'/>";
+            echo "<input type='text' name='peerboard_options[mode]' value='$mode' style='display: none;'/>";
             ?>
         </div>
 
@@ -114,7 +114,7 @@ $users_count = $wp_users_count['total_users'];
             $prefix = $peerboard_options['prefix'] ?? 'community';
             $disabled = peerboard_is_comm_set_static_home_page() ? 'disabled' : '';
 
-            printf("<input name='peerboard_options[prefix]' value='%s' %s />", $prefix, $disabled);
+            printf("<input type='text' name='peerboard_options[prefix]' value='%s' %s />", $prefix, $disabled);
 
             echo '<br><br>';
 
@@ -141,7 +141,7 @@ $users_count = $wp_users_count['total_users'];
 
         <div class="option-val">
             <?php
-            printf("<input name='peerboard_options[external_login_url]' value='%s' style='width: 300px;'/>", Settings::get_board_full_login_url());
+            printf("<input type='text' name='peerboard_options[external_login_url]' value='%s' style='width: 300px;'/>", Settings::get_board_full_login_url());
 
             // Board login link message
             $external_login_url = self::get_board_full_login_url();
@@ -210,7 +210,7 @@ $users_count = $wp_users_count['total_users'];
             <?php
             $_wpnonce = wp_create_nonce('wp_rest');
             // get how much pages we have by 1000 users
-            $pages_count = ceil($users_count / 1000);
+            $pages_count = ceil($users_count / UserSync::$import_count_by_step);
             $current_page = get_option('peerboard_stop_importing_on_page');
             $need_resume = false;
 
@@ -229,7 +229,7 @@ $users_count = $wp_users_count['total_users'];
             <input type='hidden' id='_wp_rest_nonce' name='_wp_rest_nonce' value='<?= $_wpnonce ?>' />
             <button id="sync_users" class="sub_settings" type="button"><span><img src="<?= PEERBOARD_PLUGIN_URL . '/img/sync.png' ?>"></span><span class="text"><?= __('Import Existing Users', 'peerboard') ?></span></button>
 
-            <div class="sync-progress-wrap" style="<?= $need_resume ? 'display:block;' : '' ?>">
+            <div class="sync-progress-wrap">
                 <p class="notice notice-warning"><?= __('Please do not reload the page until the users import will be finished!') ?></p>
                 <div id="sync-progress" page-count=<?= $pages_count ?> current-page="<?= $current_page ?>">
                     <div id="bar" style="width:<?= $percent_imported ?>%"><?= $percent_imported ?>%</div>
@@ -238,9 +238,10 @@ $users_count = $wp_users_count['total_users'];
                     <p>0%</p>
                     <p>100%</p>
                 </div>
-
+                
             </div>
-
+            <p id="result_message_success" class="notice notice-success" style="display:none"></p>
+            <p id="result_message_waring" class="notice notice-warning" style="display:none"></p>
         </div>
 
     </div>

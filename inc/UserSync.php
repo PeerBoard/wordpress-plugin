@@ -14,7 +14,7 @@ class UserSync
 {
 
     public static $peerboard_options;
-    public static $import_count_by_step = 100;
+    public static $import_count_by_step = 1000;
 
 
     public static function init()
@@ -143,33 +143,56 @@ class UserSync
 
         $response = self::peerboard_sync_users($peerboard_options['auth_token'], $prepared_users_data);
 
-        $request_count = 0;
-        while (++$request_count) {
-            if($request_count === 3){
-                wp_send_json_error(sprintf('something goes wrong, please retry later: already imported:%s users', (intval($body['paged']) - 1) * 1000));
-                break;
-            } 
+        $already_saved_users = get_option('peerboard_user_imported_or_updated', true);
 
-            if($response['success']){
-                break;
-            }
-
-            if(!$response['success']){
-                $response = self::peerboard_sync_users($peerboard_options['auth_token'], $prepared_users_data);
-            }
+        if (!$already_saved_users) {
+            $already_saved_users = 0;
         }
-
-        update_option('peerboard_stop_importing_on_page', $paged);
 
         $wp_users_count = count_users();
         $users_count = $wp_users_count['total_users'];
         $pages_count = ceil($users_count / self::$import_count_by_step);
+        $request_count = 0;
 
-        if ($paged === $pages_count) {
-            delete_option('peerboard_stop_importing_on_page');
+        while (++$request_count) {
+
+            if ($request_count === 3) {
+                wp_send_json_error(['message' => sprintf(__('Import failed, successfully imported %s of %s, reimport to retry', 'peerboard'), $already_saved_users, $users_count)]);
+                break;
+            }
+
+            if ($response['success']) {
+                break;
+            }
+
+            if (!$response['success']) {
+                $response = self::peerboard_sync_users($peerboard_options['auth_token'], $prepared_users_data);
+            }
         }
 
-        wp_send_json_success($response);
+        $body = json_decode($response['request']['body'], true);
+        $total_created = $body['total_created'];
+        $total_updated = $body['total_updated'];
+        $total_users_in_step = intval($total_created) + intval($total_updated);
+        $total_users_imported_all = intval($already_saved_users) + intval($total_users_in_step);
+
+        $total_users_imported_all = $total_users_imported_all > $users_count ? $users_count : $total_users_imported_all;
+
+        $resume_importing = true;
+
+        update_option('peerboard_stop_importing_on_page', $paged);
+        update_option('peerboard_user_imported_or_updated', $total_users_imported_all);
+
+
+        if (intval($paged) >= intval($pages_count)) {
+            delete_option('peerboard_stop_importing_on_page');
+            delete_option('peerboard_user_imported_or_updated');
+            $resume_importing = false;
+        }
+
+        $message = sprintf(__('Last import succeeded, imported %s of %s', 'peerboard'), $total_users_imported_all, $users_count);
+
+        wp_send_json_success(['message' => $message, 'resume' => $resume_importing]);
     }
 
     /**

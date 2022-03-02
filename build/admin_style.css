@@ -66,6 +66,19 @@
   border: 0.7px solid;
   margin-right: 20px;
 }
+.peerboard-settings-wrap .option-name {
+  min-height: 30px;
+}
+.peerboard-settings-wrap .option-name strong {
+  display: flex;
+  align-content: center;
+  align-items: center;
+  min-height: 30px;
+  height: 30px;
+}
+.peerboard-settings-wrap input[type=text] {
+  min-height: 30px;
+}
 
 .import-wrap {
   padding: 0px 20px;
