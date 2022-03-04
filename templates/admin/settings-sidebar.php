@@ -4,6 +4,10 @@ namespace PEBO;
 ?>
 
 <div class="peerboard-sidebar">
+    <h2><?php _e('What’s new:','peerboard')?></h2>
+    <p><?php _e('Now we can import WordPress member roles as PeerBoard group membership! Enable the checkboxes down below and click the Import button to do a full reimport.','peerboard')?></p>
+
+    <h3><?= __('See our ','peerboard') ?><a href="https://community.peerboard.com/space/303964679"><?= __('product updates','peerboard')?></a></h3>
 
     <?php
     $contact_email = "<a href='mailto:support_wp@peerboard.com' target='_blank'>support_wp@peerboard.com</a>";
