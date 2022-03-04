@@ -141,7 +141,7 @@ $users_count = $wp_users_count['total_users'];
 
         <div class="option-val">
             <?php
-            printf("<input type='text' name='peerboard_options[external_login_url]' value='%s' style='width: 300px;'/>", Settings::get_board_full_login_url());
+            printf("<input type='text' placeholder='https://yourwebsite.com/login' name='peerboard_options[external_login_url]' value='%s' style='width: 300px;'/>", self::$external_comm_settings['hosting']['external_login_url']);
 
             // Board login link message
             $external_login_url = self::get_board_full_login_url();
