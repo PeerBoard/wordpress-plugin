@@ -96,11 +96,22 @@
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _admin_feedback_form__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./admin/feedback-form */ "./src/js/admin/feedback-form.js");
+/* harmony import */ var _admin_settings_page__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./admin/settings-page */ "./src/js/admin/settings-page.js");
 /**
  * Feedback form
  */
 
-Object(_admin_feedback_form__WEBPACK_IMPORTED_MODULE_0__["default"])();
+
+var admin_path = window.location.href; // if plugin activation or deactivation page
+
+if (admin_path.includes('plugins.php')) {
+  Object(_admin_feedback_form__WEBPACK_IMPORTED_MODULE_0__["default"])();
+} // if plugin activation or deactivation page
+
+
+if (admin_path.includes('page=peerboard')) {
+  Object(_admin_settings_page__WEBPACK_IMPORTED_MODULE_1__["default"])();
+}
 
 /***/ }),
 
@@ -290,6 +301,132 @@ __webpack_require__.r(__webpack_exports__);
   }
 
   ;
+});
+
+/***/ }),
+
+/***/ "./src/js/admin/settings-page.js":
+/*!***************************************!*\
+  !*** ./src/js/admin/settings-page.js ***!
+  \***************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (function () {
+  var user_sync_checkbox = document.querySelector('#peerboard_users_sync_enabled');
+  var bulk_activate_email_notifications = document.querySelector('#peerboard_bulk_activate_email');
+  var expose_user_data = document.querySelector('#expose_user_data');
+  var manually_sync_users = document.querySelector('#sync_users');
+  var manually_sync_users_image = document.querySelector('#sync_users img');
+  var users_amount_pages = document.querySelector('#sync-progress').getAttribute('page-count');
+  var old_text = manually_sync_users.querySelector('.text').innerHTML;
+  var new_text = 'Importing'; // update sync settings
+
+  function check_user_settings_sync() {
+    if (!user_sync_checkbox.checked) {
+      bulk_activate_email_notifications.disabled = true;
+      bulk_activate_email_notifications.checked = false;
+      expose_user_data.disabled = true;
+      expose_user_data.checked = false;
+      manually_sync_users.disabled = true;
+    } else {
+      bulk_activate_email_notifications.disabled = false;
+      expose_user_data.disabled = false;
+      manually_sync_users.disabled = false;
+    }
+  }
+
+  user_sync_checkbox.onchange = function (element) {
+    check_user_settings_sync();
+  };
+
+  window.onload = function () {
+    check_user_settings_sync();
+  };
+  /**
+   * On import button click
+   * @returns 
+   */
+
+
+  manually_sync_users.onclick = function () {
+    if (manually_sync_users.disabled) {
+      return;
+    } // show progress bar
+
+
+    document.querySelector('.sync-progress-wrap').style.display = 'block';
+    document.querySelector('#result_message_success').style.display = 'none';
+    document.querySelector('#result_message_waring').style.display = 'none';
+    import_users();
+  };
+
+  function import_users() {
+    manually_sync_users_image.className = 'rotating';
+    manually_sync_users.disabled = true;
+    manually_sync_users.querySelector('.text').innerHTML = new_text;
+    var every_step_persent = 100 / users_amount_pages;
+    fetch(window.peerboard_admin.user_sync_url, {
+      method: 'POST',
+      body: JSON.stringify({
+        'paged': document.querySelector('#sync-progress').getAttribute('current-page'),
+        'expose_user_data': document.querySelector('#expose_user_data').checked,
+        'peerboard_bulk_activate_email': document.querySelector('#peerboard_bulk_activate_email').checked
+      }),
+      headers: {
+        'X-WP-Nonce': document.querySelector('#_wp_rest_nonce').value
+      }
+    }).then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      if (data.success) {
+        var response = data.data;
+        var current_page = document.querySelector('#sync-progress').getAttribute('current-page');
+        console.log(response);
+        document.querySelector('#sync-progress').setAttribute('current-page', parseInt(current_page) + 1);
+        var width = Math.round(every_step_persent * parseInt(current_page) + 1);
+
+        if (width > 100) {
+          width = 100;
+        }
+
+        document.querySelector('#bar').style.width = width + "%";
+        document.querySelector('#sync-progress #bar').innerHTML = width + "%"; // next page request
+
+        if (response.resume) {
+          import_users();
+        } // after last page request is ready
+
+
+        if (!response.resume) {
+          importing_finished(data);
+        }
+      } else {
+        importing_finished(data);
+      }
+    }).catch(console.error);
+  }
+
+  function importing_finished(data) {
+    var response = data.data;
+    manually_sync_users_image.classList.remove("rotating");
+    manually_sync_users.querySelector('.text').innerHTML = old_text;
+
+    if (data.success) {
+      // show success message
+      document.querySelector('#result_message_success').innerHTML = response.message;
+      document.querySelector('#result_message_success').style.display = 'block';
+    } else {
+      document.querySelector('#result_message_waring').innerHTML = response.message;
+      document.querySelector('#result_message_waring').style.display = 'block';
+      manually_sync_users.disabled = false;
+    } // hide progress bar
+
+
+    document.querySelector('.sync-progress-wrap').style.display = 'none';
+  }
 });
 
 /***/ })

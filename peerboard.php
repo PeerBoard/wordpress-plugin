@@ -4,7 +4,7 @@
  * Plugin Name: WordPress Forum Plugin – PeerBoard
  * Plugin URI: https://peerboard.com/integrations/wordpress-forum-plugin
  * Description: Forum, Community & User Profile Plugin
- * Version: 1.0.4
+ * Version: 1.1.0
  * Text Domain: peerboard
  * Domain Path: /languages
  * Author: <a href='https://peerboard.com' target='_blank'>Peerboard</a>, forumplugin
@@ -25,7 +25,7 @@ class PeerBoard
 	{
 
 		DEFINE('PEERBOARD_PROXY_PATH', 'peerboard_internal');
-		DEFINE('PEERBOARD_PLUGIN_VERSION', '1.0.4');
+		DEFINE('PEERBOARD_PLUGIN_VERSION', '1.1.0');
 		DEFINE('PEERBOARD_PLUGIN_URL', plugins_url('', __FILE__));
 		DEFINE('PEERBOARD_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 		DEFINE('PEERBOARD_PLUGIN_MAIN_TEMPLATE_NAME', 'page-full-width-template.php');
@@ -42,6 +42,7 @@ class PeerBoard
 		require_once plugin_dir_path(__FILE__) . "/inc/UserSync.php";
 		require_once plugin_dir_path(__FILE__) . "/inc/Sitemap.php";
 		require_once plugin_dir_path(__FILE__) . "/inc/SSR.php";
+		require_once plugin_dir_path(__FILE__) . "/inc/Groups.php";
 
 		add_action('plugins_loaded', [__CLASS__, 'true_load_plugin_textdomain']);
 
@@ -67,7 +68,7 @@ class PeerBoard
 		wp_enqueue_style('peerboard_integration_styles', plugin_dir_url(__FILE__) . "/build/admin_style.css", array(), $assets['version']);
 		wp_enqueue_script('peerboard-admin-js', plugin_dir_url(__FILE__) . "/build/admin.js", array(), $assets['version'], true);
 
-		wp_localize_script('peerboard-admin-js', 'peerboard_admin', ['ajax_url' => admin_url('admin-ajax.php')]);
+		wp_localize_script('peerboard-admin-js', 'peerboard_admin', apply_filters('peerboard_admin_script_localize', ['ajax_url' => admin_url('admin-ajax.php')]));
 	}
 
 	/**
@@ -152,8 +153,10 @@ class PeerBoard
 	 */
 	public static function add_deactivation_feedback_dialog_box()
 	{
-		global $peerboard_options;
+		$peerboard_options = get_option('peerboard_options');
+
 		$board_id = $peerboard_options['community_id'];
+
 		$reasons = [
 			[
 				'id' => '1',

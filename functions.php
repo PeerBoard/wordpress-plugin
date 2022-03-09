@@ -214,6 +214,10 @@ function peerboard_get_auth_hash($params, $secret)
 
 function peerboard_get_options($data)
 {
+  if(empty($data)){
+    return false;
+  }
+
   if (is_wp_error($data)) {
     return array("error" => $data);
   }

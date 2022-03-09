@@ -34,4 +34,121 @@
   display: block;
 }
 
+.peerboard-settings-wrap {
+  display: flex;
+  flex-wrap: wrap;
+}
+.peerboard-settings-wrap form {
+  flex: 1 0 auto;
+}
+.peerboard-settings-wrap .peerboard-sidebar {
+  width: 400px;
+  border: 1px solid;
+  padding: 15px;
+  border-radius: 5px;
+}
+.peerboard-settings-wrap .settings .option-field {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 20px 0px;
+}
+.peerboard-settings-wrap .settings .option-field .option-name {
+  min-width: 200px;
+  max-width: 265px;
+}
+.peerboard-settings-wrap .settings .input-check .option-name {
+  margin-right: 20px;
+}
+.peerboard-settings-wrap .settings .sub_settings {
+  padding-left: 20px;
+}
+.peerboard-settings-wrap .settings .divider {
+  border: 0.7px solid;
+  margin-right: 20px;
+}
+.peerboard-settings-wrap .option-name {
+  min-height: 30px;
+}
+.peerboard-settings-wrap .option-name strong {
+  display: flex;
+  align-content: center;
+  align-items: center;
+  min-height: 30px;
+  height: 30px;
+}
+.peerboard-settings-wrap input[type=text] {
+  min-height: 30px;
+}
+
+.import-wrap {
+  padding: 0px 20px;
+}
+.import-wrap .sync-progress-wrap {
+  display: none;
+}
+.import-wrap .sync-progress-wrap #sync-progress {
+  width: 100%;
+  background-color: white;
+}
+.import-wrap .sync-progress-wrap #sync-progress #bar {
+  width: 0%;
+  height: 30px;
+  background-color: #04aa6d;
+  text-align: center;
+  /* To center it horizontally (if you want) */
+  line-height: 30px;
+  /* To center it vertically */
+  color: white;
+}
+.import-wrap .sync-progress-wrap .numbers {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.toplevel_page_peerboard #sync_users {
+  display: flex;
+  border: 1px solid;
+  justify-content: center;
+  align-content: center;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  padding: 5px 10px;
+  background: white;
+  border-radius: 5px;
+  font-size: 18px;
+  margin: 20px 0px;
+  flex-wrap: wrap;
+  margin-left: 20px;
+}
+.toplevel_page_peerboard #sync_users:hover {
+  cursor: pointer;
+  opacity: 0.7;
+}
+.toplevel_page_peerboard #sync_users img {
+  margin-right: 10px;
+  width: 20px;
+}
+@-webkit-keyframes rotating /* Safari and Chrome */ {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes rotating {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.toplevel_page_peerboard .rotating {
+  -webkit-animation: rotating 2s linear infinite;
+  animation: rotating 2s linear infinite;
+}
+
 /*# sourceMappingURL=admin_style.css.map*/

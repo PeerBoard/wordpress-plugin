@@ -212,7 +212,7 @@ class ForumPage
             );
 
             // Will send first and last name only if this true
-            if ($peerboard_options['expose_user_data'] == '1') {
+            if (empty($peerboard_options['expose_user_data']) ? false : true) {
                 $userdata['first_name'] = $user->first_name;
                 $userdata['last_name'] = $user->last_name;
             }

@@ -1,0 +1,136 @@
+.peerboard-settings-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  form {
+    flex: 1 0 auto;
+  }
+  .peerboard-sidebar {
+    width: 400px;
+    border: 1px solid;
+    padding: 15px;
+    border-radius: 5px;
+  }
+  .settings {
+    .option-field {
+      display: flex;
+      flex-wrap: wrap;
+      margin: 20px 0px;
+      .option-name {
+        min-width: 200px;
+        max-width: 265px;
+      }
+    }
+    .input-check {
+      .option-name {
+        margin-right: 20px;
+      }
+    }
+    .sub_settings {
+      padding-left: 20px;
+    }
+    .divider {
+      border: 0.7px solid;
+      margin-right: 20px;
+    }
+  }
+  .option-name {
+    min-height: 30px;
+    strong {
+      display: flex;
+      align-content: center;
+      align-items: center;
+      min-height: 30px;
+      height: 30px;
+    }
+  }
+  input[type=text] {
+    min-height: 30px;
+  }
+}
+
+.import-wrap {
+  padding: 0px 20px;
+
+  .sync-progress-wrap {
+    display: none;
+    #sync-progress {
+      width: 100%;
+      background-color: white;
+      #bar {
+        width: 0%;
+        height: 30px;
+        background-color: #04aa6d;
+        text-align: center; /* To center it horizontally (if you want) */
+        line-height: 30px; /* To center it vertically */
+        color: white;
+      }
+    }
+
+    .numbers {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+  }
+}
+
+.toplevel_page_peerboard {
+  #sync_users {
+    display: flex;
+    border: 1px solid;
+    justify-content: center;
+    align-content: center;
+    width: fit-content;
+    padding: 5px 10px;
+    background: white;
+    border-radius: 5px;
+    font-size: 18px;
+    margin: 20px 0px;
+    flex-wrap: wrap;
+    margin-left: 20px;
+    &:hover {
+      cursor: pointer;
+      opacity: 0.7;
+    }
+    img {
+      margin-right: 10px;
+      width: 20px;
+    }
+  }
+
+  @-webkit-keyframes rotating /* Safari and Chrome */ {
+    from {
+      -webkit-transform: rotate(0deg);
+      -o-transform: rotate(0deg);
+      transform: rotate(0deg);
+    }
+    to {
+      -webkit-transform: rotate(360deg);
+      -o-transform: rotate(360deg);
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes rotating {
+    from {
+      -ms-transform: rotate(0deg);
+      -moz-transform: rotate(0deg);
+      -webkit-transform: rotate(0deg);
+      -o-transform: rotate(0deg);
+      transform: rotate(0deg);
+    }
+    to {
+      -ms-transform: rotate(360deg);
+      -moz-transform: rotate(360deg);
+      -webkit-transform: rotate(360deg);
+      -o-transform: rotate(360deg);
+      transform: rotate(360deg);
+    }
+  }
+  .rotating {
+    -webkit-animation: rotating 2s linear infinite;
+    -moz-animation: rotating 2s linear infinite;
+    -ms-animation: rotating 2s linear infinite;
+    -o-animation: rotating 2s linear infinite;
+    animation: rotating 2s linear infinite;
+  }
+}
