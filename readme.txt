@@ -97,15 +97,13 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 * Russian - ru_RU
 
 == Screenshots ==
-1. Newsfeed style. Instead of a traditional forum, PeerBoard makes it easy to stay up to date with a single Facebook-like feed.
-2. Real-time conversations. PeerBoard updates forum pages in real time so that users can enjoy a deeper level of discussion.
-3. Modern forum software. PeerBoard’s modern look and feel make it a sight to behold and delight to use for every single user.
-4. Complete white label. Add custom colors, logos, categories, and topics to deliver a fully branded experience for every user.
-5. No-code integration. Embed PeerBoard as a fully customizable page in your WordPress configuration in 10 minutes.
-6. Robust user profiles. Allow users to create bios, receive badges, and build a history that identifies them to other members.
-7. Easy email invite. Quickly transfer or add existing members through a simple email invite.
-8. Rich editor. Allow users to create long-form content by including photos, videos, and formatted content.
-9. Private or public. Control your community’s visibility, access rights and registration options.
+1. Community homepage. Give members a bird’s-eye view of the hottest posts, media, and messages in your community as soon as they log in.
+2. Private spaces. Give people the exclusivity they need and encourage brand loyalty through private spaces.
+3. Complete white label. Add custom colors, logos, categories, and topics to deliver a fully branded experience for every user.
+4. Robust user profiles. Allow your users personalities to shine through and help people find posts from their favorite contributors easily.
+5. Rich content capabilities. Enable members to create long-form articles, post questions, suggestions and detailed comments.
+6. Simple member management. Easily keep track of your community. Review members, change roles, add badges and restrict access from a single location.
+7. No-code integration. Embed PeerBoard as a fully customizable page in your WordPress configuration in 10 minutes.
 
 == Changelog ==
 
