@@ -124,6 +124,7 @@ $users_count = $wp_users_count['total_users'];
                 printf(__("The community page is set as the homepage <a target='_blank' href='%s'>%s</a>", 'peerboard'), $community_link, $community_link);
                 $user_ID = get_current_user_id();
                 $reading_settings_url = get_dashboard_url($user_ID, 'options-reading.php');
+                echo '<br>';
                 printf(__('To change the community page slug or the parent page, do not use it as a static homepage. You can change it <a target="_blank" href="%s">here</a>', 'peerboard'), $reading_settings_url);
             } else {
                 printf(__("PeerBoard will be live at <a target='_blank' href='%s'>%s</a>", 'peerboard'), $community_link, $community_link);
