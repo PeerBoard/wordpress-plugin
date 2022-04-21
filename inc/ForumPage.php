@@ -90,7 +90,7 @@ class ForumPage
         if (peerboard_is_comm_set_static_home_page()) {
 
 
-            
+
             // if we are on space
             if (
                 peerboard_is_embed_page('space') ||
@@ -296,8 +296,19 @@ class ForumPage
      */
     public static function sync_plugin_and_peerboard_versions()
     {
-        global $peerboard_options;
+        $checked_recently = get_transient('plugin_version_checked_recently');
+
+        if($checked_recently){
+            return;
+        }
+
+        if (!$checked_recently) {
+            set_transient('plugin_version_checked_recently', 1, time() + (DAY_IN_SECONDS * 5));
+        }
+
         $peerboard_options = get_option('peerboard_options', array());
+
+        var_dump($peerboard_options);
         if (!array_key_exists('peerboard_version_synced', $peerboard_options)) {
             $req = API::peerboard_post_integration($peerboard_options['auth_token'], $peerboard_options['prefix'], peerboard_get_domain());
 
