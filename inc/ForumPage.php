@@ -307,8 +307,7 @@ class ForumPage
         }
 
         $peerboard_options = get_option('peerboard_options', array());
-
-        var_dump($peerboard_options);
+        
         if (!array_key_exists('peerboard_version_synced', $peerboard_options)) {
             $req = API::peerboard_post_integration($peerboard_options['auth_token'], $peerboard_options['prefix'], peerboard_get_domain());
 
