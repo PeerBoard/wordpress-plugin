@@ -329,6 +329,25 @@ class API
   public static function add_sentry_error($message, $function_name, $extra = [])
   {
     $timestamp = time();
+
+    // do not report this type of errors
+    if(strpos($message, 'cURL error 60')){
+      return;
+    }
+
+    if(strpos($message, 'cURL error 28')){
+      return;
+    }
+
+    if($message === 'provide auth token'){
+      return;
+    }
+
+    if($message === 'unauthorized'){
+      return;
+    }
+    // do not report this type of errors
+
     $body = [
       "culprit" => $function_name,
       "timestamp" => $timestamp,
