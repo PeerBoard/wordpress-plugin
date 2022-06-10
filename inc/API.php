@@ -94,11 +94,11 @@ class API
     }
 
     if (is_array($request)) {
-      if ($request['response']['code'] >= 400 && $request['response']['code'] !== 404) {
+      if ($request['response']['code'] >= 400) {
         $response_body = wp_remote_retrieve_body($request);
         $message = json_decode(wp_remote_retrieve_body($request), true);
         $message = empty($message['message']) ? $response_body : $message['message'];
-        if ($report_error) {
+        if ($report_error && $request['response']['code'] !== 404) {
           peerboard_add_notice($message, $ref_function_name, 'error', $function_args);
         }
         $success = false;
