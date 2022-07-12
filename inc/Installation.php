@@ -85,9 +85,19 @@ class Installation
 
         $community = API::peerboard_create_community();
 
-        if ($community) {
-          $peerboard_options = peerboard_get_options($community);
+        if (!$community) {
+          $community = API::peerboard_create_community();
+        }  
+        
+        if (!$community) {
+          $community = API::peerboard_create_community();
         }
+
+        if (!$community) {
+          $community = API::peerboard_create_community();
+        }
+
+        $peerboard_options = peerboard_get_options($community);
       }
       peerboard_send_analytics('activate_plugin', $peerboard_options["community_id"]);
 
