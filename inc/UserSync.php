@@ -231,6 +231,9 @@ class UserSync
             ];
 
             if (empty($peerboard_options['expose_user_data']) ? false : true) {
+                if (!empty($user['first_name'])) {
+                    $user_data['name'] = $user['first_name'];
+                }
                 $user_data['last_name'] = $user['last_name'];
             }
         }
