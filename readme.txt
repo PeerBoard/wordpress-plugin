@@ -4,7 +4,7 @@ Tags: forum, forums, community, discussion, knowledge base, membership, member, 
 Requires at least: 5.1
 Tested up to: 6.0
 Requires PHP: 7.0
-Stable tag: 1.1.8
+Stable tag: 1.2.0
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -99,13 +99,18 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 == Screenshots ==
 1. Community homepage. Give members a bird’s-eye view of the hottest posts, media, and messages in your community as soon as they log in.
 2. Private spaces. Give people the exclusivity they need and encourage brand loyalty through private spaces.
-3. Complete white label. Add custom colors, logos, categories, and topics to deliver a fully branded experience for every user.
-4. Robust user profiles. Allow your users personalities to shine through and help people find posts from their favorite contributors easily.
-5. Rich content capabilities. Enable members to create long-form articles, post questions, suggestions and detailed comments.
-6. Simple member management. Easily keep track of your community. Review members, change roles, add badges and restrict access from a single location.
-7. No-code integration. Embed PeerBoard as a fully customizable page in your WordPress configuration in 10 minutes.
+3. Notifications panel. See all important updates such as new comments, replies, and mentions that are a click away from the homepage.
+4. Complete white label. Add custom colors, logos, categories, and topics to deliver a fully branded experience for every user.
+5. Robust user profiles. Allow your users personalities to shine through and help people find posts from their favorite contributors easily.
+6. Rich content capabilities. Enable members to create long-form articles, post questions, suggestions and detailed comments.
+7. Simple member management. Easily keep track of your community. Review members, change roles, add badges and restrict access from a single location.
+8. No-code integration. Embed PeerBoard as a fully customizable page in your WordPress configuration in 10 minutes.
 
 == Changelog ==
+
+= 1.2.0 = 
+* fixed issue with users first name
+* fixed some other small issues
 
 = 1.1.8 = 
 * fixed issue with users import
@@ -225,6 +230,10 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 * Fix: plugin reactivation now uses old community instead of creating new one
 
 == Upgrade Notice ==
+
+= 1.2.0 = 
+* fixed issue with users first name
+* fixed some other small issues
 
 = 1.1.8 = 
 * fixed issue with users import

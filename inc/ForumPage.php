@@ -97,7 +97,8 @@ class ForumPage
                 peerboard_is_embed_page('settings') ||
                 peerboard_is_embed_page('members') ||
                 peerboard_is_embed_page('customization') ||
-                peerboard_is_embed_page('login')
+                peerboard_is_embed_page('login') ||
+                peerboard_is_embed_page('profile')
             ) {
                 $query_vars = array("page_id" => get_option("peerboard_post"));
                 unset($query_vars['pagename']);
