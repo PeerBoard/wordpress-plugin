@@ -2,7 +2,7 @@
 Contributors: peerboard
 Tags: forum, forums, community, discussion, knowledge base, membership, member, profile, profiles
 Requires at least: 5.1
-Tested up to: 6.5
+Tested up to: 6.1.2
 Requires PHP: 7.0
 Stable tag: 1.2.1
 License: GPLv2
