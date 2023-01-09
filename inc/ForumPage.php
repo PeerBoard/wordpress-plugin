@@ -77,8 +77,6 @@ class ForumPage
 
         $peerboard_options = get_option('peerboard_options');
         $peerboard_options['prefix'] = peerboard_get_comm_full_slug();
-        global $peerboard_external_comm_settings;
-        $peerboard_external_comm_settings = API::peerboard_get_community($peerboard_options['auth_token']);
 
         // if the comm is not static page
         if (peerboard_is_embed_page($peerboard_options['prefix']) && !peerboard_is_comm_set_static_home_page()) {
@@ -180,7 +178,6 @@ class ForumPage
     public static function peerboard_get_script_settings($peerboard_options)
     {
         $peerboard_prefix = $peerboard_options['prefix'];
-        global $peerboard_external_comm_settings;
         $community_id = intval($peerboard_options['community_id']);
         $user = wp_get_current_user();
 
@@ -199,7 +196,6 @@ class ForumPage
             'board-id' => $community_id,
             // временное решение
             'prefix' => $peerboard_prefix,
-            'external_login_url' => $peerboard_external_comm_settings['hosting']['external_login_url']
         );
 
         if ($isUserLogged) {
