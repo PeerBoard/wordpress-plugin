@@ -58,9 +58,9 @@ class Settings
         add_filter('peerboard_admin_script_localize', [__CLASS__, 'peerboard_admin_scripts_data']);
 
         /**
-         * Will load on all pages to prevent issues
+         * Will load on all pages to prevent issues (do not remember why this was needed)
          */
-        add_action('init', [__CLASS__, 'new_version_changes']);
+        //add_action('init', [__CLASS__, 'new_version_changes']);
     }
 
     /**
@@ -134,7 +134,6 @@ class Settings
         // if set default permalinks ?p=post_id
         if (empty($structure)) {
             $permaling_structure = get_dashboard_url(0, 'options-permalink.php');
-            var_dump($permaling_structure);
             printf(
                 __(
                     '<div class="notice notice-error settings-error is-dismissible">
@@ -195,6 +194,7 @@ class Settings
      */
     public static function pre_update_option_peerboard_options($value, $old_value, $option)
     {
+
         if ($old_value === NULL || $old_value === false) {
             return $value;
         }
@@ -435,7 +435,6 @@ class Settings
 
             delete_option('peerboard_users_sync_enabled');
         }
-
 
         update_option('peerboard_options', $peerboard_options);
     }
