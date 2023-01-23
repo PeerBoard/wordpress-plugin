@@ -2,9 +2,9 @@
 Contributors: peerboard
 Tags: forum, forums, community, discussion, knowledge base, membership, member, profile, profiles
 Requires at least: 5.1
-Tested up to: 6.5
+Tested up to: 6.1.2
 Requires PHP: 7.0
-Stable tag: 1.2.1
+Stable tag: 1.2.2
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -107,6 +107,9 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 8. No-code integration. Embed PeerBoard as a fully customizable page in your WordPress configuration in 10 minutes.
 
 == Changelog ==
+
+= 1.2.2 = 
+* very important bug was fixed
 
 = 1.2.1 = 
 * fixed some other small issues
@@ -233,6 +236,9 @@ Check out our support forums [here](https://community.peerboard.com/) or send us
 * Fix: plugin reactivation now uses old community instead of creating new one
 
 == Upgrade Notice ==
+
+= 1.2.2 = 
+* very important bug was fixed
 
 = 1.2.1 = 
 * fixed some other small issues
