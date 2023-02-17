@@ -1,6 +1,6 @@
 {
     "require": {
         "kub-at/php-simple-html-dom-parser": "^1.9",
-        "firebase/php-jwt": "^5.5"
+        "firebase/php-jwt": "^6.0"
     }
 }
